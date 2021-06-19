@@ -4,6 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
+import '../models.dart';
+import '../utils.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => HomePageState();
@@ -11,14 +14,15 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
-  List<_DeviceWithAvailability> devices = <_DeviceWithAvailability>[];
+  List<DeviceWithAvailability> devices = <DeviceWithAvailability>[];
   BluetoothDevice _selectedDevice;
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   BluetoothConnection connection;
-  List<_Message> messages = <_Message>[];
+  List<Message> messages = <Message>[];
 
   TextEditingController _controller = TextEditingController();
   TabController _tabController;
+  ScrollController _scrollController = ScrollController();
 
   String _address;
   String _name;
@@ -85,7 +89,7 @@ class HomePageState extends State<HomePage>
               _startDevice();
             },
           ),
-          Icon(_btStateIcon(_bluetoothState)),
+          Icon(btStateIcon(_bluetoothState)),
           IconButton(
             icon: _bluetoothState.isEnabled
                 ? Icon(Icons.toggle_on_outlined, color: Colors.green)
@@ -175,6 +179,7 @@ class HomePageState extends State<HomePage>
                   ),
                 ),
                 child: ListView.builder(
+                  controller: _scrollController,
                   itemCount: messages.length,
                   itemBuilder: (context, i) {
                     return Text("${messages[i].name} -> ${messages[i].text}");
@@ -234,19 +239,6 @@ class HomePageState extends State<HomePage>
     );
   }
 
-  IconData _btStateIcon(BluetoothState state) {
-    if (state == BluetoothState.UNKNOWN) return Icons.do_disturb_alt_sharp;
-    if (state == BluetoothState.ERROR) return Icons.error_outline_sharp;
-    if (state == BluetoothState.STATE_BLE_ON) return Icons.ac_unit;
-    if (state == BluetoothState.STATE_BLE_TURNING_OFF) return Icons.ac_unit;
-    if (state == BluetoothState.STATE_BLE_TURNING_ON) return Icons.ac_unit;
-    if (state == BluetoothState.STATE_OFF) return Icons.bluetooth_disabled;
-    if (state == BluetoothState.STATE_ON) return Icons.bluetooth;
-    if (state == BluetoothState.STATE_TURNING_ON) return Icons.ac_unit;
-    if (state == BluetoothState.STATE_TURNING_OFF) return Icons.ac_unit;
-    return Icons.details;
-  }
-
   void _getDevices() {
     // Setup a list of the bonded devices
     FlutterBluetoothSerial.instance
@@ -255,9 +247,9 @@ class HomePageState extends State<HomePage>
       setState(() {
         devices = bondedDevices
             .map(
-              (device) => _DeviceWithAvailability(
+              (device) => DeviceWithAvailability(
                 device,
-                _DeviceAvailability.maybe,
+                DeviceAvailability.maybe,
               )..isPaired = true,
             )
             .toList();
@@ -266,7 +258,7 @@ class HomePageState extends State<HomePage>
   }
 
   void _startDevice() {
-    for (_DeviceWithAvailability d in devices) {
+    for (DeviceWithAvailability d in devices) {
       if (d.isPaired == false) {
         devices.remove(d);
       }
@@ -274,24 +266,24 @@ class HomePageState extends State<HomePage>
     FlutterBluetoothSerial.instance.startDiscovery().listen((r) {
       setState(() {
         bool isPaired = false;
-        for (_DeviceWithAvailability d in devices) {
+        for (DeviceWithAvailability d in devices) {
           if (d.device == r.device) {
-            d.availability = _DeviceAvailability.yes;
+            d.availability = DeviceAvailability.yes;
             d.rssi = r.rssi;
             isPaired = true;
           }
         }
         if (!isPaired) {
-          _DeviceWithAvailability d = _DeviceWithAvailability(
-              r.device, _DeviceAvailability.yes, r.rssi);
+          DeviceWithAvailability d =
+              DeviceWithAvailability(r.device, DeviceAvailability.yes, r.rssi);
           d.isPaired = false;
           devices.add(d);
         }
       });
     }).onDone(() {
-      for (_DeviceWithAvailability d in devices) {
-        if (d.availability == _DeviceAvailability.maybe) {
-          d.availability = _DeviceAvailability.no;
+      for (DeviceWithAvailability d in devices) {
+        if (d.availability == DeviceAvailability.maybe) {
+          d.availability = DeviceAvailability.no;
         }
       }
     });
@@ -344,7 +336,7 @@ class HomePageState extends State<HomePage>
     if (~index != 0) {
       setState(() {
         messages.add(
-          _Message(
+          Message(
             _selectedDevice.name ?? "Unknown",
             backspacesCounter > 0
                 ? _messageBuffer
@@ -355,6 +347,11 @@ class HomePageState extends State<HomePage>
         );
         _messageBuffer = dataString.substring(index);
       });
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 600),
+        curve: Curves.easeInOut,
+      );
     } else {
       _messageBuffer = (backspacesCounter > 0
               ? _messageBuffer.substring(
@@ -364,44 +361,3 @@ class HomePageState extends State<HomePage>
     }
   }
 }
-
-enum _DeviceAvailability {
-  no,
-  maybe,
-  yes,
-}
-
-class _DeviceWithAvailability extends BluetoothDevice {
-  BluetoothDevice device;
-  _DeviceAvailability availability;
-  int rssi;
-  bool isPaired;
-
-  _DeviceWithAvailability(this.device, this.availability, [this.rssi]);
-}
-
-class _Message {
-  final String name;
-  final String text;
-
-  _Message(this.name, this.text);
-}
-
-/*
-TextField(
-                      controller: _controller,
-                      keyboardType: TextInputType.number,
-                    ),
-                    Center(
-                      child: TextButton(
-                        child: Text("Send"),
-                        onPressed: () async {
-                          if (_controller.text.isEmpty) return;
-                          connection.output
-                              .add(utf8.encode(_controller.text + "\r\n"));
-                          await connection.output.allSent;
-                          _controller.clear();
-                        },
-                      ),
-                    )
-*/
