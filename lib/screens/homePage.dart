@@ -83,7 +83,7 @@ class HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("BT Serial"),
+        title: const Text(title),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
