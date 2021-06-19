@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:bt01_serial_test/widgets/gamePad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
+import '../constants.dart';
 import '../models.dart';
 import '../utils.dart';
 
@@ -66,7 +68,7 @@ class HomePageState extends State<HomePage>
       });
     });
     super.initState();
-    _tabController = TabController(length: 1, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -223,6 +225,13 @@ class HomePageState extends State<HomePage>
                             );
                           },
                         ),
+                        gamePad((int i) async {
+                          if (connection?.isConnected == true) {
+                            connection.output
+                                .add(utf8.encode("${gamePadValues[i]}\r\n"));
+                            await connection.output.allSent;
+                          }
+                        }),
                       ]),
                     ),
                   ],
@@ -234,7 +243,7 @@ class HomePageState extends State<HomePage>
       ),
       bottomNavigationBar: TabBar(
         controller: _tabController,
-        tabs: [Tab(text: "NumPad")],
+        tabs: [Tab(text: "NumPad"), Tab(text: "GamePad")],
       ),
     );
   }

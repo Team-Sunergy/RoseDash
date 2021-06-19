@@ -7,6 +7,7 @@ Widget gameButton(
   return GestureDetector(
     onTapDown: onTap,
     child: Container(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.teal,
         borderRadius: BorderRadius.circular(10),
