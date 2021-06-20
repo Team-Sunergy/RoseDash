@@ -1,13 +1,17 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:bt01_serial_test/widgets/customButtonWidget.dart';
+import 'package:bt01_serial_test/widgets/gameButton.dart';
 import 'package:bt01_serial_test/widgets/gamePad.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 import '../models.dart';
 import '../utils.dart';
+import 'customButtonPage.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -21,6 +25,8 @@ class HomePageState extends State<HomePage>
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
   BluetoothConnection connection;
   List<Message> messages = <Message>[];
+  SharedPreferences _pref;
+  List<CustomButton> customButtons = [];
 
   TextEditingController _controller = TextEditingController();
   TabController _tabController;
@@ -68,12 +74,18 @@ class HomePageState extends State<HomePage>
       });
     });
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+    SharedPreferences.getInstance().then((SharedPreferences p) {
+      _pref = p;
+      getStoredButtons();
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _scrollController?.dispose();
+    _tabController?.dispose();
     connection?.dispose();
     FlutterBluetoothSerial.instance.setPairingRequestHandler(null);
     super.dispose();
@@ -232,6 +244,38 @@ class HomePageState extends State<HomePage>
                             await connection.output.allSent;
                           }
                         }),
+                        ListView.builder(
+                          itemCount: customButtons.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    gameButton("Edit", (TapDownDetails _) {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CustomButtonPage(_pref)))
+                                          .then((_) {
+                                        getStoredButtons();
+                                      });
+                                    })
+                                  ]);
+                            }
+                            CustomButton b = customButtons[index - 1];
+                            return Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              child: customButtonWidget(b, (String val) async {
+                                if (connection?.isConnected == true) {
+                                  connection.output
+                                      .add(utf8.encode("$val\r\n"));
+                                  await connection.output.allSent;
+                                }
+                              }),
+                            );
+                          },
+                        ),
                       ]),
                     ),
                   ],
@@ -243,7 +287,7 @@ class HomePageState extends State<HomePage>
       ),
       bottomNavigationBar: TabBar(
         controller: _tabController,
-        tabs: [Tab(text: "NumPad"), Tab(text: "GamePad")],
+        tabs: [Tab(text: "NumPad"), Tab(text: "GamePad"), Tab(text: "Custom")],
       ),
     );
   }
@@ -367,6 +411,15 @@ class HomePageState extends State<HomePage>
                   0, _messageBuffer.length - backspacesCounter)
               : _messageBuffer + dataString)
           .trim();
+    }
+  }
+
+  void getStoredButtons() {
+    customButtons = getCustomButtons(_pref);
+    if (customButtons.length == 0) {
+      customButtons.add(CustomButton(0, "LED 1", "0", "1"));
+      customButtons.add(CustomButton(1, "Event 1", "1"));
+      setCustomButtons(_pref, customButtons);
     }
   }
 }

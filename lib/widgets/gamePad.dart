@@ -1,5 +1,6 @@
-import 'package:bt01_serial_test/widgets/gameButton.dart';
 import 'package:flutter/material.dart';
+
+import 'gameButton.dart';
 
 Widget gamePad(dynamic onTap) {
   return Column(
