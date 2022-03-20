@@ -1,6 +1,6 @@
 # RoseDash
 <div style="width:60px ; height:60px">
-![Employee data](https://github.com/Team-Sunergy/Dash-Ui/blob/7c777a1c08835b062ef585bb4c86b92261ded93f/code/static/logo/team-sunergy-logo-header.png "RoseDash")
+![RoseDash](https://github.com/Team-Sunergy/Dash-Ui/blob/7c777a1c08835b062ef585bb4c86b92261ded93f/code/static/logo/team-sunergy-logo-header.png "RoseDash")
 <div>
 Flutter Project For The Rose Dash App
 
