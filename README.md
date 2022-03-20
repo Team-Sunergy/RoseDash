@@ -1,8 +1,7 @@
-<p align="center">
 # RoseDash
-<img src="https://github.com/Team-Sunergy/Dash-Ui/blob/7c777a1c08835b062ef585bb4c86b92261ded93f/code/static/logo/team-sunergy-logo-header.png" width="50%" height="50%">
+<img src="https://github.com/Team-Sunergy/Dash-Ui/blob/7c777a1c08835b062ef585bb4c86b92261ded93f/code/static/logo/team-sunergy-logo-header.png" width="50%" height="50%" align="center">
 Flutter Project For The Rose Dash App
-</p>
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
