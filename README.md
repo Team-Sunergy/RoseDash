@@ -1,7 +1,5 @@
 # RoseDash
-<div style="width:60px ; height:60px">
-![RoseDash](https://github.com/Team-Sunergy/Dash-Ui/blob/7c777a1c08835b062ef585bb4c86b92261ded93f/code/static/logo/team-sunergy-logo-header.png "RoseDash")
-<div>
+<img src="https://github.com/Team-Sunergy/Dash-Ui/blob/7c777a1c08835b062ef585bb4c86b92261ded93f/code/static/logo/team-sunergy-logo-header.png" width="50%" height="50%">
 Flutter Project For The Rose Dash App
 
 ## Getting Started
