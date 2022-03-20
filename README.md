@@ -3,9 +3,8 @@
 </p>
 <div align="center">
 <h1>RoseDash</h1>
+  Flutter Project For The Rose Dash App
 </div>
-
-Flutter Project For The Rose Dash App
 
 ## Getting Started
 
