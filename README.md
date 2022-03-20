@@ -1,6 +1,7 @@
 <p align="center">
   <img width="200" src="https://github.com/Team-Sunergy/Dash-Ui/blob/7c777a1c08835b062ef585bb4c86b92261ded93f/code/static/logo/team-sunergy-logo-header.png" alt="Team Sunergy">
 </p>
+
 # RoseDash
 
 Flutter Project For The Rose Dash App
