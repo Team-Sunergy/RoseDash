@@ -16,4 +16,14 @@ This article found bluetooth only used 1% more battery.
 *We should definitley see what Brad thinks about this*
 
 
+_____________________________________________________________
 
+Display:
+* Highest voltage
+* State of charge
+* Pack current
+* Delta voltage 
+* Highest and lowest
+* Average 
+* Temperature (show all cell temp)
+* BMS???
