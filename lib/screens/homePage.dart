@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:bt01_serial_test/widgets/customButtonWidget.dart';
 import 'package:bt01_serial_test/widgets/gameButton.dart';
-import 'package:bt01_serial_test/widgets/gamePad.dart';
+//import 'package:bt01_serial_test/widgets/speedometer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +12,10 @@ import '../constants.dart';
 import '../models.dart';
 import '../utils.dart';
 import 'customButtonPage.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
+
+SfRadialGauge speedo;
+double _currentValue = 50.0;
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,6 +24,100 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
+
+
+  Widget speedometer()
+  {
+    return SfRadialGauge(enableLoadingAnimation: true, animationDuration: 4500,
+        title: GaugeTitle(
+            text: 'Speed',
+            textStyle:
+            const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xff6df1d8))),
+        axes: <RadialAxis>[
+          RadialAxis(minimum: 0, maximum: 100, ranges: <GaugeRange>[
+            GaugeRange(
+                startValue: 0,
+                endValue: 33,
+                color: Color(0xffffd319),
+                startWidth: 10,
+                endWidth: 10),
+            GaugeRange(
+                startValue: 33,
+                endValue: 66,
+                color: Color(0xffff901f),
+                startWidth: 10,
+                endWidth: 10),
+            GaugeRange(
+                startValue: 66,
+                endValue: 100,
+                color: Color(0xffff2975),
+                startWidth: 10,
+                endWidth: 10)
+          ], pointers: <GaugePointer>[
+            NeedlePointer(value: _currentValue,
+                onValueChanged: (double newValue) {
+                setState(() {
+                    _currentValue = newValue;
+                  });
+                },
+                needleColor: Color(0xfff222ff),
+                knobStyle: KnobStyle(color: Color(0xff8c1eff), borderColor: Color(0xff6df1d8), borderWidth: 0.01),
+                enableAnimation: true)
+
+          ], annotations: <GaugeAnnotation>[
+            GaugeAnnotation(
+                widget: Container(
+                    child: const Text('50',
+                        style: TextStyle(color: Color(0xff6df1d8),
+                            fontSize: 25, fontWeight: FontWeight.bold))),
+                angle: 90,
+                positionFactor: 0.5)
+          ])
+        ]);
+    /**
+        Widget gamePad(dynamic onTap) {
+        return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+        Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+        gameButton("^", (TapDownDetails details) {
+        onTap(0);
+        })
+        ],
+        ),
+        Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+        gameButton("<", (TapDownDetails details) {
+        onTap(2);
+        }),
+        Container(width: 30),
+        gameButton("O", (TapDownDetails details) {
+        onTap(4);
+        }),
+        Container(width: 30),
+        gameButton(">", (TapDownDetails details) {
+        onTap(3);
+        }),
+        ],
+        ),
+        Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+        gameButton("⌄", (TapDownDetails details) {
+        onTap(1);
+        })
+        ],
+        ),
+        ],
+        );**/
+  }
+
   List<DeviceWithAvailability> devices = <DeviceWithAvailability>[];
   BluetoothDevice _selectedDevice;
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
@@ -27,7 +125,7 @@ class HomePageState extends State<HomePage>
   List<Message> messages = <Message>[];
   SharedPreferences _pref;
   List<CustomButton> customButtons = [];
-
+  int speed = 0;
   TextEditingController _controller = TextEditingController();
   TabController _tabController;
   ScrollController _scrollController = ScrollController();
@@ -130,6 +228,7 @@ class HomePageState extends State<HomePage>
         child: Column(
           children: [
             // List of paired devices
+            speedo = speedometer(),
             Expanded(
               flex: 5,
               child: Container(
@@ -196,6 +295,9 @@ class HomePageState extends State<HomePage>
                   controller: _scrollController,
                   itemCount: messages.length,
                   itemBuilder: (context, i) {
+                    speed = int.parse(messages[i].text);
+
+                    return Text(messages[i].text);
                     return Text("${messages[i].name} -> ${messages[i].text}");
                   },
                 ),
@@ -237,13 +339,6 @@ class HomePageState extends State<HomePage>
                             );
                           },
                         ),
-                        gamePad((int i) async {
-                          if (connection?.isConnected == true) {
-                            connection.output
-                                .add(utf8.encode("${gamePadValues[i]}\r\n"));
-                            await connection.output.allSent;
-                          }
-                        }),
                         ListView.builder(
                           itemCount: customButtons.length + 1,
                           itemBuilder: (context, index) {
@@ -287,7 +382,7 @@ class HomePageState extends State<HomePage>
       ),
       bottomNavigationBar: TabBar(
         controller: _tabController,
-        tabs: [Tab(text: "NumPad"), Tab(text: "GamePad"), Tab(text: "Custom")],
+        tabs: [Tab(text: "Garb"), Tab(text: "Speedo"), Tab(text: "Custom")],
       ),
     );
   }
@@ -412,6 +507,7 @@ class HomePageState extends State<HomePage>
               : _messageBuffer + dataString)
           .trim();
     }
+    speedo.axes[0].pointers[0].onValueChanged((speed.toDouble()));
   }
 
   void getStoredButtons() {
