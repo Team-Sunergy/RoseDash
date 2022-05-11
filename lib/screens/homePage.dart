@@ -30,11 +30,19 @@ class HomePageState extends State<HomePage>
   {
     return SfRadialGauge(enableLoadingAnimation: true, animationDuration: 4500,
         title: GaugeTitle(
-            text: 'Speed',
+            text: '',
             textStyle:
             const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xff6df1d8))),
         axes: <RadialAxis>[
-          RadialAxis(minimum: 0, maximum: 100, ranges: <GaugeRange>[
+          RadialAxis(
+              minimum: 0,
+              maximum: 100,
+              interval: 10,
+              axisLineStyle: AxisLineStyle(
+                  ),
+
+              ranges: <GaugeRange>[
+
             GaugeRange(
                 startValue: 0,
                 endValue: 33,
@@ -67,55 +75,13 @@ class HomePageState extends State<HomePage>
           ], annotations: <GaugeAnnotation>[
             GaugeAnnotation(
                 widget: Container(
-                    child: const Text('50',
+                    child: Text((_currentValue.toInt()).toString() + ' mph',
                         style: TextStyle(color: Color(0xff6df1d8),
                             fontSize: 25, fontWeight: FontWeight.bold))),
                 angle: 90,
                 positionFactor: 0.5)
           ])
         ]);
-    /**
-        Widget gamePad(dynamic onTap) {
-        return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-        Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-        gameButton("^", (TapDownDetails details) {
-        onTap(0);
-        })
-        ],
-        ),
-        Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-        gameButton("<", (TapDownDetails details) {
-        onTap(2);
-        }),
-        Container(width: 30),
-        gameButton("O", (TapDownDetails details) {
-        onTap(4);
-        }),
-        Container(width: 30),
-        gameButton(">", (TapDownDetails details) {
-        onTap(3);
-        }),
-        ],
-        ),
-        Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-        gameButton("⌄", (TapDownDetails details) {
-        onTap(1);
-        })
-        ],
-        ),
-        ],
-        );**/
   }
 
   List<DeviceWithAvailability> devices = <DeviceWithAvailability>[];
@@ -314,77 +280,10 @@ class HomePageState extends State<HomePage>
                         ? Text("No Device Selected")
                         : Text(
                             "Connected to ${_selectedDevice.name} ::: ${_selectedDevice.address}"),
-                    Expanded(
-                      child: TabBarView(controller: _tabController, children: [
-                        GridView.builder(
-                          padding: EdgeInsets.all(20),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 5),
-                          itemCount: 10,
-                          itemBuilder: (context, i) {
-                            return Container(
-                              margin: EdgeInsets.all(10),
-                              color: Colors.teal,
-                              child: IconButton(
-                                icon: Text("$i", textScaleFactor: 2.0),
-                                onPressed: () async {
-                                  if (connection?.isConnected == true) {
-                                    connection.output
-                                        .add(utf8.encode("$i\r\n"));
-                                    await connection.output.allSent;
-                                  }
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        ListView.builder(
-                          itemCount: customButtons.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    gameButton("Edit", (TapDownDetails _) {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CustomButtonPage(_pref)))
-                                          .then((_) {
-                                        getStoredButtons();
-                                      });
-                                    })
-                                  ]);
-                            }
-                            CustomButton b = customButtons[index - 1];
-                            return Container(
-                              margin: EdgeInsets.symmetric(vertical: 10),
-                              child: customButtonWidget(b, (String val) async {
-                                if (connection?.isConnected == true) {
-                                  connection.output
-                                      .add(utf8.encode("$val\r\n"));
-                                  await connection.output.allSent;
-                                }
-                              }),
-                            );
-                          },
-                        ),
-                      ]),
-                    ),
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: TabBar(
-        controller: _tabController,
-        tabs: [Tab(text: "Garb"), Tab(text: "Speedo"), Tab(text: "Custom")],
-      ),
-    );
+           )])));
   }
 
   void _getDevices() {
@@ -511,11 +410,5 @@ class HomePageState extends State<HomePage>
   }
 
   void getStoredButtons() {
-    customButtons = getCustomButtons(_pref);
-    if (customButtons.length == 0) {
-      customButtons.add(CustomButton(0, "LED 1", "0", "1"));
-      customButtons.add(CustomButton(1, "Event 1", "1"));
-      setCustomButtons(_pref, customButtons);
-    }
   }
 }
