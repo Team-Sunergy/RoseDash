@@ -48,8 +48,8 @@ void loop()
     else
       sprintf(msgString, "Standard ID: 0x%.3lX       DLC: %1d  Data:", rxId, len);
   
-    Serial.print(msgString);
-    Bluetooth.print(msgString);
+    //Serial.print(msgString);
+    //Bluetooth.print(msgString);
   
     if((rxId & 0x40000000) == 0x40000000){    // Determine if message is a remote request frame.
       sprintf(msgString, " REMOTE REQUEST FRAME");

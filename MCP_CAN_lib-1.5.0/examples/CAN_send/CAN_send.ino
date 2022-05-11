@@ -25,7 +25,7 @@ void loop( ) {
       data[0] = i;
       
       // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
-      byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
+      byte sndStat = CAN0.sendMsgBuf(0x100, 0, 1, data);
       
       if (sndStat == CAN_OK) Serial.println("Message Sent Successfully!"); 
       else Serial.println("Error Sending Message...");
@@ -38,7 +38,7 @@ void loop( ) {
       data[0] = i;
       
       // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send    
-      byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
+      byte sndStat = CAN0.sendMsgBuf(0x100, 0, 1, data);
       
       if (sndStat == CAN_OK) Serial.println("Message Sent Successfully!"); 
       else Serial.println("Error Sending Message..."); 
@@ -50,4 +50,3 @@ void loop( ) {
 /*********************************************************************************************************
   END FILE
 *********************************************************************************************************/
-}
