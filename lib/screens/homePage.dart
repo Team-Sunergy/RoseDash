@@ -15,7 +15,7 @@ import 'customButtonPage.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 SfRadialGauge speedo;
-double _currentValue = 50.0;
+double _currentValue = 828;
 
 class HomePage extends StatefulWidget {
   @override
@@ -30,11 +30,19 @@ class HomePageState extends State<HomePage>
   {
     return SfRadialGauge(enableLoadingAnimation: true, animationDuration: 4500,
         title: GaugeTitle(
-            text: 'Speed',
+            text: '',
             textStyle:
             const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xff6df1d8))),
         axes: <RadialAxis>[
-          RadialAxis(minimum: 0, maximum: 100, ranges: <GaugeRange>[
+          RadialAxis(
+              minimum: 0,
+              maximum: 100,
+              interval: 10,
+              axisLineStyle: AxisLineStyle(
+                  ),
+
+              ranges: <GaugeRange>[
+
             GaugeRange(
                 startValue: 0,
                 endValue: 33,
@@ -67,55 +75,13 @@ class HomePageState extends State<HomePage>
           ], annotations: <GaugeAnnotation>[
             GaugeAnnotation(
                 widget: Container(
-                    child: const Text('50',
+                    child: Text((_currentValue.toInt()).toString() + ' mph',
                         style: TextStyle(color: Color(0xff6df1d8),
                             fontSize: 25, fontWeight: FontWeight.bold))),
                 angle: 90,
                 positionFactor: 0.5)
           ])
         ]);
-    /**
-        Widget gamePad(dynamic onTap) {
-        return Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-        Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-        gameButton("^", (TapDownDetails details) {
-        onTap(0);
-        })
-        ],
-        ),
-        Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-        gameButton("<", (TapDownDetails details) {
-        onTap(2);
-        }),
-        Container(width: 30),
-        gameButton("O", (TapDownDetails details) {
-        onTap(4);
-        }),
-        Container(width: 30),
-        gameButton(">", (TapDownDetails details) {
-        onTap(3);
-        }),
-        ],
-        ),
-        Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-        gameButton("⌄", (TapDownDetails details) {
-        onTap(1);
-        })
-        ],
-        ),
-        ],
-        );**/
   }
 
   List<DeviceWithAvailability> devices = <DeviceWithAvailability>[];
@@ -175,7 +141,6 @@ class HomePageState extends State<HomePage>
     _tabController = TabController(length: 3, vsync: this);
     SharedPreferences.getInstance().then((SharedPreferences p) {
       _pref = p;
-      getStoredButtons();
     });
   }
 
@@ -193,7 +158,8 @@ class HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(title),
+        centerTitle: true,
+        title: const Text("Rose Dash Pre-Alpha"),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
@@ -295,7 +261,7 @@ class HomePageState extends State<HomePage>
                   controller: _scrollController,
                   itemCount: messages.length,
                   itemBuilder: (context, i) {
-                    speed = int.parse(messages[i].text);
+                    speed = int.parse(messages[i].text.toString(), radix: 16);
 
                     return Text(messages[i].text);
                     return Text("${messages[i].name} -> ${messages[i].text}");
@@ -314,77 +280,10 @@ class HomePageState extends State<HomePage>
                         ? Text("No Device Selected")
                         : Text(
                             "Connected to ${_selectedDevice.name} ::: ${_selectedDevice.address}"),
-                    Expanded(
-                      child: TabBarView(controller: _tabController, children: [
-                        GridView.builder(
-                          padding: EdgeInsets.all(20),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 5),
-                          itemCount: 10,
-                          itemBuilder: (context, i) {
-                            return Container(
-                              margin: EdgeInsets.all(10),
-                              color: Colors.teal,
-                              child: IconButton(
-                                icon: Text("$i", textScaleFactor: 2.0),
-                                onPressed: () async {
-                                  if (connection?.isConnected == true) {
-                                    connection.output
-                                        .add(utf8.encode("$i\r\n"));
-                                    await connection.output.allSent;
-                                  }
-                                },
-                              ),
-                            );
-                          },
-                        ),
-                        ListView.builder(
-                          itemCount: customButtons.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    gameButton("Edit", (TapDownDetails _) {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CustomButtonPage(_pref)))
-                                          .then((_) {
-                                        getStoredButtons();
-                                      });
-                                    })
-                                  ]);
-                            }
-                            CustomButton b = customButtons[index - 1];
-                            return Container(
-                              margin: EdgeInsets.symmetric(vertical: 10),
-                              child: customButtonWidget(b, (String val) async {
-                                if (connection?.isConnected == true) {
-                                  connection.output
-                                      .add(utf8.encode("$val\r\n"));
-                                  await connection.output.allSent;
-                                }
-                              }),
-                            );
-                          },
-                        ),
-                      ]),
-                    ),
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: TabBar(
-        controller: _tabController,
-        tabs: [Tab(text: "Garb"), Tab(text: "Speedo"), Tab(text: "Custom")],
-      ),
-    );
+           )])));
   }
 
   void _getDevices() {
@@ -438,6 +337,7 @@ class HomePageState extends State<HomePage>
   }
 
   void _startConnection() {
+    startSpeed();
     BluetoothConnection.toAddress(_selectedDevice.address).then((_connection) {
       print('Connected to the device');
       connection = _connection;
@@ -510,12 +410,7 @@ class HomePageState extends State<HomePage>
     speedo.axes[0].pointers[0].onValueChanged((speed.toDouble()));
   }
 
-  void getStoredButtons() {
-    customButtons = getCustomButtons(_pref);
-    if (customButtons.length == 0) {
-      customButtons.add(CustomButton(0, "LED 1", "0", "1"));
-      customButtons.add(CustomButton(1, "Event 1", "1"));
-      setCustomButtons(_pref, customButtons);
-    }
+  void startSpeed() {
+    speedo.axes[0].pointers[0].onValueChanged((speed.toDouble()));
   }
 }

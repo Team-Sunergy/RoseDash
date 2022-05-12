@@ -4,15 +4,16 @@ import 'constants.dart';
 import 'screens/homePage.dart';
 
 void main() {
-  runApp(MyApp());
+  MyApp app = MyApp();
+  runApp(app);
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: title,
-      theme: ThemeData.light(),
+      title: "SVT: Alpha Dashboard",
+      theme: ThemeData.dark(),
       darkTheme: ThemeData.dark(),
       home: HomePage(),
     );
