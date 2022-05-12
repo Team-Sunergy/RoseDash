@@ -15,7 +15,7 @@ import 'customButtonPage.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 SfRadialGauge speedo;
-double _currentValue = 50.0;
+double _currentValue = 828;
 
 class HomePage extends StatefulWidget {
   @override
@@ -141,7 +141,6 @@ class HomePageState extends State<HomePage>
     _tabController = TabController(length: 3, vsync: this);
     SharedPreferences.getInstance().then((SharedPreferences p) {
       _pref = p;
-      getStoredButtons();
     });
   }
 
@@ -159,7 +158,8 @@ class HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(title),
+        centerTitle: true,
+        title: const Text("Rose Dash Pre-Alpha"),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
@@ -261,7 +261,7 @@ class HomePageState extends State<HomePage>
                   controller: _scrollController,
                   itemCount: messages.length,
                   itemBuilder: (context, i) {
-                    speed = int.parse(messages[i].text);
+                    speed = int.parse(messages[i].text.toString(), radix: 16);
 
                     return Text(messages[i].text);
                     return Text("${messages[i].name} -> ${messages[i].text}");
@@ -337,6 +337,7 @@ class HomePageState extends State<HomePage>
   }
 
   void _startConnection() {
+    startSpeed();
     BluetoothConnection.toAddress(_selectedDevice.address).then((_connection) {
       print('Connected to the device');
       connection = _connection;
@@ -409,6 +410,7 @@ class HomePageState extends State<HomePage>
     speedo.axes[0].pointers[0].onValueChanged((speed.toDouble()));
   }
 
-  void getStoredButtons() {
+  void startSpeed() {
+    speedo.axes[0].pointers[0].onValueChanged((speed.toDouble()));
   }
 }

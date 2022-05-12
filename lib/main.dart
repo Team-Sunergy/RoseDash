@@ -4,7 +4,8 @@ import 'constants.dart';
 import 'screens/homePage.dart';
 
 void main() {
-  runApp(MyApp());
+  MyApp app = MyApp();
+  runApp(app);
 }
 
 class MyApp extends StatelessWidget {
