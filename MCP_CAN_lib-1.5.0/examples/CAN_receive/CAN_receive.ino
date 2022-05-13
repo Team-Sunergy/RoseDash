@@ -56,7 +56,7 @@ void loop()
       Serial.print(msgString);
     } else {
       for(byte i = 0; i<len; i++){
-        sprintf(msgString, " 0x%.2X", rxBuf[i]);
+        sprintf(msgString, "%.2X", rxBuf[i]);
         Serial.print(msgString);
         Bluetooth.print(msgString);
       }
