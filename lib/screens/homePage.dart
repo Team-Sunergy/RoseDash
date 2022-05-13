@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:typed_data';
+import 'dart:ui';
 
 import 'package:bt01_serial_test/widgets/customButtonWidget.dart';
 import 'package:bt01_serial_test/widgets/gameButton.dart';
@@ -7,14 +9,17 @@ import 'package:bt01_serial_test/widgets/gameButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../constants.dart';
 import '../models.dart';
 import '../utils.dart';
 import 'customButtonPage.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:segment_display/segment_display.dart';
+//import 'package:digital_lcd/digital_lcd.dart';
+//import 'package:digital_lcd/hex_color.dart';
 
 SfRadialGauge speedo;
+Widget volt;
 double _currentValue = 828;
 
 class HomePage extends StatefulWidget {
@@ -25,7 +30,159 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
 
+Widget voltWidget() {
+  PictureRecorder recorder = PictureRecorder();
+  Canvas canvas = Canvas(recorder);
+  return Row (
 
+      children: [
+        Column (
+    crossAxisAlignment: CrossAxisAlignment.start,
+
+            children: [
+    Row(
+    children: [
+      Column(
+        children: [
+
+          Container(
+            //width: 150,
+            //color: Colors.red,
+            child:
+            SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+          ),
+          Container(height: 20, child: Text("% State of Charge")),
+          Container (
+              child:
+              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+          ),
+          Container(height: 20, child: Text("High Cell Voltage")),
+          Container (
+              child:
+              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+          ),
+          Container(height: 20, child: Text("Low Cell Voltage")),
+          Container (
+              child:
+              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+          ),
+          Container(height: 20, child: Text("Pack Voltage")),
+          Container (
+              child:
+              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+          ),
+          Container(height: 20, child: Text("Hi Cell Temp")),
+          Container (
+              child:
+              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+          ),
+          //Signed Value from PID of BMS
+          Container(height: 20, child: Text("Current Draw")),
+        ],
+      ),
+      Row(
+        children: [
+          Container(width: 40,),
+          Container(
+              //height: 40,
+              //width: 20,
+            child:
+            loHiVoltMeter()
+
+            //color: Colors.blue
+          ),
+          Container(
+              //height: 40,
+              width: 20,
+            //color: Colors.green
+          ),
+          Container(child: socMeter()),
+          Container(
+            //height: 40,
+            width: 20,
+            //color: Colors.green
+          ),
+          Container(child: hiTempMeter()),
+        ],
+      ),
+
+    ],
+    ),
+              Container(
+                height: 5,
+                //width: 20,
+                //color: Colors.green
+              ),
+      Container(
+        //height: 20,
+        width: 500,
+        //color: Colors.pink
+        child: deltaMeter()
+      ),
+              Container(
+                height: 5
+                //color: Colors.green
+              ),
+  ]
+  )]
+  );
+}
+
+Widget loHiVoltMeter() {
+  //TODO: Globalize Fields for Stateful behavior
+  double _startMarkerValueLo = 28.5;
+  double _startMarkerValueHi = 34.2;
+  return SfLinearGauge(orientation: LinearGaugeOrientation.vertical,
+                        minimum: 22.5,
+                        maximum: 37.8,
+                        markerPointers: [LinearShapePointer(value: _startMarkerValueLo,
+      onChanged: (double value) {
+        setState(() {
+          _startMarkerValueLo = value;
+        });
+      }), LinearShapePointer(value: _startMarkerValueHi,onChanged: (double value) {
+                          setState(() {
+                            _startMarkerValueHi = value;
+                          });
+                        })],);
+}
+
+Widget socMeter() {
+  double _startSOCMarkerValue = 25.0;
+  return SfLinearGauge(orientation: LinearGaugeOrientation.vertical, minimum: 0.0, maximum: 100.0,
+                        markerPointers: [LinearShapePointer(value: _startSOCMarkerValue, shapeType: LinearShapePointerType.invertedTriangle,
+      onChanged: (double value) {
+        setState(() {
+          _startSOCMarkerValue = value;
+        });
+      }
+        )]);
+}
+
+Widget hiTempMeter() {
+  double _startHiTempMarkerValue = 25.0;
+  return SfLinearGauge(orientation: LinearGaugeOrientation.vertical, minimum: 0.0, maximum: 45.0,
+      markerPointers: [LinearShapePointer(value: _startHiTempMarkerValue, shapeType: LinearShapePointerType.invertedTriangle,
+          onChanged: (double value) {
+            setState(() {
+              _startHiTempMarkerValue = value;
+            });
+          }
+      )]);
+}
+
+Widget deltaMeter() {
+  //TODO: Formula for difference of hi/lo Volt
+  double _startdeltaMarkerValue = 8;
+  return SfLinearGauge(orientation: LinearGaugeOrientation.horizontal, minimum: 0.0, maximum: 15.3,
+      markerPointers: [LinearShapePointer(value: _startdeltaMarkerValue, shapeType: LinearShapePointerType.triangle, position: LinearElementPosition.inside, offset: 30,
+          onChanged: (double value) {
+            setState(() {
+              _startdeltaMarkerValue = value;
+            });
+          }
+      )]);
+}
   Widget speedometer()
   {
     return SfRadialGauge(enableLoadingAnimation: true, animationDuration: 4500,
@@ -157,7 +314,8 @@ class HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      //TODO: Leave BT Settings and possible side menu
+      /*appBar: AppBar(
         centerTitle: true,
         title: const Text("Rose Dash Pre-Alpha"),
         actions: [
@@ -188,13 +346,20 @@ class HomePageState extends State<HomePage>
             },
           ),
         ],
-      ),
+      ),*/
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 10),
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
         child: Column(
-          children: [
-            // List of paired devices
-            speedo = speedometer(),
+            children: [
+            Row(
+              children: [
+                // List of paired devices
+                Container(width:200),
+                speedo = speedometer(),
+                Container(width:100),
+                volt = voltWidget(),
+              ],
+            ),
             Expanded(
               flex: 5,
               child: Container(
@@ -208,8 +373,6 @@ class HomePageState extends State<HomePage>
                 ),
                 child: Column(
                   children: [
-                    Text("Local Address: $_address"),
-                    Text("Local Name: $_name"),
                     Expanded(
                       child: ListView.builder(
                         itemCount: devices.length,
