@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:ffi';
+//import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -15,6 +15,7 @@ import '../utils.dart';
 import 'customButtonPage.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 //import 'package:digital_lcd/digital_lcd.dart';
 //import 'package:digital_lcd/hex_color.dart';
 
@@ -34,47 +35,56 @@ Widget voltWidget() {
   PictureRecorder recorder = PictureRecorder();
   Canvas canvas = Canvas(recorder);
   return Row (
-
       children: [
         Column (
     crossAxisAlignment: CrossAxisAlignment.start,
-
             children: [
     Row(
     children: [
       Column(
         children: [
-
           Container(
             //width: 150,
             //color: Colors.red,
             child:
-            SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+            SixteenSegmentDisplay(value: "828.0%", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
           ),
-          Container(height: 20, child: Text("% State of Charge")),
+          Container(child: NeumorphicText(
+            "State of Charge",
+            style: NeumorphicStyle(
+              depth: 20,  //customize depth here
+              color: Colors.white,
+              shape: NeumorphicShape.concave,
+              boxShape: NeumorphicBoxShape.rect()//customize color here
+            ),
+            textStyle: NeumorphicTextStyle(
+              fontSize: 18, //customize size here
+              // AND others usual text style properties (fontFamily, fontWeight, ...)
+            ),
+          )),
           Container (
               child:
-              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
           ),
           Container(height: 20, child: Text("High Cell Voltage")),
           Container (
               child:
-              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
           ),
           Container(height: 20, child: Text("Low Cell Voltage")),
           Container (
               child:
-              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
           ),
           Container(height: 20, child: Text("Pack Voltage")),
           Container (
               child:
-              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
           ),
           Container(height: 20, child: Text("Hi Cell Temp")),
           Container (
               child:
-              SevenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: HexSegmentStyle(enabledColor: Colors.amber, disabledColor: Colors.amber.withOpacity(0.15)),)
+              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
           ),
           //Signed Value from PID of BMS
           Container(height: 20, child: Text("Current Draw")),
@@ -226,7 +236,9 @@ Widget deltaMeter() {
                   });
                 },
                 needleColor: Color(0xfff222ff),
-                knobStyle: KnobStyle(color: Color(0xff8c1eff), borderColor: Color(0xff6df1d8), borderWidth: 0.01),
+                needleLength: 2,
+                needleEndWidth: 3,
+                knobStyle: KnobStyle(color: Color(0xff8c1eff), borderColor: Color(0xff6df1d8), borderWidth: 0.01, knobRadius: 0.01),
                 enableAnimation: true)
 
           ], annotations: <GaugeAnnotation>[
@@ -249,6 +261,9 @@ Widget deltaMeter() {
   SharedPreferences _pref;
   List<CustomButton> customButtons = [];
   int speed = 0;
+  PageController _pageController = PageController(
+    initialPage: 0,
+  );
   TextEditingController _controller = TextEditingController();
   TabController _tabController;
   ScrollController _scrollController = ScrollController();
@@ -303,6 +318,7 @@ Widget deltaMeter() {
 
   @override
   void dispose() {
+    _pageController.dispose();
     _controller.dispose();
     _scrollController?.dispose();
     _tabController?.dispose();
@@ -351,13 +367,25 @@ Widget deltaMeter() {
         margin: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
         child: Column(
             children: [
-            Row(
+              Row(
               children: [
-                // List of paired devices
-                Container(width:200),
-                speedo = speedometer(),
-                Container(width:100),
-                volt = voltWidget(),
+                VerticalDivider(width: 200),
+                speedometer(),
+                VerticalDivider(width: 100),
+                SizedBox(
+                    height: 550,
+                    width:500,
+                    child: new PageView(
+                      controller: _pageController,
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        voltWidget(),
+                        voltWidget(),
+                        voltWidget(),
+                        voltWidget()
+                      ],
+                    )
+                  )
               ],
             ),
             Expanded(
