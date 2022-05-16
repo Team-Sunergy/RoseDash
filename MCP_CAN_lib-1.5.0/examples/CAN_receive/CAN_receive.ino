@@ -39,6 +39,9 @@ void setup()
 
 void loop()
 {
+  
+  
+  
   if(!digitalRead(CAN0_INT))                         // If CAN0_INT pin is low, read receive buffer
   {
     CAN0.readMsgBuf(&rxId, &len, rxBuf);      // Read data: len = data length, buf = data byte(s)
