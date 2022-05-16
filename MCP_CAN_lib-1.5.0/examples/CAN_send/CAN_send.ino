@@ -21,29 +21,47 @@ byte data[8];
 
 void loop( ) {
   int i = 0;
+  double z = 0;
     for ( ; i < 100; ++i) {
-      data[0] = i;
+      
+      data[0] = i;  // speedometer
+      data[1] = i;  // state of charge
+      data[2] = i;  // high cell (volt)
+      data[3] = i;  // low cell (volt)
+      data[4] = i;  // pack (volt)
+      data[5] = i;  // Hi Cel (temp *C)
+      data[6] = i;  // Current Draw
+      data[7] = i;  // extra
       
       // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
-      byte sndStat = CAN0.sendMsgBuf(0x100, 0, 1, data);
+      byte sndStat = CAN0.sendMsgBuf(0x100, 0, 7, data);
       
       if (sndStat == CAN_OK) Serial.println("Message Sent Successfully!"); 
       else Serial.println("Error Sending Message...");
 
-      delay(1000);   // send data per 100ms  
+      delay(100);   // send data per 100ms  
       
     }
 
     for ( ; i > 0 ; --i ) {
-      data[0] = i;
+      
+      data[0] = i;  // speedometer
+      data[1] = i;  // state of charge
+      data[2] = i;  // high cell (volt)
+      data[3] = i;  // low cell (volt)
+      data[4] = i;  // pack (volt)
+      data[5] = i;  // Hi Cel (temp *C)
+      data[6] = i;  // Current Draw
+      data[7] = i;  // extra
+      
       
       // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send    
-      byte sndStat = CAN0.sendMsgBuf(0x100, 0, 1, data);
+      byte sndStat = CAN0.sendMsgBuf(0x100, 0, 7, data);
       
       if (sndStat == CAN_OK) Serial.println("Message Sent Successfully!"); 
       else Serial.println("Error Sending Message..."); 
 
-      delay(1000);   // send data per 100ms   
+      delay(100);   // send data per 100ms   
     }  
 }
       

@@ -21,20 +21,20 @@ void setup()
     Bluetooth.begin(9600);
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
   if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK) {
-    Serial.println("MCP2515 Initialized Successfully!");
-    Bluetooth.println("MCP2515 Initialized Successfully!");
+    //Serial.println("MCP2515 Initialized Successfully!");
+    //Bluetooth.println("MCP2515 Initialized Successfully!");
   }
   else {
-    Serial.println("Error Initializing MCP2515...");
-    Bluetooth.println("Error Initializing MCP2515...");
+    //Serial.println("Error Initializing MCP2515...");
+    //Bluetooth.println("Error Initializing MCP2515...");
   }
   
   CAN0.setMode(MCP_NORMAL);                     // Set operation mode to normal so the MCP2515 sends acks to received data.
 
   pinMode(CAN0_INT, INPUT);                            // Configuring pin for /INT input
   
-  Serial.println("MCP2515 Library Receive Example...");
-  Bluetooth.println("MCP2515 Library Receive Example...");
+  //Serial.println("MCP2515 Library Receive Example...");
+  //Bluetooth.println("MCP2515 Library Receive Example...");
 }
 
 void loop()
@@ -56,18 +56,35 @@ void loop()
   
     if((rxId & 0x40000000) == 0x40000000){    // Determine if message is a remote request frame.
       sprintf(msgString, " REMOTE REQUEST FRAME");
-      Serial.print(msgString);
+      //Serial.print(msgString);
     } else {
       for(byte i = 0; i<len; i++){
         sprintf(msgString, "%.2X", rxBuf[i]);
-        Serial.print(msgString);
+        //Serial.print(msgString);
         Bluetooth.print(msgString);
       }
     }
-    Serial.println();
+    //Serial.println();
     Bluetooth.println();
     //delay(10);
   }
+
+  char str[80];
+  int i = 0;
+  while(Bluetooth.peek() > 0) {
+    str[i] = Bluetooth.read();
+    ++i;
+  }
+  str[i] = 0;
+  String faultrequest = "";
+  if (i) {
+    byte at = 0;
+    const char *p = str;
+    while (*p++) { faultrequest.concat(str[at++]); } 
+    Serial.print(faultrequest);
+  }
+    //Serial.println();  
+  
 }
 
 /*********************************************************************************************************
