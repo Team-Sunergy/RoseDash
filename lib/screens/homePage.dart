@@ -706,7 +706,7 @@ Widget deltaMeter() {
   }
 
   Future pollFaults() async {
-    connection.output.add(ascii.encode(speed.toString() + "\n"));
+    connection.output.add(ascii.encode("Hello World\n"));
     await connection.output.allSent;
   }
 }
