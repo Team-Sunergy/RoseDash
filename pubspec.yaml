@@ -20,6 +20,7 @@ dependencies:
   digital_lcd: ^1.0.2
   segment_display: ^0.5.0
   flutter_neumorphic: ^3.2.0
+  intl: ^0.17.0
 
 
 dev_dependencies:
@@ -36,8 +37,8 @@ flutter:
 
   uses-material-design: true
 
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - images/yosef.png
   #   - images/a_dot_ham.jpeg
 
   # fonts:

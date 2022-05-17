@@ -53,17 +53,28 @@ void loop()
   
     if((rxId & 0x40000000) == 0x40000000){    // Determine if message is a remote request frame.
       sprintf(msgString, " REMOTE REQUEST FRAME");
-      Serial.print(msgString);
+      //Serial.print(msgString);
     } else {
       for(byte i = 0; i<len; i++){
         sprintf(msgString, "%.2X", rxBuf[i]);
-        Serial.print(msgString);
+        //Serial.print(msgString);
         Bluetooth.print(msgString);
       }
     }
-    Serial.println();
+    //Serial.println();
     Bluetooth.println();
     //delay(10);
+  }
+  char str[80];
+  int i = 0;
+  while(Bluetooth.peek() > 0) {
+    str[i] = Bluetooth.read();
+    ++i;
+  }
+  str[i] = 0;
+  if (i) {
+    Serial.print(str);
+    Serial.println();
   }
 }
 

@@ -1,27 +1,37 @@
-import 'dart:convert';
+//import 'dart:convert';
 //import 'dart:ffi';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
-
+import 'package:intl/intl.dart';
+import 'dart:math' as math;
 import 'package:bt01_serial_test/widgets/customButtonWidget.dart';
 import 'package:bt01_serial_test/widgets/gameButton.dart';
 //import 'package:bt01_serial_test/widgets/speedometer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../constants.dart';
+//import '../constants.dart';
 import '../models.dart';
 import '../utils.dart';
-import 'customButtonPage.dart';
+//import 'customButtonPage.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 //import 'package:digital_lcd/digital_lcd.dart';
 //import 'package:digital_lcd/hex_color.dart';
 
 SfRadialGauge speedo;
 Widget volt;
-double _currentValue = 828;
+int speed = 0;
+double _currentValue = 82.8;
+double _startMarkerValueLo = 32.2;
+double _startMarkerValueHi = 34.2;
+double _startSOCMarkerValue = 82.8;
+int _startHiTempMarkerValue = 31;
+double _packVoltSum = 0.0;
+double _startCurrentDraw = 10.0;
+double _startdeltaMarkerValue = _startMarkerValueHi - _startMarkerValueLo;
 
 class HomePage extends StatefulWidget {
   @override
@@ -32,8 +42,8 @@ class HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
 
 Widget voltWidget() {
-  PictureRecorder recorder = PictureRecorder();
-  Canvas canvas = Canvas(recorder);
+  //PictureRecorder recorder = PictureRecorder();
+  //Canvas canvas = Canvas(recorder);
   return Row (
       children: [
         Column (
@@ -47,44 +57,32 @@ Widget voltWidget() {
             //width: 150,
             //color: Colors.red,
             child:
-            SixteenSegmentDisplay(value: "828.0%", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
+            SixteenSegmentDisplay(value: _startSOCMarkerValue.toString() + "%", size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
           ),
-          Container(child: NeumorphicText(
-            "State of Charge",
-            style: NeumorphicStyle(
-              depth: 20,  //customize depth here
-              color: Colors.white,
-              shape: NeumorphicShape.concave,
-              boxShape: NeumorphicBoxShape.rect()//customize color here
-            ),
-            textStyle: NeumorphicTextStyle(
-              fontSize: 18, //customize size here
-              // AND others usual text style properties (fontFamily, fontWeight, ...)
-            ),
-          )),
+          Container(height: 20, child: Text("State of Charge")),
           Container (
               child:
-              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
+              SixteenSegmentDisplay(value: _startMarkerValueHi.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
           ),
-          Container(height: 20, child: Text("High Cell Voltage")),
+          Container(height: 20, child: Text("High Cell (Volt)")),
           Container (
               child:
-              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
+              SixteenSegmentDisplay(value: _startMarkerValueLo.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
           ),
-          Container(height: 20, child: Text("Low Cell Voltage")),
+          Container(height: 20, child: Text("Low Cell (Volt)")),
           Container (
               child:
-              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
+              SixteenSegmentDisplay(value: _packVoltSum.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
           ),
-          Container(height: 20, child: Text("Pack Voltage")),
+          Container(height: 20, child: Text("Pack (Volt)")),
           Container (
               child:
-              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
+              SixteenSegmentDisplay(value: _startHiTempMarkerValue.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
           ),
-          Container(height: 20, child: Text("Hi Cell Temp")),
+          Container(height: 20, child: Text("Hi Cell (ºCel)")),
           Container (
               child:
-              SixteenSegmentDisplay(value: "828.00", size: 5.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xff6df1d8), disabledColor: Color(0xff6df1d8).withOpacity(0.05)),)
+              SixteenSegmentDisplay(value: _startCurrentDraw.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
           ),
           //Signed Value from PID of BMS
           Container(height: 20, child: Text("Current Draw")),
@@ -92,7 +90,7 @@ Widget voltWidget() {
       ),
       Row(
         children: [
-          Container(width: 40,),
+          Container(width: 30,),
           Container(
               //height: 40,
               //width: 20,
@@ -103,7 +101,7 @@ Widget voltWidget() {
           ),
           Container(
               //height: 40,
-              width: 20,
+              width: 40,
             //color: Colors.green
           ),
           Container(child: socMeter()),
@@ -140,116 +138,203 @@ Widget voltWidget() {
 
 Widget loHiVoltMeter() {
   //TODO: Globalize Fields for Stateful behavior
-  double _startMarkerValueLo = 28.5;
-  double _startMarkerValueHi = 34.2;
-  return SfLinearGauge(orientation: LinearGaugeOrientation.vertical,
-                        minimum: 22.5,
-                        maximum: 37.8,
-                        markerPointers: [LinearShapePointer(value: _startMarkerValueLo,
-      onChanged: (double value) {
-        setState(() {
-          _startMarkerValueLo = value;
-        });
-      }), LinearShapePointer(value: _startMarkerValueHi,onChanged: (double value) {
-                          setState(() {
-                            _startMarkerValueHi = value;
-                          });
-                        })],);
+  return SfLinearGauge(numberFormat: NumberFormat("#0.#v"), orientation: LinearGaugeOrientation.vertical,
+                        minimum: 3.50,
+                        maximum: 3.515,
+                        axisTrackStyle: LinearAxisTrackStyle(thickness: 2.5),
+                        markerPointers: [
+                          LinearWidgetPointer(value: _startMarkerValueLo,
+                            position: LinearElementPosition.cross,
+                            child: Transform.rotate(
+                              angle: 90 * math.pi / 180,
+                              child: IconButton(
+                                icon: Icon(Icons.battery_4_bar_outlined, color: Color(0xffc2b11d), size: 27),
+                                //onPressed: null,
+                              ),
+                            ),
+                            onChanged: (double value) {
+                              setState(() {
+                                _startMarkerValueLo = value;
+                              });
+                            }),
+                          LinearWidgetPointer(value: _startMarkerValueHi, offset: 10,
+                              position: LinearElementPosition.cross,
+                              //offset: 10,
+                              child: Transform.rotate(
+                                angle: 90 * math.pi / 180,
+                                child: IconButton(
+                                  icon: Icon(Icons.battery_6_bar_outlined, color: Color(0xffedd711), size: 30),
+                                  //onPressed: null,
+                                ),
+                              ),
+                              onChanged: (double value) {
+                                setState(() {
+                                  _startMarkerValueHi = value;
+                                });
+                              }),
+                          ],
+                        );
 }
 
 Widget socMeter() {
-  double _startSOCMarkerValue = 25.0;
-  return SfLinearGauge(orientation: LinearGaugeOrientation.vertical, minimum: 0.0, maximum: 100.0,
-                        markerPointers: [LinearShapePointer(value: _startSOCMarkerValue, shapeType: LinearShapePointerType.invertedTriangle,
-      onChanged: (double value) {
-        setState(() {
-          _startSOCMarkerValue = value;
-        });
-      }
+  return SfLinearGauge(numberFormat: NumberFormat.percentPattern("en_US"), orientation: LinearGaugeOrientation.vertical, minimum: 0.0, maximum: 1.0, axisTrackStyle: LinearAxisTrackStyle(thickness: 10, color: Colors.white.withOpacity(0.05)),
+                        barPointers: [LinearBarPointer(value: _startSOCMarkerValue / 100, edgeStyle: LinearEdgeStyle.endCurve, thickness: 8, color: Color(0xffedd711), borderColor: Color(0xff070b1a), borderWidth: 1.25,
         )]);
 }
 
 Widget hiTempMeter() {
-  double _startHiTempMarkerValue = 25.0;
-  return SfLinearGauge(orientation: LinearGaugeOrientation.vertical, minimum: 0.0, maximum: 45.0,
-      markerPointers: [LinearShapePointer(value: _startHiTempMarkerValue, shapeType: LinearShapePointerType.invertedTriangle,
-          onChanged: (double value) {
-            setState(() {
-              _startHiTempMarkerValue = value;
-            });
-          }
-      )]);
+  return SfLinearGauge(numberFormat: NumberFormat("##0º"), interval: 3, minorTicksPerInterval: 10, orientation: LinearGaugeOrientation.vertical, minimum: 0.0, maximum: 45.0, axisTrackStyle: LinearAxisTrackStyle(thickness: 10, color: Colors.transparent),
+      markerPointers: [
+        LinearWidgetPointer(value: _startHiTempMarkerValue.toDouble(),
+            position: LinearElementPosition.cross,
+            child: Transform.rotate(
+              angle: 0 * math.pi / 180,
+              child: IconButton(
+                icon: Icon(Icons.thermostat_outlined, color: Colors.amberAccent, size: 23),
+                //onPressed: null,
+              ),
+            ),
+            onChanged: (double value) {
+              setState(() {
+                _startMarkerValueLo = value;
+              });
+            })
+      ]);
 }
 
 Widget deltaMeter() {
   //TODO: Formula for difference of hi/lo Volt
-  double _startdeltaMarkerValue = 8;
-  return SfLinearGauge(orientation: LinearGaugeOrientation.horizontal, minimum: 0.0, maximum: 15.3,
-      markerPointers: [LinearShapePointer(value: _startdeltaMarkerValue, shapeType: LinearShapePointerType.triangle, position: LinearElementPosition.inside, offset: 30,
-          onChanged: (double value) {
-            setState(() {
-              _startdeltaMarkerValue = value;
-            });
-          }
-      )]);
+  return SfLinearGauge(numberFormat: NumberFormat("#0Δv"), interval: 1, minorTicksPerInterval: 5, orientation: LinearGaugeOrientation.horizontal, minimum: 0.0, maximum: 0.015, axisTrackStyle: LinearAxisTrackStyle(thickness: 10, color: Colors.white.withOpacity(0.05)),
+      barPointers: [LinearBarPointer(value: _startdeltaMarkerValue, edgeStyle: LinearEdgeStyle.endCurve, thickness: 8, color: Color(0xffedd711), borderColor: Color(0xff070b1a), borderWidth: 1.25,
+      )],
+      ranges:[
+      LinearGaugeRange(
+      startValue: 8,
+      endValue: 10,
+      startWidth: 5,
+      endWidth: 5,
+      color: Color(0xff7d7411)),
+      ],);
 }
   Widget speedometer()
   {
-    return SfRadialGauge(enableLoadingAnimation: true, animationDuration: 4500,
-        title: GaugeTitle(
-            text: '',
-            textStyle:
-            const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Color(0xff6df1d8))),
+    return SfRadialGauge(
+
         axes: <RadialAxis>[
           RadialAxis(
+            showAxisLine: false,
+            showLabels: false,
+            showTicks: false,
+            radiusFactor: 1,
+              annotations: <GaugeAnnotation>[
+          GaugeAnnotation(
+          widget: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              // Added image widget as an annotation
+              Container(
+                  width: 100.00,
+                  height: 100.00,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      alignment: Alignment.bottomLeft,
+                      image: ExactAssetImage('images/yosef.png'),
+                      fit: BoxFit.fill,
+                    ),
+                  )),
+            ],
+          ),)]),
+          RadialAxis(
+            showAxisLine: false,
+            showLabels: false,
+            showTicks: false,
+            pointers: <GaugePointer>[
+              NeedlePointer(value: _currentValue,
+                  onValueChanged: (double newValue) {
+                    setState(() {
+                      _currentValue = newValue;
+                    });
+                  },
+                  needleColor: Colors.amberAccent,
+                  needleLength: 2,
+                  needleStartWidth: 0,
+                  needleEndWidth: 3,
+                  tailStyle: TailStyle(length: 0.0455, width: 1.5, borderWidth: 1, borderColor: Color(0xff070b1a)),
+                  knobStyle: KnobStyle(color: Colors.white, borderColor: Color(0xff070b1a), borderWidth: 0.006, knobRadius: 0.017),
+                  enableAnimation: true)
+
+            ],
+          ),
+          RadialAxis(
+            useRangeColorForAxis: true,
+            showAxisLine: false,
+            showLabels: false,
+            showTicks: false,
+            radiusFactor: 1.05,
+            ranges: <GaugeRange>[
+              GaugeRange(
+                  startValue: 0,
+                  endValue: 20,
+                  startWidth: 0,
+                  endWidth: 10,
+                  color: Color(0xffc2b11d)),
+              GaugeRange(
+                  startValue: 22,
+                  endValue: 42,
+                  startWidth: 5,
+                  endWidth: 15,
+                  color: Color(0xff03050a)),
+              GaugeRange(
+                  startValue: 44,
+                  endValue: 64,
+                  startWidth: 7,
+                  endWidth: 20,
+                  color: Color(0xffedd711)),
+              GaugeRange(
+                  startValue: 66,
+                  endValue: 86,
+                  startWidth: 20,
+                  endWidth: 20,
+                  color: Color(0xff03050a)),
+              GaugeRange(
+                  startValue: 88,
+                  endValue: 100,
+                  startWidth: 10,
+                  endWidth: 20,
+                  color: Color(0xffc2b11d)),
+            ],
+          ),
+          RadialAxis(
+              showAxisLine: false,
+              showLabels: true,
+              showTicks: true,
+              radiusFactor: 0.9,
               minimum: 0,
               maximum: 100,
-              interval: 10,
+              majorTickStyle: MajorTickStyle(color: Color(0xffc2b11d), dashArray: <double>[5,5]),
+              minorTickStyle: MinorTickStyle(color: Color(0xff635b0e)),
+              axisLabelStyle: GaugeTextStyle(color: Color(0xffc2b11d)),
               axisLineStyle: AxisLineStyle(
-                  ),
-
-              ranges: <GaugeRange>[
-
-            GaugeRange(
-                startValue: 0,
-                endValue: 33,
-                color: Color(0xffffd319),
-                startWidth: 10,
-                endWidth: 10),
-            GaugeRange(
-                startValue: 33,
-                endValue: 66,
-                color: Color(0xffff901f),
-                startWidth: 10,
-                endWidth: 10),
-            GaugeRange(
-                startValue: 66,
-                endValue: 100,
-                color: Color(0xffff2975),
-                startWidth: 10,
-                endWidth: 10)
-          ], pointers: <GaugePointer>[
-            NeedlePointer(value: _currentValue,
-                onValueChanged: (double newValue) {
-                setState(() {
-                    _currentValue = newValue;
-                  });
-                },
-                needleColor: Color(0xfff222ff),
-                needleLength: 2,
-                needleEndWidth: 3,
-                knobStyle: KnobStyle(color: Color(0xff8c1eff), borderColor: Color(0xff6df1d8), borderWidth: 0.01, knobRadius: 0.01),
-                enableAnimation: true)
-
-          ], annotations: <GaugeAnnotation>[
+                  dashArray: <double>[5,5],),
+                  //color: Color(0xFFFF7676),),
+              annotations: <GaugeAnnotation>[
             GaugeAnnotation(
                 widget: Container(
-                    child: Text((_currentValue.toInt()).toString() + ' mph',
-                        style: TextStyle(color: Color(0xff6df1d8),
-                            fontSize: 25, fontWeight: FontWeight.bold))),
-                angle: 90,
-                positionFactor: 0.5)
-          ])
+                    child: SixteenSegmentDisplay(value: _currentValue.toInt().toString() + ' mph', size: 2.5, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Colors.yellow, disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+
+                ),
+                angle: 85,
+                positionFactor: 0.5,
+            ),
+                GaugeAnnotation(
+                  widget: Container(
+                    child: SixteenSegmentDisplay(value: 'Range:828mi', size: 1.25, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Colors.yellow, disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+
+                  ),
+                  angle: 85,
+                  positionFactor: 0.7,
+                )]),
         ]);
   }
 
@@ -260,7 +345,7 @@ Widget deltaMeter() {
   List<Message> messages = <Message>[];
   SharedPreferences _pref;
   List<CustomButton> customButtons = [];
-  int speed = 0;
+
   PageController _pageController = PageController(
     initialPage: 0,
   );
@@ -331,7 +416,7 @@ Widget deltaMeter() {
   Widget build(BuildContext context) {
     return Scaffold(
       //TODO: Leave BT Settings and possible side menu
-      /*appBar: AppBar(
+      appBar: AppBar(
         centerTitle: true,
         title: const Text("Rose Dash Pre-Alpha"),
         actions: [
@@ -362,24 +447,23 @@ Widget deltaMeter() {
             },
           ),
         ],
-      ),*/
+      ),
       body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         child: Column(
             children: [
               Row(
               children: [
                 VerticalDivider(width: 200),
-                speedometer(),
+                speedo = speedometer(),
                 VerticalDivider(width: 100),
                 SizedBox(
-                    height: 550,
+                    height: 515,
                     width:500,
                     child: new PageView(
                       controller: _pageController,
                       scrollDirection: Axis.horizontal,
                       children: [
-                        voltWidget(),
                         voltWidget(),
                         voltWidget(),
                         voltWidget()
@@ -417,6 +501,7 @@ Widget deltaMeter() {
                               if (devices[i].isPaired == true) {
                                 setState(() {
                                   _selectedDevice = devices[i].device;
+                                  //print(devices[i].name);
                                   connection?.dispose();
                                   _startConnection();
                                 });
@@ -452,8 +537,22 @@ Widget deltaMeter() {
                   controller: _scrollController,
                   itemCount: messages.length,
                   itemBuilder: (context, i) {
-                    speed = int.parse(messages[i].text.toString(), radix: 16);
-
+                    //speed = int.parse(messages[i].text.substring(0, 2), radix: 16);
+                    if (messages[i].text[0] != 'G') {
+                      _startSOCMarkerValue = int.parse(
+                          messages[i].text.substring(0, 2), radix: 16) / 2;
+                      _startMarkerValueHi = int.parse(
+                          messages[i].text.substring(3, 7), radix: 16) / 10000;
+                      _startMarkerValueLo = int.parse(
+                          messages[i].text.substring(8, 12), radix: 16) / 10000;
+                      _packVoltSum = int.parse(
+                          messages[i].text.substring(13, 17), radix: 16) / 100;
+                      _startHiTempMarkerValue = int.parse(
+                          messages[i].text.substring(18, 20), radix: 16);
+                      _startdeltaMarkerValue = _startMarkerValueHi - _startMarkerValueLo;
+                    } else {
+                      _startCurrentDraw = (int.parse(messages[i].text.substring(1, 3), radix: 16)) * 0.1;
+                    }
                     return Text(messages[i].text);
                     return Text("${messages[i].name} -> ${messages[i].text}");
                   },
@@ -598,10 +697,16 @@ Widget deltaMeter() {
               : _messageBuffer + dataString)
           .trim();
     }
-    speedo.axes[0].pointers[0].onValueChanged((speed.toDouble()));
+    speedo.axes[1].pointers[0].onValueChanged((speed.toDouble()));
+    pollFaults();
   }
 
   void startSpeed() {
-    speedo.axes[0].pointers[0].onValueChanged((speed.toDouble()));
+    speedo.axes[1].pointers[0].onValueChanged((speed.toDouble()));
+  }
+
+  Future pollFaults() async {
+    connection.output.add(ascii.encode(speed.toString() + "\n"));
+    await connection.output.allSent;
   }
 }

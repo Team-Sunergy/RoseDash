@@ -21,9 +21,14 @@ byte data[8];
 
 void loop( ) {
   int i = 0;
-    for ( ; i < 100; ++i) {
+    for ( ; i < 200; ++i) {
+      if (i <= 100) {
       data[0] = i;
-      
+      data[1] = i;
+      }
+      else {
+        data[1] = i;
+      }
       // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
       byte sndStat = CAN0.sendMsgBuf(0x100, 0, 1, data);
       
