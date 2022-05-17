@@ -39,6 +39,7 @@ flutter:
 
   assets:
     - images/yosef.png
+    - images/SunergyYosef-yellow.png
   #   - images/a_dot_ham.jpeg
 
   # fonts:

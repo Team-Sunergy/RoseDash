@@ -233,13 +233,13 @@ Widget deltaMeter() {
             children: <Widget>[
               // Added image widget as an annotation
               Container(
-                  width: 100.00,
-                  height: 100.00,
+                  width: 200.00,
+                  height: 200.00,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       alignment: Alignment.bottomLeft,
-                      image: ExactAssetImage('images/yosef.png'),
+                      image: ExactAssetImage('images/SunergyYosef-yellow.png'),
                       fit: BoxFit.fill,
                     ),
                   )),
@@ -538,22 +538,29 @@ Widget deltaMeter() {
                   itemCount: messages.length,
                   itemBuilder: (context, i) {
                     //speed = int.parse(messages[i].text.substring(0, 2), radix: 16);
-                    if (messages[i].text[0] != 'G') {
-                      _startSOCMarkerValue = int.parse(
-                          messages[i].text.substring(0, 2), radix: 16) / 2;
-                      _startMarkerValueHi = int.parse(
-                          messages[i].text.substring(3, 7), radix: 16) / 10000;
-                      _startMarkerValueLo = int.parse(
-                          messages[i].text.substring(8, 12), radix: 16) / 10000;
-                      _packVoltSum = int.parse(
-                          messages[i].text.substring(13, 17), radix: 16) / 100;
-                      _startHiTempMarkerValue = int.parse(
-                          messages[i].text.substring(18, 20), radix: 16);
-                      _startdeltaMarkerValue = _startMarkerValueHi - _startMarkerValueLo;
-                    } else {
-                      _startCurrentDraw = (int.parse(messages[i].text.substring(1, 3), radix: 16)) * 0.1;
+                    if (messages[i].text.isNotEmpty) {
+                      if (messages[i].text[0] != 'G') {
+                        _startSOCMarkerValue = int.parse(
+                            messages[i].text.substring(0, 2), radix: 16) / 2;
+                        _startMarkerValueHi = int.parse(
+                            messages[i].text.substring(3, 7), radix: 16) /
+                            10000;
+                        _startMarkerValueLo = int.parse(
+                            messages[i].text.substring(8, 12), radix: 16) /
+                            10000;
+                        _packVoltSum = int.parse(
+                            messages[i].text.substring(13, 17), radix: 16) /
+                            100;
+                        _startHiTempMarkerValue = int.parse(
+                            messages[i].text.substring(18, 20), radix: 16);
+                        _startdeltaMarkerValue =
+                            _startMarkerValueHi - _startMarkerValueLo;
+                      } else {
+                        _startCurrentDraw = (int.parse(messages[i].text
+                            .substring(1, 3), radix: 16)) * 0.1;
+                      }
+                      return Text(messages[i].text);
                     }
-                    return Text(messages[i].text);
                     return Text("${messages[i].name} -> ${messages[i].text}");
                   },
                 ),
@@ -697,16 +704,18 @@ Widget deltaMeter() {
               : _messageBuffer + dataString)
           .trim();
     }
+    speedo = speedometer();
     speedo.axes[1].pointers[0].onValueChanged((speed.toDouble()));
     pollFaults();
   }
 
   void startSpeed() {
+    speedo = speedometer();
     speedo.axes[1].pointers[0].onValueChanged((speed.toDouble()));
   }
 
   Future pollFaults() async {
-    connection.output.add(ascii.encode("Hello World\n"));
+    connection.output.add(ascii.encode("hello#"));
     await connection.output.allSent;
   }
 }
