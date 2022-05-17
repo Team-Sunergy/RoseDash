@@ -3,7 +3,7 @@
 </p>
 <div align="center">
 <h1>RoseDash</h1>
-  Flutter Project For The RoseDash App
+  Flutter Project For The RoseDash App. <br>
   Vehicle Dashboard application framework.
 </div>
 
