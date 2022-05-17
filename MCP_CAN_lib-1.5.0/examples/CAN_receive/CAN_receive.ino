@@ -19,11 +19,11 @@ void setup()
     Bluetooth.begin(9600);
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
   if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK) {
-    Serial.println("MCP2515 Initialized Successfully!");
+    //Serial.println("MCP2515 Initialized Successfully!");
     //Bluetooth.println("MCP2515 Initialized Successfully!");
   }
   else {
-    Serial.println("Error Initializing MCP2515...");
+    //Serial.println("Error Initializing MCP2515...");
     //Bluetooth.println("Error Initializing MCP2515...");
   }
   
@@ -31,12 +31,13 @@ void setup()
 
   pinMode(CAN0_INT, INPUT);                            // Configuring pin for /INT input
   
-  Serial.println("MCP2515 Library Receive Example...");
+  //Serial.println("MCP2515 Library Receive Example...");
   //Bluetooth.println("MCP2515 Library Receive Example...");
 }
 
 void loop()
 {
+  bool notOwn = true;
   if(!digitalRead(CAN0_INT))                         // If CAN0_INT pin is low, read receive buffer
   {
     CAN0.readMsgBuf(&rxId, &len, rxBuf);      // Read data: len = data length, buf = data byte(s)
@@ -48,43 +49,58 @@ void loop()
 
     //Serial.print(msgString);
     //Bluetooth.print(msgString);*/
-  
+    
     if((rxId & 0x40000000) == 0x40000000){    // Determine if message is a remote request frame.
       //sprintf(msgString, " REMOTE REQUEST FRAME");
       //Serial.print(msgString);
     } else if(rxId == 0x286 || rxId == 0x287) {
-      for(byte i = 0; i<len; i++){
-         // Delineates between 286 msg and 287
-        if ((i == 2 || i == 4 || i == 6) && rxId == 0x286) sprintf(msgString, "%.2X", rxBuf[i]);
-        else if (i != 0  && rxId == 0x286) sprintf(msgString, "-%.2X", rxBuf[i]);
-        else if (rxId == 0x287 && i == 0) sprintf(msgString, "G%.2X", rxBuf[i]);
-        else if (rxId == 0x287) sprintf(msgString, "%.2X", rxBuf[i]);
-        else sprintf(msgString, "%.2X", rxBuf[i]);
-        Bluetooth.print(msgString);
-        //Serial.print(msgString);
+        for(byte i = 0; i<len; i++){
+             // Delineates between 286 msg and 287
+            if ((i == 2 || i == 4 || i == 6) && rxId == 0x286) sprintf(msgString, "%.2X", rxBuf[i]);
+            else if (i != 0  && rxId == 0x286) sprintf(msgString, "-%.2X", rxBuf[i]);
+            else if (rxId == 0x287 && i == 0) sprintf(msgString, "G%.2X", rxBuf[i]);
+            else if (rxId == 0x287) sprintf(msgString, "%.2X", rxBuf[i]);
+            else sprintf(msgString, "%.2X", rxBuf[i]);
+            Bluetooth.print(msgString);
+            //Serial.print(msgString);
+        }
+        //Serial.println();
+        Bluetooth.println();
+        notOwn = false;
+    }
+    delay(10); 
+  }
+  
+
+  if (Bluetooth.available() > 0) {
+    char str[80];
+    memset(str, 0, 80);
+    int i = 0;
+    while(Bluetooth.peek() > 0 && notOwn) {
+      if (Bluetooth.peek() >= 'a' && Bluetooth.peek() <= 'z') {
+        //Serial.print((char)Bluetooth.read());
+        str[i++] = Bluetooth.read();
+      } else {
+        if(Bluetooth.read() == '#') {
+          break;  
+        }  
       }
     }
-    //Serial.println();
-    Bluetooth.println();
-    delay(8);
+    str[i] = 0;
+    String faultrequest = "";
+    if (i) {
+      byte at = 0;
+      const char *p = str;
+      while (*p++) {
+        faultrequest.concat(str[at++]); 
+        if (faultrequest.equals("hello")){
+          Serial.println(faultrequest);
+          break;
+        }
+      }
+     }
+    }
   }
-
-  char str[80];
-  int i = 0;
-  while(Bluetooth.peek() > 0) {
-    str[i] = Bluetooth.read();
-    ++i;
-  }
-  str[i] = 0;
-  String faultrequest = "";
-  if (i) {
-    byte at = 0;
-    const char *p = str;
-    while (*p++) { faultrequest.concat(str[at++]); } 
-    Serial.print(faultrequest);
-  }
-
-}
 
 /*********************************************************************************************************
   END FILE
