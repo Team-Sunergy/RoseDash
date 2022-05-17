@@ -183,8 +183,26 @@ Widget socMeter() {
 }
 
 Widget hiTempMeter() {
-  return SfLinearGauge(numberFormat: NumberFormat("##0º"), interval: 3, minorTicksPerInterval: 10, orientation: LinearGaugeOrientation.vertical, minimum: 0.0, maximum: 45.0, axisTrackStyle: LinearAxisTrackStyle(thickness: 10, color: Colors.transparent),
-      markerPointers: [
+  return SfLinearGauge(numberFormat: NumberFormat("##0º"),
+      interval: 3,
+      minorTicksPerInterval: 10,
+      orientation: LinearGaugeOrientation.vertical,
+      minimum: 0.0,
+      maximum: 45.0,
+      axisTrackStyle: LinearAxisTrackStyle(
+          thickness: 10, color: Colors.transparent),
+      barPointers: [
+        LinearBarPointer(value: _startHiTempMarkerValue.toDouble(),
+          edgeStyle: LinearEdgeStyle.endCurve,
+          thickness: 8,
+          color: Color(0xffedd711),
+          borderColor: Color(0xff070b1a),
+          borderWidth: 1.25,
+        )
+      ]);
+
+
+  /*markerPointers: [
         LinearWidgetPointer(value: _startHiTempMarkerValue.toDouble(),
             position: LinearElementPosition.cross,
             child: Transform.rotate(
@@ -199,7 +217,7 @@ Widget hiTempMeter() {
                 _startMarkerValueLo = value;
               });
             })
-      ]);
+      ]);*/
 }
 
 Widget deltaMeter() {
