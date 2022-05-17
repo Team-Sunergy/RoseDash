@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 //import 'constants.dart';
 import 'screens/homePage.dart';
 
-//Navigation imports
-
-
 void main() {
   MyApp app = MyApp();
   runApp(app);
