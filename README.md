@@ -4,6 +4,7 @@
 <div align="center">
 <h1>RoseDash</h1>
   Flutter Project For The RoseDash App
+  Vehicle Dashboard application framework.
 </div>
 
 ## Getting Started
