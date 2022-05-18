@@ -809,7 +809,7 @@ class HomePageState extends State<HomePage>
       });
       setState(() {});
     }).catchError((error) {
-      print('Cannot connect, exception occured');
+      print('Cannot connect, exception occurred');
       print(error);
       _selectedDevice = null;
       connection?.dispose();
@@ -865,8 +865,7 @@ class HomePageState extends State<HomePage>
       _messageBuffer = (backspacesCounter > 0
               ? _messageBuffer.substring(
                   0, _messageBuffer.length - backspacesCounter)
-              : _messageBuffer + dataString)
-          .trim();
+              : _messageBuffer + dataString).trim();
     }
     speedo = speedometer();
     speedo.axes[1].pointers[0].onValueChanged((speed.toDouble()));
@@ -879,7 +878,7 @@ class HomePageState extends State<HomePage>
   }
 
   Future pollFaults() async {
-    connection.output.add(ascii.encode("hello#"));
+    connection.output.add(ascii.encode("ctc#"));
     await connection.output.allSent;
   }
 
