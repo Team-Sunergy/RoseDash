@@ -176,7 +176,7 @@ class HomePageState extends State<HomePage>
     /* Public toke */
     final String token = 'pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ';
 
-    final String style = 'https://api.mapbox.com/styles/v1/svtappstate/cl3awn1e9004t14p0t5dfrav6/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ';
+    final String style = 'mapbox://styles/svtappstate/cl3bp63ml005e14rqqwnl6oqj';
 
     return MapboxMap(
           accessToken: token,
@@ -878,7 +878,7 @@ class HomePageState extends State<HomePage>
   }
 
   Future pollFaults() async {
-    connection.output.add(ascii.encode("ctc#"));
+    connection.output.add(ascii.encode("soc#"));
     await connection.output.allSent;
   }
 
