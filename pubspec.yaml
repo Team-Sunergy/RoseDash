@@ -21,6 +21,8 @@ dependencies:
   segment_display: ^0.5.0
   flutter_neumorphic: ^3.2.0
   intl: ^0.17.0
+  mapbox_gl: ^0.15.0
+  location: ^4.4.0
 
 
 dev_dependencies:
