@@ -12,7 +12,7 @@ char msgString[128];                        // Array to store serial string
 #define CAN0_INT 2                              // Set INT to pin 2
 MCP_CAN CAN0(10);                               // Set CS to pin 10
 
-enum request {VOLTAGE, OTHER};
+enum request {VOLTAGE, SOC, PTC, CTC, OTHER};
 
 void setup()
 {
@@ -43,12 +43,12 @@ void loop()
   {
     CAN0.readMsgBuf(&rxId, &len, rxBuf);      // Read data: len = data length, buf = data byte(s)
 
-    /*if((rxId & 0x80000000) == 0x80000000)     // Determine if ID is standard (11 bits) or extended (29 bits)
-      //sprintf(msgString, "Extended ID: 0x%.8lX  DLC: %1d  Data:", (rxId & 0x1FFFFFFF), len);
+    if((rxId & 0x80000000) == 0x80000000)     // Determine if ID is standard (11 bits) or extended (29 bits)
+      sprintf(msgString, "Extended ID: 0x%.8lX  DLC: %1d  Data:", (rxId & 0x1FFFFFFF), len);
     else
-      //sprintf(msgString, "Standard ID: 0x%.3lX       DLC: %1d  Data:", rxId, len);
+      sprintf(msgString, "Standard ID: 0x%.3lX       DLC: %1d  Data:", rxId, len);
 
-    //Serial.print(msgString);
+    Serial.print(msgString);
     //Bluetooth.print(msgString);*/
     
     if((rxId & 0x40000000) == 0x40000000){    // Determine if message is a remote request frame.
@@ -63,9 +63,9 @@ void loop()
             else if (rxId == 0x287) sprintf(msgString, "%.2X", rxBuf[i]);
             else sprintf(msgString, "%.2X", rxBuf[i]);
             Bluetooth.print(msgString);
-            //Serial.print(msgString);
+            Serial.print(msgString);
         } 
-        //Serial.println();
+        Serial.println();
         Bluetooth.println();
         notOwn = false;
     } else if (rxId == 0x7EB) {
@@ -100,25 +100,61 @@ void loop()
       const char *p = str;
       while (*p++) {
         faultrequest.concat(str[at++]); 
-        if (faultrequest.equals("hello")){
-          req = VOLTAGE;
+        if (faultrequest.equals("soc")){
+          req = SOC;
+          Serial.println(faultrequest);
+          break;
+        }
+        else if (faultrequest.equals("ptc")){
+          req = PTC;
+          Serial.println(faultrequest);
+          break;
+        }
+        else if (faultrequest.equals("ctc")){
+          req = CTC;
           Serial.println(faultrequest);
           break;
         }
       }
       // OBD2 length, MOD, PID
-      byte obdmsg[] = {0x04,0x22,0xf0,0x0f,0x00,0x00,0x00,0x00};
+      INT32U id = 0x7E3;
+      INT8U canLen = 8;
+      byte OBD2Len = 0;
+      byte Mod = 0;
+      byte PID_1 = 0;
+      byte PID_2 = 0;
+      byte PID_3 = 0;
+      byte PID_4 = 0;
+      byte PID_5 = 0;
+      byte PID_6 = 0;
+      
+      String reqType;
       switch(req) {
-        case VOLTAGE:
-          Serial.println("Voltage Request Sending");
-          if (CAN0.sendMsgBuf(0x7E3, 8, obdmsg) == CAN_OK) {
-            Serial.println("Message Sent Successfully!");
-          } else {
-            Serial.println("Error Sending Message...");
-          }
+        case SOC:
+          OBD2Len = 4;
+          Mod = 0x22;
+          PID_1 = 0xF0;
+          PID_2 = 0xF;
+          reqType = "SOC";
           break;
-            
+        case PTC:
+          OBD2Len = 1;
+          Mod = 0x07;
+          reqType = "PTC";
+          break;
+        case CTC:
+          OBD2Len = 1;
+          Mod = 0x03;
+          reqType = "CTC";
+          break;   
       }
+      byte obdmsg[8] = {OBD2Len,Mod,PID_1,PID_2,PID_3,PID_4,PID_5,PID_6};
+            Serial.println(reqType + " Request Sending");
+            if (CAN0.sendMsgBuf(id, canLen, obdmsg) == CAN_OK) {
+              Serial.println("Message Sent Successfully!");
+            } else {
+              Serial.println("Error Sending Message...");
+            }
      }
     }
   }
