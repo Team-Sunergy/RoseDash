@@ -147,8 +147,6 @@ class HomePageState extends State<HomePage>
                   //color: Colors.green
                 ),
                 Container(child: hiTempMeter()),
-                //TODO: set up Nav widget.
-                //Container(height: 400, width: 280, color: Colors.blue, child: nav()),
               ],
             ),
           ],
@@ -171,19 +169,18 @@ class HomePageState extends State<HomePage>
 
   @override
   Widget nav() {
+
     /* Private toke */
-    final String token = 'sk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXB3c2wwMDF0OTNkbDdxcDFtbGNscSJ9.yiVQfSAtfmt1IQmYkNO-eA';
+    //final String token = 'sk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXB3c2wwMDF0OTNkbDdxcDFtbGNscSJ9.yiVQfSAtfmt1IQmYkNO-eA';
 
     /* Public toke */
-    //final String token = 'pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ';
+    final String token = 'pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ';
 
-    final String style = 'mapbox://styles/svtappstate/cl3awn1e9004t14p0t5dfrav6';
+    final String style = 'https://api.mapbox.com/styles/v1/svtappstate/cl3awn1e9004t14p0t5dfrav6/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ';
 
-    return Scaffold(
-      body: MapboxMap(
-
-          accessToken: 'sk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXB3c2wwMDF0OTNkbDdxcDFtbGNscSJ9.yiVQfSAtfmt1IQmYkNO-eA',
-          //styleString: style,
+    return MapboxMap(
+          accessToken: token,
+          styleString: style,
           initialCameraPosition: CameraPosition(
             zoom: 15.0,
             target: LatLng(14.508, 46.048),
@@ -217,8 +214,7 @@ class HomePageState extends State<HomePage>
                 draggable: false,
               ),
             );
-          }),
-    );
+          });
   }
 
   Widget loHiVoltMeter() {
@@ -626,7 +622,7 @@ class HomePageState extends State<HomePage>
                       child: new PageView(
                         controller: _pageController,
                         scrollDirection: Axis.horizontal,
-                        children: [voltWidget(), voltWidget(), voltWidget()],
+                        children: [voltWidget(), nav(), voltWidget()],
                       ))
                 ],
               ),
