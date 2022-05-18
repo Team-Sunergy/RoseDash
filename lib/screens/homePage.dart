@@ -27,26 +27,6 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
-import 'package:mapbox_gl_example/custom_marker.dart';
-import 'package:mapbox_gl_example/full_map.dart';
-import 'package:mapbox_gl_example/offline_regions.dart';
-import 'package:mapbox_gl_example/place_batch.dart';
-import 'package:mapbox_gl_example/layer.dart';
-import 'package:mapbox_gl_example/sources.dart';
-import 'animate_camera.dart';
-import 'annotation_order_maps.dart';
-import 'full_map.dart';
-import 'line.dart';
-import 'local_style.dart';
-import 'map_ui.dart';
-import 'move_camera.dart';
-import 'click_annotations.dart';
-import 'page.dart';
-import 'place_circle.dart';
-import 'place_source.dart';
-import 'place_symbol.dart';
-import 'place_fill.dart';
-import 'scrolling_map.dart';
 
 SfRadialGauge speedo;
 Widget volt;
@@ -67,169 +47,267 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
+  Widget voltWidget() {
+    //PictureRecorder recorder = PictureRecorder();
+    //Canvas canvas = Canvas(recorder);
+    return Row(children: [
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(
+          children: [
+            Column(
+              children: [
+                Container(
+                    //width: 150,
+                    //color: Colors.red,
+                    child: SixteenSegmentDisplay(
+                  value: _startSOCMarkerValue.toString() + "%",
+                  size: 4.0,
+                  backgroundColor: Colors.transparent,
+                  segmentStyle: RectSegmentStyle(
+                      enabledColor: Color(0xffedd711),
+                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                )),
+                Container(height: 20, child: Text("State of Charge")),
+                Container(
+                    child: SixteenSegmentDisplay(
+                  value: _startMarkerValueHi.toString(),
+                  size: 4.0,
+                  backgroundColor: Colors.transparent,
+                  segmentStyle: RectSegmentStyle(
+                      enabledColor: Color(0xffedd711),
+                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                )),
+                Container(height: 20, child: Text("High Cell (Volt)")),
+                Container(
+                    child: SixteenSegmentDisplay(
+                  value: _startMarkerValueLo.toString(),
+                  size: 4.0,
+                  backgroundColor: Colors.transparent,
+                  segmentStyle: RectSegmentStyle(
+                      enabledColor: Color(0xffedd711),
+                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                )),
+                Container(height: 20, child: Text("Low Cell (Volt)")),
+                Container(
+                    child: SixteenSegmentDisplay(
+                  value: _packVoltSum.toString(),
+                  size: 4.0,
+                  backgroundColor: Colors.transparent,
+                  segmentStyle: RectSegmentStyle(
+                      enabledColor: Color(0xffedd711),
+                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                )),
+                Container(height: 20, child: Text("Pack (Volt)")),
+                Container(
+                    child: SixteenSegmentDisplay(
+                  value: _startHiTempMarkerValue.toString(),
+                  size: 4.0,
+                  backgroundColor: Colors.transparent,
+                  segmentStyle: RectSegmentStyle(
+                      enabledColor: Color(0xffedd711),
+                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                )),
+                Container(height: 20, child: Text("Hi Cell (ºCel)")),
+                Container(
+                    child: SixteenSegmentDisplay(
+                  value: _startCurrentDraw.toString(),
+                  size: 4.0,
+                  backgroundColor: Colors.transparent,
+                  segmentStyle: RectSegmentStyle(
+                      enabledColor: Color(0xffedd711),
+                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                )),
+                //Signed Value from PID of BMS
+                Container(height: 20, child: Text("Current Draw")),
+              ],
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 30,
+                ),
+                Container(
+                    //height: 40,
+                    //width: 20,
+                    child: loHiVoltMeter()
 
-Widget voltWidget() {
-  //PictureRecorder recorder = PictureRecorder();
-  //Canvas canvas = Canvas(recorder);
-  return Row (
-      children: [
-        Column (
-    crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-    Row(
-    children: [
-      Column(
-        children: [
-          Container(
-            //width: 150,
-            //color: Colors.red,
-            child:
-            SixteenSegmentDisplay(value: _startSOCMarkerValue.toString() + "%", size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
-          ),
-          Container(height: 20, child: Text("State of Charge")),
-          Container (
-              child:
-              SixteenSegmentDisplay(value: _startMarkerValueHi.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
-          ),
-          Container(height: 20, child: Text("High Cell (Volt)")),
-          Container (
-              child:
-              SixteenSegmentDisplay(value: _startMarkerValueLo.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
-          ),
-          Container(height: 20, child: Text("Low Cell (Volt)")),
-          Container (
-              child:
-              SixteenSegmentDisplay(value: _packVoltSum.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
-          ),
-          Container(height: 20, child: Text("Pack (Volt)")),
-          Container (
-              child:
-              SixteenSegmentDisplay(value: _startHiTempMarkerValue.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
-          ),
-          Container(height: 20, child: Text("Hi Cell (ºCel)")),
-          Container (
-              child:
-              SixteenSegmentDisplay(value: _startCurrentDraw.toString(), size: 4.0, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Color(0xffedd711), disabledColor: Color(0xffc2b11d).withOpacity(0.05)),)
-          ),
-          //Signed Value from PID of BMS
-          Container(height: 20, child: Text("Current Draw")),
-        ],
-      ),
-      Row(
-        children: [
-          Container(width: 30,),
-          Container(
-              //height: 40,
-              //width: 20,
-            child:
-            loHiVoltMeter()
-
-            //color: Colors.blue
-          ),
-          Container(
-              //height: 40,
-              width: 40,
+                    //color: Colors.blue
+                    ),
+                Container(
+                  //height: 40,
+                  width: 40,
+                  //color: Colors.green
+                ),
+                Container(child: socMeter()),
+                Container(
+                  //height: 40,
+                  width: 20,
+                  //color: Colors.green
+                ),
+                Container(child: hiTempMeter()),
+                //TODO: set up Nav widget.
+                //Container(height: 400, width: 280, color: Colors.blue, child: nav()),
+              ],
+            ),
+          ],
+        ),
+        Container(
+          height: 5,
+          //width: 20,
+        ),
+        Container(
+            //height: 20,
+            //width: 500,
+            //color: Colors.pink
+            child: deltaMeter()),
+        Container(height: 5
             //color: Colors.green
+            ),
+      ])
+    ]);
+  }
+
+  @override
+  Widget nav() {
+    /* Private toke */
+    final String token = 'sk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXB3c2wwMDF0OTNkbDdxcDFtbGNscSJ9.yiVQfSAtfmt1IQmYkNO-eA';
+
+    /* Public toke */
+    //final String token = 'pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ';
+
+    final String style = 'mapbox://styles/svtappstate/cl3awn1e9004t14p0t5dfrav6';
+
+    return Scaffold(
+      body: MapboxMap(
+
+          accessToken: 'sk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXB3c2wwMDF0OTNkbDdxcDFtbGNscSJ9.yiVQfSAtfmt1IQmYkNO-eA',
+          //styleString: style,
+          initialCameraPosition: CameraPosition(
+            zoom: 15.0,
+            target: LatLng(14.508, 46.048),
           ),
-          Container(child: socMeter()),
-          Container(
-            //height: 40,
-            width: 20,
-            //color: Colors.green
-          ),
-          Container(child: hiTempMeter()),
-        ],
-      ),
 
-    ],
-    ),
-              Container(
-                height: 5,
-                //width: 20,
-                //color: Colors.green
+          // The onMapCreated callback should be used for everything related
+          // to updating map components via the MapboxMapController instance
+          onMapCreated: (MapboxMapController controller) async {
+            // Acquire current location (returns the LatLng instance)
+            final result = await acquireCurrentLocation();
+
+            // You can either use the moveCamera or animateCamera, but the former
+            // causes a sudden movement from the initial to 'new' camera position,
+            // while animateCamera gives a smooth animated transition
+            await controller.animateCamera(
+              CameraUpdate.newLatLng(result),
+            );
+
+            // Add a circle denoting current user location
+            await controller.addCircle(
+              CircleOptions(
+                circleRadius: 8.0,
+                circleColor: '#006992',
+                circleOpacity: 0.8,
+
+                // YOU NEED TO PROVIDE THIS FIELD!!!
+                // Otherwise, you'll get a silent exception somewhere in the stack
+                // trace, but the parameter is never marked as @required, so you'll
+                // never know unless you check the stack trace
+                geometry: result,
+                draggable: false,
               ),
-      Container(
-        //height: 20,
-        width: 500,
-        //color: Colors.pink
-        child: deltaMeter()
-      ),
-              Container(
-                height: 5
-                //color: Colors.green
-              ),
-  ]
-  )]
-  );
-}
+            );
+          }),
+    );
+  }
 
-Widget loHiVoltMeter() {
-  //TODO: Globalize Fields for Stateful behavior
-  return SfLinearGauge(numberFormat: NumberFormat("#0.#v"), orientation: LinearGaugeOrientation.vertical,
-                        minimum: 3.50,
-                        maximum: 3.515,
-                        axisTrackStyle: LinearAxisTrackStyle(thickness: 2.5),
-                        markerPointers: [
-                          LinearWidgetPointer(value: _startMarkerValueLo,
-                            position: LinearElementPosition.cross,
-                            child: Transform.rotate(
-                              angle: 90 * math.pi / 180,
-                              child: IconButton(
-                                icon: Icon(Icons.battery_4_bar_outlined, color: Color(0xffc2b11d), size: 27),
-                                //onPressed: null,
-                              ),
-                            ),
-                            onChanged: (double value) {
-                              setState(() {
-                                _startMarkerValueLo = value;
-                              });
-                            }),
-                          LinearWidgetPointer(value: _startMarkerValueHi, offset: 10,
-                              position: LinearElementPosition.cross,
-                              //offset: 10,
-                              child: Transform.rotate(
-                                angle: 90 * math.pi / 180,
-                                child: IconButton(
-                                  icon: Icon(Icons.battery_6_bar_outlined, color: Color(0xffedd711), size: 30),
-                                  //onPressed: null,
-                                ),
-                              ),
-                              onChanged: (double value) {
-                                setState(() {
-                                  _startMarkerValueHi = value;
-                                });
-                              }),
-                          ],
-                        );
-}
-
-Widget socMeter() {
-  return SfLinearGauge(numberFormat: NumberFormat.percentPattern("en_US"), orientation: LinearGaugeOrientation.vertical, minimum: 0.0, maximum: 1.0, axisTrackStyle: LinearAxisTrackStyle(thickness: 10, color: Colors.white.withOpacity(0.05)),
-                        barPointers: [LinearBarPointer(value: _startSOCMarkerValue / 100, edgeStyle: LinearEdgeStyle.endCurve, thickness: 8, color: Color(0xffedd711), borderColor: Color(0xff070b1a), borderWidth: 1.25,
-        )]);
-}
-
-Widget hiTempMeter() {
-  return SfLinearGauge(numberFormat: NumberFormat("##0º"),
-      interval: 3,
-      minorTicksPerInterval: 10,
+  Widget loHiVoltMeter() {
+    //TODO: Globalize Fields for Stateful behavior
+    return SfLinearGauge(
+      numberFormat: NumberFormat("#0.#v"),
       orientation: LinearGaugeOrientation.vertical,
-      minimum: 0.0,
-      maximum: 45.0,
-      axisTrackStyle: LinearAxisTrackStyle(
-          thickness: 10, color: Colors.transparent),
-      barPointers: [
-        LinearBarPointer(value: _startHiTempMarkerValue.toDouble(),
-          edgeStyle: LinearEdgeStyle.endCurve,
-          thickness: 8,
-          color: Color(0xffedd711),
-          borderColor: Color(0xff070b1a),
-          borderWidth: 1.25,
-        )
-      ]);
+      minimum: 3.50,
+      maximum: 3.515,
+      axisTrackStyle: LinearAxisTrackStyle(thickness: 2.5),
+      markerPointers: [
+        LinearWidgetPointer(
+            value: _startMarkerValueLo,
+            position: LinearElementPosition.cross,
+            child: Transform.rotate(
+              angle: 90 * math.pi / 180,
+              child: IconButton(
+                icon: Icon(Icons.battery_4_bar_outlined,
+                    color: Color(0xffc2b11d), size: 27),
+                //onPressed: null,
+              ),
+            ),
+            onChanged: (double value) {
+              setState(() {
+                _startMarkerValueLo = value;
+              });
+            }),
+        LinearWidgetPointer(
+            value: _startMarkerValueHi,
+            offset: 10,
+            position: LinearElementPosition.cross,
+            //offset: 10,
+            child: Transform.rotate(
+              angle: 90 * math.pi / 180,
+              child: IconButton(
+                icon: Icon(Icons.battery_6_bar_outlined,
+                    color: Color(0xffedd711), size: 30),
+                //onPressed: null,
+              ),
+            ),
+            onChanged: (double value) {
+              setState(() {
+                _startMarkerValueHi = value;
+              });
+            }),
+      ],
+    );
+  }
 
+  Widget socMeter() {
+    return SfLinearGauge(
+        numberFormat: NumberFormat.percentPattern("en_US"),
+        orientation: LinearGaugeOrientation.vertical,
+        minimum: 0.0,
+        maximum: 1.0,
+        axisTrackStyle: LinearAxisTrackStyle(
+            thickness: 10, color: Colors.white.withOpacity(0.05)),
+        barPointers: [
+          LinearBarPointer(
+            value: _startSOCMarkerValue / 100,
+            edgeStyle: LinearEdgeStyle.endCurve,
+            thickness: 8,
+            color: Color(0xffedd711),
+            borderColor: Color(0xff070b1a),
+            borderWidth: 1.25,
+          )
+        ]);
+  }
 
-  /*markerPointers: [
+  Widget hiTempMeter() {
+    return SfLinearGauge(
+        numberFormat: NumberFormat("##0º"),
+        interval: 3,
+        minorTicksPerInterval: 10,
+        orientation: LinearGaugeOrientation.vertical,
+        minimum: 0.0,
+        maximum: 45.0,
+        axisTrackStyle:
+            LinearAxisTrackStyle(thickness: 10, color: Colors.transparent),
+        barPointers: [
+          LinearBarPointer(
+            value: _startHiTempMarkerValue.toDouble(),
+            edgeStyle: LinearEdgeStyle.endCurve,
+            thickness: 8,
+            color: Color(0xffedd711),
+            borderColor: Color(0xff070b1a),
+            borderWidth: 1.25,
+          )
+        ]);
+
+    /*markerPointers: [
         LinearWidgetPointer(value: _startHiTempMarkerValue.toDouble(),
             position: LinearElementPosition.cross,
             child: Transform.rotate(
@@ -245,183 +323,181 @@ Widget hiTempMeter() {
               });
             })
       ]);*/
-}
-
-Widget deltaMeter() {
-  //TODO: Formula for difference of hi/lo Volt
-  return SfLinearGauge(numberFormat: NumberFormat("#0Δv"), interval: 1, minorTicksPerInterval: 5, orientation: LinearGaugeOrientation.horizontal, minimum: 0.0, maximum: 0.015, axisTrackStyle: LinearAxisTrackStyle(thickness: 10, color: Colors.white.withOpacity(0.05)),
-      barPointers: [LinearBarPointer(value: _startdeltaMarkerValue, edgeStyle: LinearEdgeStyle.endCurve, thickness: 8, color: Color(0xffedd711), borderColor: Color(0xff070b1a), borderWidth: 1.25,
-      )],
-      ranges:[
-      LinearGaugeRange(
-      startValue: 8,
-      endValue: 10,
-      startWidth: 5,
-      endWidth: 5,
-      color: Color(0xff7d7411)),
-      ],);
-}
-  Widget speedometer()
-  {
-    return SfRadialGauge(
-
-        axes: <RadialAxis>[
-          RadialAxis(
-            showAxisLine: false,
-            showLabels: false,
-            showTicks: false,
-            radiusFactor: 1,
-              annotations: <GaugeAnnotation>[
-          GaugeAnnotation(
-          widget: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              // Added image widget as an annotation
-              Container(
-                  width: 200.00,
-                  height: 200.00,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      alignment: Alignment.bottomLeft,
-                      image: ExactAssetImage('images/SunergyYosef-yellow.png'),
-                      fit: BoxFit.fill,
-                    ),
-                  )),
-            ],
-          ),)]),
-          RadialAxis(
-            showAxisLine: false,
-            showLabels: false,
-            showTicks: false,
-            pointers: <GaugePointer>[
-              NeedlePointer(value: _currentValue,
-                  onValueChanged: (double newValue) {
-                    setState(() {
-                      _currentValue = newValue;
-                    });
-                  },
-                  needleColor: Colors.amberAccent,
-                  needleLength: 2,
-                  needleStartWidth: 0,
-                  needleEndWidth: 3,
-                  tailStyle: TailStyle(length: 0.0455, width: 1.5, borderWidth: 1, borderColor: Color(0xff070b1a)),
-                  knobStyle: KnobStyle(color: Colors.white, borderColor: Color(0xff070b1a), borderWidth: 0.006, knobRadius: 0.017),
-                  enableAnimation: true)
-
-            ],
-          ),
-          RadialAxis(
-            useRangeColorForAxis: true,
-            showAxisLine: false,
-            showLabels: false,
-            showTicks: false,
-            radiusFactor: 1.05,
-            ranges: <GaugeRange>[
-              GaugeRange(
-                  startValue: 0,
-                  endValue: 20,
-                  startWidth: 0,
-                  endWidth: 10,
-                  color: Color(0xffc2b11d)),
-              GaugeRange(
-                  startValue: 22,
-                  endValue: 42,
-                  startWidth: 5,
-                  endWidth: 15,
-                  color: Color(0xff03050a)),
-              GaugeRange(
-                  startValue: 44,
-                  endValue: 64,
-                  startWidth: 7,
-                  endWidth: 20,
-                  color: Color(0xffedd711)),
-              GaugeRange(
-                  startValue: 66,
-                  endValue: 86,
-                  startWidth: 20,
-                  endWidth: 20,
-                  color: Color(0xff03050a)),
-              GaugeRange(
-                  startValue: 88,
-                  endValue: 100,
-                  startWidth: 10,
-                  endWidth: 20,
-                  color: Color(0xffc2b11d)),
-            ],
-          ),
-          RadialAxis(
-              showAxisLine: false,
-              showLabels: true,
-              showTicks: true,
-              radiusFactor: 0.9,
-              minimum: 0,
-              maximum: 100,
-              majorTickStyle: MajorTickStyle(color: Color(0xffc2b11d), dashArray: <double>[5,5]),
-              minorTickStyle: MinorTickStyle(color: Color(0xff635b0e)),
-              axisLabelStyle: GaugeTextStyle(color: Color(0xffc2b11d)),
-              axisLineStyle: AxisLineStyle(
-                  dashArray: <double>[5,5],),
-                  //color: Color(0xFFFF7676),),
-              annotations: <GaugeAnnotation>[
-            GaugeAnnotation(
-                widget: Container(
-                    child: SixteenSegmentDisplay(value: _currentValue.toInt().toString() + ' mph', size: 2.5, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Colors.yellow, disabledColor: Color(0xff635b0e).withOpacity(0.05))),
-
-                ),
-                angle: 85,
-                positionFactor: 0.5,
-            ),
-                GaugeAnnotation(
-                  widget: Container(
-                    child: SixteenSegmentDisplay(value: 'Range:828mi', size: 1.25, backgroundColor: Colors.transparent, segmentStyle: RectSegmentStyle(enabledColor: Colors.yellow, disabledColor: Color(0xff635b0e).withOpacity(0.05))),
-
-                  ),
-                  angle: 85,
-                  positionFactor: 0.7,
-                )]),
-        ]);
   }
 
-  Widget Navigation() {
+  Widget deltaMeter() {
+    //TODO: Formula for difference of hi/lo Volt
+    return SfLinearGauge(
+      numberFormat: NumberFormat("#0Δv"),
+      interval: 1,
+      minorTicksPerInterval: 5,
+      orientation: LinearGaugeOrientation.horizontal,
+      minimum: 0.0,
+      maximum: 0.015,
+      axisTrackStyle: LinearAxisTrackStyle(
+          thickness: 10, color: Colors.white.withOpacity(0.05)),
+      barPointers: [
+        LinearBarPointer(
+          value: _startdeltaMarkerValue,
+          edgeStyle: LinearEdgeStyle.endCurve,
+          thickness: 8,
+          color: Color(0xffedd711),
+          borderColor: Color(0xff070b1a),
+          borderWidth: 1.25,
+        )
+      ],
+      ranges: [
+        LinearGaugeRange(
+            startValue: 8,
+            endValue: 10,
+            startWidth: 5,
+            endWidth: 5,
+            color: Color(0xff7d7411)),
+      ],
+    );
+  }
 
-    Future<LatLng> acquireCurrentLocation() async {
-      // Initializes the plugin and starts listening for potential platform events
-      Location location = new Location();
-
-      // Whether or not the location service is enabled
-      bool serviceEnabled;
-
-      // Status of a permission request to use location services
-      PermissionStatus permissionGranted;
-
-      // Check if the location service is enabled, and if not, then request it. In
-      // case the user refuses to do it, return immediately with a null result
-      serviceEnabled = await location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-        if (!serviceEnabled) {
-          return null;
-        }
-      }
-
-      // Check for location permissions; similar to the workflow in Android apps,
-      // so check whether the permissions is granted, if not, first you need to
-      // request it, and then read the result of the request, and only proceed if
-      // the permission was granted by the user
-      permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          return null;
-        }
-      }
-
-      // Gets the current location of the user
-      final locationData = await location.getLocation();
-      return LatLng(locationData.latitude, locationData.longitude);
-    }
-
+  Widget speedometer() {
+    return SfRadialGauge(axes: <RadialAxis>[
+      RadialAxis(
+          showAxisLine: false,
+          showLabels: false,
+          showTicks: false,
+          radiusFactor: 1,
+          annotations: <GaugeAnnotation>[
+            GaugeAnnotation(
+              widget: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  // Added image widget as an annotation
+                  Container(
+                      width: 200.00,
+                      height: 200.00,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          alignment: Alignment.bottomLeft,
+                          image:
+                              ExactAssetImage('images/SunergyYosef-yellow.png'),
+                          fit: BoxFit.fill,
+                        ),
+                      )),
+                ],
+              ),
+            )
+          ]),
+      RadialAxis(
+        showAxisLine: false,
+        showLabels: false,
+        showTicks: false,
+        pointers: <GaugePointer>[
+          NeedlePointer(
+              value: _currentValue,
+              onValueChanged: (double newValue) {
+                setState(() {
+                  _currentValue = newValue;
+                });
+              },
+              needleColor: Colors.amberAccent,
+              needleLength: 2,
+              needleStartWidth: 0,
+              needleEndWidth: 3,
+              tailStyle: TailStyle(
+                  length: 0.0455,
+                  width: 1.5,
+                  borderWidth: 1,
+                  borderColor: Color(0xff070b1a)),
+              knobStyle: KnobStyle(
+                  color: Colors.white,
+                  borderColor: Color(0xff070b1a),
+                  borderWidth: 0.006,
+                  knobRadius: 0.017),
+              enableAnimation: true)
+        ],
+      ),
+      RadialAxis(
+        useRangeColorForAxis: true,
+        showAxisLine: false,
+        showLabels: false,
+        showTicks: false,
+        radiusFactor: 1.05,
+        ranges: <GaugeRange>[
+          GaugeRange(
+              startValue: 0,
+              endValue: 20,
+              startWidth: 0,
+              endWidth: 10,
+              color: Color(0xffc2b11d)),
+          GaugeRange(
+              startValue: 22,
+              endValue: 42,
+              startWidth: 5,
+              endWidth: 15,
+              color: Color(0xff03050a)),
+          GaugeRange(
+              startValue: 44,
+              endValue: 64,
+              startWidth: 7,
+              endWidth: 20,
+              color: Color(0xffedd711)),
+          GaugeRange(
+              startValue: 66,
+              endValue: 86,
+              startWidth: 20,
+              endWidth: 20,
+              color: Color(0xff03050a)),
+          GaugeRange(
+              startValue: 88,
+              endValue: 100,
+              startWidth: 10,
+              endWidth: 20,
+              color: Color(0xffc2b11d)),
+        ],
+      ),
+      RadialAxis(
+          showAxisLine: false,
+          showLabels: true,
+          showTicks: true,
+          radiusFactor: 0.9,
+          minimum: 0,
+          maximum: 100,
+          majorTickStyle: MajorTickStyle(
+              color: Color(0xffc2b11d), dashArray: <double>[5, 5]),
+          minorTickStyle: MinorTickStyle(color: Color(0xff635b0e)),
+          axisLabelStyle: GaugeTextStyle(color: Color(0xffc2b11d)),
+          axisLineStyle: AxisLineStyle(
+            dashArray: <double>[5, 5],
+          ),
+          //color: Color(0xFFFF7676),),
+          annotations: <GaugeAnnotation>[
+            GaugeAnnotation(
+              widget: Container(
+                child: SixteenSegmentDisplay(
+                    value: _currentValue.toInt().toString() + ' mph',
+                    size: 2.5,
+                    backgroundColor: Colors.transparent,
+                    segmentStyle: RectSegmentStyle(
+                        enabledColor: Colors.yellow,
+                        disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+              ),
+              angle: 85,
+              positionFactor: 0.5,
+            ),
+            GaugeAnnotation(
+              widget: Container(
+                child: SixteenSegmentDisplay(
+                    value: 'Range:828mi',
+                    size: 1.25,
+                    backgroundColor: Colors.transparent,
+                    segmentStyle: RectSegmentStyle(
+                        enabledColor: Colors.yellow,
+                        disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+              ),
+              angle: 85,
+              positionFactor: 0.7,
+            )
+          ]),
+    ]);
   }
 
   List<DeviceWithAvailability> devices = <DeviceWithAvailability>[];
@@ -501,172 +577,176 @@ Widget deltaMeter() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //TODO: Leave BT Settings and possible side menu
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Rose Dash Pre-Alpha"),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            onPressed: () {
-              _startDevice();
-            },
-          ),
-          Icon(btStateIcon(_bluetoothState)),
-          IconButton(
-            icon: _bluetoothState.isEnabled
-                ? Icon(Icons.toggle_on_outlined, color: Colors.green)
-                : Icon(Icons.toggle_off_outlined, color: Colors.grey),
-            onPressed: () async {
-              if (_bluetoothState.isEnabled) {
-                await FlutterBluetoothSerial.instance.requestDisable();
-              } else {
-                await FlutterBluetoothSerial.instance.requestEnable();
-              }
-              setState(() {});
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.settings_bluetooth),
-            onPressed: () {
-              FlutterBluetoothSerial.instance.openSettings();
-            },
-          ),
-        ],
-      ),
-      body: Container(
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        child: Column(
-            children: [
+        //TODO: Leave BT Settings and possible side menu
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text("Rose Dash Pre-Alpha"),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.refresh),
+              onPressed: () {
+                _startDevice();
+              },
+            ),
+            Icon(btStateIcon(_bluetoothState)),
+            IconButton(
+              icon: _bluetoothState.isEnabled
+                  ? Icon(Icons.toggle_on_outlined, color: Colors.green)
+                  : Icon(Icons.toggle_off_outlined, color: Colors.grey),
+              onPressed: () async {
+                if (_bluetoothState.isEnabled) {
+                  await FlutterBluetoothSerial.instance.requestDisable();
+                } else {
+                  await FlutterBluetoothSerial.instance.requestEnable();
+                }
+                setState(() {});
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings_bluetooth),
+              onPressed: () {
+                FlutterBluetoothSerial.instance.openSettings();
+              },
+            ),
+          ],
+        ),
+        body: Container(
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+            child: Column(children: [
               Row(
-              children: [
-                VerticalDivider(width: 200),
-                speedo = speedometer(),
-                VerticalDivider(width: 100),
-                SizedBox(
-                    height: 515,
-                    width:500,
-                    child: new PageView(
-                      controller: _pageController,
-                      scrollDirection: Axis.horizontal,
-                      children: [
-                        voltWidget(),
-                        voltWidget(),
-                        voltWidget()
-                      ],
-                    )
-                  )
-              ],
-            ),
-            Expanded(
-              flex: 5,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 5),
-                padding: EdgeInsets.only(top: 10),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.teal,
-                    width: 1,
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: devices.length,
-                        itemBuilder: (context, i) {
-                          return ListTile(
-                            dense: true,
-                            leading: Icon(Icons.devices),
-                            title: Text(devices[i].device.name ?? "Unknown.."),
-                            subtitle:
-                                Text(devices[i].device.address.toString()),
-                            trailing:
-                                Text(devices[i].device.bondState.stringValue),
-                            onTap: () {
-                              if (devices[i].isPaired == true) {
-                                setState(() {
-                                  _selectedDevice = devices[i].device;
-                                  //print(devices[i].name);
-                                  connection?.dispose();
-                                  _startConnection();
-                                });
-                              } else {
-                                FlutterBluetoothSerial.instance
-                                    .bondDeviceAtAddress(
-                                        devices[i].device.address)
-                                    .then((bool value) {
-                                  devices[i].isPaired = value;
-                                });
-                              }
-                            },
-                          );
-                        },
-                      ),
+                children: [
+                  VerticalDivider(width: 200),
+                  speedo = speedometer(),
+                  VerticalDivider(width: 100),
+                  SizedBox(
+                      height: 515,
+                      width: 500,
+                      child: new PageView(
+                        controller: _pageController,
+                        scrollDirection: Axis.horizontal,
+                        children: [voltWidget(), voltWidget(), voltWidget()],
+                      ))
+                ],
+              ),
+              Expanded(
+                flex: 5,
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 5),
+                  padding: EdgeInsets.only(top: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.teal,
+                      width: 1,
                     ),
-                  ],
-                ),
-              ),
-            ),
-            // List of received messages
-            Expanded(
-              flex: 6,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.teal,
-                    width: 1,
+                  ),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: devices.length,
+                          itemBuilder: (context, i) {
+                            return ListTile(
+                              dense: true,
+                              leading: Icon(Icons.devices),
+                              title:
+                                  Text(devices[i].device.name ?? "Unknown.."),
+                              subtitle:
+                                  Text(devices[i].device.address.toString()),
+                              trailing:
+                                  Text(devices[i].device.bondState.stringValue),
+                              onTap: () {
+                                if (devices[i].isPaired == true) {
+                                  setState(() {
+                                    _selectedDevice = devices[i].device;
+                                    //print(devices[i].name);
+                                    connection?.dispose();
+                                    _startConnection();
+                                  });
+                                } else {
+                                  FlutterBluetoothSerial.instance
+                                      .bondDeviceAtAddress(
+                                          devices[i].device.address)
+                                      .then((bool value) {
+                                    devices[i].isPaired = value;
+                                  });
+                                }
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: messages.length,
-                  itemBuilder: (context, i) {
-                    //speed = int.parse(messages[i].text.substring(0, 2), radix: 16);
-                    if (messages[i].text.isNotEmpty) {
-                      if (messages[i].text[0] != 'G') {
-                        _startSOCMarkerValue = int.parse(
-                            messages[i].text.substring(0, 2), radix: 16) / 2;
-                        _startMarkerValueHi = int.parse(
-                            messages[i].text.substring(3, 7), radix: 16) /
-                            10000;
-                        _startMarkerValueLo = int.parse(
-                            messages[i].text.substring(8, 12), radix: 16) /
-                            10000;
-                        _packVoltSum = int.parse(
-                            messages[i].text.substring(13, 17), radix: 16) /
-                            100;
-                        _startHiTempMarkerValue = int.parse(
-                            messages[i].text.substring(18, 20), radix: 16);
-                        _startdeltaMarkerValue =
-                            _startMarkerValueHi - _startMarkerValueLo;
-                      } else {
-                        _startCurrentDraw = (int.parse(messages[i].text
-                            .substring(1, 3), radix: 16)) * 0.1;
+              ),
+              // List of received messages
+              Expanded(
+                flex: 6,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Colors.teal,
+                      width: 1,
+                    ),
+                  ),
+                  child: ListView.builder(
+                    controller: _scrollController,
+                    itemCount: messages.length,
+                    itemBuilder: (context, i) {
+                      //speed = int.parse(messages[i].text.substring(0, 2), radix: 16);
+                      if (messages[i].text.isNotEmpty) {
+                        if (messages[i].text[0] != 'G') {
+                          _startSOCMarkerValue = int.parse(
+                                  messages[i].text.substring(0, 2),
+                                  radix: 16) /
+                              2;
+                          _startMarkerValueHi = int.parse(
+                                  messages[i].text.substring(3, 7),
+                                  radix: 16) /
+                              10000;
+                          _startMarkerValueLo = int.parse(
+                                  messages[i].text.substring(8, 12),
+                                  radix: 16) /
+                              10000;
+                          _packVoltSum = int.parse(
+                                  messages[i].text.substring(13, 17),
+                                  radix: 16) /
+                              100;
+                          _startHiTempMarkerValue = int.parse(
+                              messages[i].text.substring(18, 20),
+                              radix: 16);
+                          _startdeltaMarkerValue =
+                              _startMarkerValueHi - _startMarkerValueLo;
+                        } else {
+                          _startCurrentDraw = (int.parse(
+                                  messages[i].text.substring(1, 3),
+                                  radix: 16)) *
+                              0.1;
+                        }
+                        return Text(messages[i].text);
                       }
-                      return Text(messages[i].text);
-                    }
-                    return Text("${messages[i].name} -> ${messages[i].text}");
-                  },
+                      return Text("${messages[i].name} -> ${messages[i].text}");
+                    },
+                  ),
                 ),
               ),
-            ),
-            // Send message to a paired device
-            Expanded(
-              flex: 6,
-              child: Container(
-                child: Column(
-                  children: [
-                    Container(height: 10),
-                    _selectedDevice == null
-                        ? Text("No Device Selected")
-                        : Text(
-                            "Connected to ${_selectedDevice.name} ::: ${_selectedDevice.address}"),
-                  ],
+              // Send message to a paired device
+              Expanded(
+                flex: 6,
+                child: Container(
+                  child: Column(
+                    children: [
+                      Container(height: 10),
+                      _selectedDevice == null
+                          ? Text("No Device Selected")
+                          : Text(
+                              "Connected to ${_selectedDevice.name} ::: ${_selectedDevice.address}"),
+                    ],
+                  ),
                 ),
-              ),
-           )])));
+              )
+            ])));
   }
 
   void _getDevices() {
@@ -803,5 +883,42 @@ Widget deltaMeter() {
   Future pollFaults() async {
     connection.output.add(ascii.encode("hello#"));
     await connection.output.allSent;
+  }
+
+  Future<LatLng> acquireCurrentLocation() async {
+    // Initializes the plugin and starts listening for potential platform events
+    Location location = new Location();
+
+    // Whether or not the location service is enabled
+    bool serviceEnabled;
+
+    // Status of a permission request to use location services
+    PermissionStatus permissionGranted;
+
+    // Check if the location service is enabled, and if not, then request it. In
+    // case the user refuses to do it, return immediately with a null result
+    serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
+        return null;
+      }
+    }
+
+    // Check for location permissions; similar to the workflow in Android apps,
+    // so check whether the permissions is granted, if not, first you need to
+    // request it, and then read the result of the request, and only proceed if
+    // the permission was granted by the user
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return null;
+      }
+    }
+
+    // Gets the current location of the user
+    final locationData = await location.getLocation();
+    return LatLng(locationData.latitude, locationData.longitude);
   }
 }
