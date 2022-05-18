@@ -24,9 +24,11 @@ import 'package:segment_display/segment_display.dart';
 // Navigation Imports
 import 'package:location/location.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+
 
 SfRadialGauge speedo;
 Widget volt;
