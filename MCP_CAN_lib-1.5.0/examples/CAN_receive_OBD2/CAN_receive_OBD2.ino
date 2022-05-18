@@ -116,6 +116,7 @@ void loop()
           break;
         }
       }
+      //Serial.println(faultrequest);
       // OBD2 length, MOD, PID
       INT32U id = 0x7E3;
       INT8U canLen = 8;

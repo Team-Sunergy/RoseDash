@@ -21,8 +21,10 @@ dependencies:
   segment_display: ^0.5.0
   flutter_neumorphic: ^3.2.0
   intl: ^0.17.0
-  mapbox_gl: ^0.15.0
   location: ^4.4.0
+  mapbox_gl:
+    git:
+      url: https://github.com/tobrun/flutter-mapbox-gl.git
 
 
 dev_dependencies:
@@ -55,3 +57,5 @@ flutter:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+
+
