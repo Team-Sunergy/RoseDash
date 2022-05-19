@@ -176,7 +176,7 @@ class HomePageState extends State<HomePage>
     /* Public toke */
     final String token = 'pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ';
 
-    final String style = 'mapbox://styles/svtappstate/cl3bp63ml005e14rqqwnl6oqj';
+    final String style = 'mapbox://styles/svtappstate/cl3c61ivy006f14miaq4xr5da';
 
     return MapboxMap(
           accessToken: token,
