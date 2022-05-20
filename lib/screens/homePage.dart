@@ -28,6 +28,8 @@ import "package:latlong2/latlong.dart" as latLng;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+// Offline Maps
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 SfRadialGauge speedo;
@@ -534,12 +536,12 @@ class HomePageState extends State<HomePage>
   Widget nav() {
     return FlutterMap(
       options: MapOptions(
-        center: latLng.LatLng(51.5, -0.09),
+        center: latLng.LatLng(36.221366, -81.644684),
         zoom: 13.0,
       ),
       layers: [
         TileLayerOptions(
-          urlTemplate: "https://api.mapbox.com/styles/v1/svtappstate/cl3c61ivy006f14miaq4xr5da/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ",
+          urlTemplate: "https://api.mapbox.com/simport 'package:cached_network_image/cached_network_image.dart';tyles/v1/svtappstate/cl3c61ivy006f14miaq4xr5da/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ",
         ),
         MarkerLayerOptions(
           markers: [

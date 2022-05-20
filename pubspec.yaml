@@ -29,6 +29,7 @@ dependencies:
   latlng: ^0.1.0
   latlong: ^0.6.1
   latlong2: ^0.8.1
+  cached_network_image: ^3.2.1
 
 
 dev_dependencies:
