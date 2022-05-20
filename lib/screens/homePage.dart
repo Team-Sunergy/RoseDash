@@ -41,7 +41,7 @@ int _startHiTempMarkerValue = 31;
 double _packVoltSum = 0.0;
 double _startCurrentDraw = 10.0;
 double _startdeltaMarkerValue = _startMarkerValueHi - _startMarkerValueLo;
-
+int _index = 0;
 class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => HomePageState();
@@ -123,44 +123,47 @@ class HomePageState extends State<HomePage>
                 Container(height: 20, child: Text("Current Draw")),
               ],
             ),
-            Row(
-              children: [
-                Container(
-                  width: 30,
-                ),
-                Container(
-                  //height: 40,
-                  //width: 20,
-                    child: loHiVoltMeter()
+            Container(
+              height: 375,
+              child: Row(
+                children: [
+                  Container(
+                    width: 30,
+                  ),
+                  Container(
+                    //height: 40,
+                    //width: 20,
+                      child: loHiVoltMeter()
 
-                  //color: Colors.blue
-                ),
-                Container(
-                  //height: 40,
-                  width: 40,
-                  //color: Colors.green
-                ),
-                Container(child: socMeter()),
-                Container(
-                  //height: 40,
-                  width: 20,
-                  //color: Colors.green
-                ),
-                Container(child: hiTempMeter()),
-              ],
+                    //color: Colors.blue
+                  ),
+                  Container(
+                    //height: 40,
+                    width: 40,
+                    //color: Colors.green
+                  ),
+                  Container(child: socMeter()),
+                  Container(
+                    //height: 40,
+                    width: 20,
+                    //color: Colors.green
+                  ),
+                  Container(child: hiTempMeter()),
+                ],
+              ),
             ),
           ],
         ),
         Container(
-          height: 5,
+          height: 15,
           //width: 20,
         ),
         Container(
           //height: 20,
-          //width: 500,
+          width: 368,
           //color: Colors.pink
             child: deltaMeter()),
-        Container(height: 5
+        Container(height: 0
           //color: Colors.green
         ),
       ])
@@ -177,6 +180,7 @@ class HomePageState extends State<HomePage>
       axisTrackStyle: LinearAxisTrackStyle(thickness: 2.5),
       markerPointers: [
         LinearWidgetPointer(
+          enableAnimation: false,
             value: _startMarkerValueLo,
             position: LinearElementPosition.cross,
             child: Transform.rotate(
@@ -193,6 +197,7 @@ class HomePageState extends State<HomePage>
               });
             }),
         LinearWidgetPointer(
+            enableAnimation: false,
             value: _startMarkerValueHi,
             offset: 10,
             position: LinearElementPosition.cross,
@@ -224,6 +229,7 @@ class HomePageState extends State<HomePage>
             thickness: 10, color: Colors.white.withOpacity(0.05)),
         barPointers: [
           LinearBarPointer(
+            enableAnimation: false,
             value: _startSOCMarkerValue / 100,
             edgeStyle: LinearEdgeStyle.endCurve,
             thickness: 8,
@@ -246,6 +252,7 @@ class HomePageState extends State<HomePage>
         LinearAxisTrackStyle(thickness: 10, color: Colors.transparent),
         barPointers: [
           LinearBarPointer(
+            enableAnimation: false,
             value: _startHiTempMarkerValue.toDouble(),
             edgeStyle: LinearEdgeStyle.endCurve,
             thickness: 8,
@@ -276,8 +283,8 @@ class HomePageState extends State<HomePage>
   Widget deltaMeter() {
     //TODO: Formula for difference of hi/lo Volt
     return SfLinearGauge(
-      numberFormat: NumberFormat("#0Δv"),
-      interval: 1,
+      numberFormat: NumberFormat("#0.000Δv"),
+      interval: 0.005,
       minorTicksPerInterval: 5,
       orientation: LinearGaugeOrientation.horizontal,
       minimum: 0.0,
@@ -286,6 +293,7 @@ class HomePageState extends State<HomePage>
           thickness: 10, color: Colors.white.withOpacity(0.05)),
       barPointers: [
         LinearBarPointer(
+          enableAnimation: false,
           value: _startdeltaMarkerValue,
           edgeStyle: LinearEdgeStyle.endCurve,
           thickness: 8,
@@ -360,7 +368,7 @@ class HomePageState extends State<HomePage>
                   borderColor: Color(0xff070b1a),
                   borderWidth: 0.006,
                   knobRadius: 0.017),
-              enableAnimation: true)
+              enableAnimation: false)
         ],
       ),
       RadialAxis(
@@ -586,21 +594,44 @@ class HomePageState extends State<HomePage>
           ],
         ),
         body: Container(
-            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 30),
             child: Column(children: [
               Row(
                 children: [
                   VerticalDivider(width: 200),
                   speedo = speedometer(),
                   VerticalDivider(width: 100),
-                  SizedBox(
-                      height: 515,
-                      width: 500,
-                      child: new PageView(
-                        controller: _pageController,
-                        scrollDirection: Axis.horizontal,
-                        children: [voltWidget(), nav(), voltWidget()],
-                      ))
+                  Column(
+                    children: [
+                      Container(
+                          height: 450,
+                          width: 450,
+                          child:
+                          AnimatedSwitcher(
+                              transitionBuilder: AnimatedSwitcher.defaultTransitionBuilder,
+                              duration: const Duration(milliseconds: 5),
+                              child:IndexedStack(
+                                // This key causes the AnimatedSwitcher to interpret this as a "new"
+                                // child each time the count changes, so that it will begin its animation
+                                // when the count changes.
+                                key: ValueKey<int>(_index % 2 == 0? 1: 0), // add this line
+                            index: _index,
+                            children: [Container(margin: EdgeInsets.symmetric(vertical: 0, horizontal: 30), child:voltWidget()), Center(child: ClipOval(child: Container(height: 500, width: 500, child: nav()))), Center(child:voltWidget())],
+                          ))),
+                      Container(height: 10,),
+                      Row(
+                        children: [
+                          VerticalDivider(width:15),
+                          if (_index > 0) ElevatedButton(onPressed: () { setState(() {--_index;});}, child: Icon(Icons.arrow_back_ios_new, color: Color(0xffedd711),), style: ElevatedButton.styleFrom(primary: Color(0xff03050a), shape: CircleBorder(), padding: EdgeInsets.all(18),),),
+                          if (_index == 0) VerticalDivider(width: 65),
+                          VerticalDivider(width: 150),
+                          if (_index < 2 ) ElevatedButton(onPressed: () { setState(() {++_index;});}, child: Icon(Icons.arrow_forward_ios, color: Color(0xffedd711),), style: ElevatedButton.styleFrom(primary: Color(0xff03050a), shape: CircleBorder(), padding: EdgeInsets.all(18),),),
+                          if (_index == 2) VerticalDivider(width: 65),
+                        ]
+                      ),
+                      Container(height: 10,),
+                    ],
+                  )
                 ],
               ),
               Expanded(
