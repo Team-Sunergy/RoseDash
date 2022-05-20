@@ -25,6 +25,10 @@ dependencies:
   mapbox_gl:
     git:
       url: https://github.com/tobrun/flutter-mapbox-gl.git
+  flutter_map: ^0.14.0
+  latlng: ^0.1.0
+  latlong: ^0.6.1
+  latlong2: ^0.8.1
 
 
 dev_dependencies:
