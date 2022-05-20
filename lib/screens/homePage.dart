@@ -59,66 +59,66 @@ class HomePageState extends State<HomePage>
             Column(
               children: [
                 Container(
-                    //width: 150,
-                    //color: Colors.red,
+                  //width: 150,
+                  //color: Colors.red,
                     child: SixteenSegmentDisplay(
-                  value: _startSOCMarkerValue.toString() + "%",
-                  size: 4.0,
-                  backgroundColor: Colors.transparent,
-                  segmentStyle: RectSegmentStyle(
-                      enabledColor: Color(0xffedd711),
-                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
-                )),
+                      value: _startSOCMarkerValue.toString() + "%",
+                      size: 4.0,
+                      backgroundColor: Colors.transparent,
+                      segmentStyle: RectSegmentStyle(
+                          enabledColor: Color(0xffedd711),
+                          disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                    )),
                 Container(height: 20, child: Text("State of Charge")),
                 Container(
                     child: SixteenSegmentDisplay(
-                  value: _startMarkerValueHi.toString(),
-                  size: 4.0,
-                  backgroundColor: Colors.transparent,
-                  segmentStyle: RectSegmentStyle(
-                      enabledColor: Color(0xffedd711),
-                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
-                )),
+                      value: _startMarkerValueHi.toString(),
+                      size: 4.0,
+                      backgroundColor: Colors.transparent,
+                      segmentStyle: RectSegmentStyle(
+                          enabledColor: Color(0xffedd711),
+                          disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                    )),
                 Container(height: 20, child: Text("High Cell (Volt)")),
                 Container(
                     child: SixteenSegmentDisplay(
-                  value: _startMarkerValueLo.toString(),
-                  size: 4.0,
-                  backgroundColor: Colors.transparent,
-                  segmentStyle: RectSegmentStyle(
-                      enabledColor: Color(0xffedd711),
-                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
-                )),
+                      value: _startMarkerValueLo.toString(),
+                      size: 4.0,
+                      backgroundColor: Colors.transparent,
+                      segmentStyle: RectSegmentStyle(
+                          enabledColor: Color(0xffedd711),
+                          disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                    )),
                 Container(height: 20, child: Text("Low Cell (Volt)")),
                 Container(
                     child: SixteenSegmentDisplay(
-                  value: _packVoltSum.toString(),
-                  size: 4.0,
-                  backgroundColor: Colors.transparent,
-                  segmentStyle: RectSegmentStyle(
-                      enabledColor: Color(0xffedd711),
-                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
-                )),
+                      value: _packVoltSum.toString(),
+                      size: 4.0,
+                      backgroundColor: Colors.transparent,
+                      segmentStyle: RectSegmentStyle(
+                          enabledColor: Color(0xffedd711),
+                          disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                    )),
                 Container(height: 20, child: Text("Pack (Volt)")),
                 Container(
                     child: SixteenSegmentDisplay(
-                  value: _startHiTempMarkerValue.toString(),
-                  size: 4.0,
-                  backgroundColor: Colors.transparent,
-                  segmentStyle: RectSegmentStyle(
-                      enabledColor: Color(0xffedd711),
-                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
-                )),
+                      value: _startHiTempMarkerValue.toString(),
+                      size: 4.0,
+                      backgroundColor: Colors.transparent,
+                      segmentStyle: RectSegmentStyle(
+                          enabledColor: Color(0xffedd711),
+                          disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                    )),
                 Container(height: 20, child: Text("Hi Cell (ºCel)")),
                 Container(
                     child: SixteenSegmentDisplay(
-                  value: _startCurrentDraw.toString(),
-                  size: 4.0,
-                  backgroundColor: Colors.transparent,
-                  segmentStyle: RectSegmentStyle(
-                      enabledColor: Color(0xffedd711),
-                      disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
-                )),
+                      value: _startCurrentDraw.toString(),
+                      size: 4.0,
+                      backgroundColor: Colors.transparent,
+                      segmentStyle: RectSegmentStyle(
+                          enabledColor: Color(0xffedd711),
+                          disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+                    )),
                 //Signed Value from PID of BMS
                 Container(height: 20, child: Text("Current Draw")),
               ],
@@ -129,12 +129,12 @@ class HomePageState extends State<HomePage>
                   width: 30,
                 ),
                 Container(
-                    //height: 40,
-                    //width: 20,
+                  //height: 40,
+                  //width: 20,
                     child: loHiVoltMeter()
 
-                    //color: Colors.blue
-                    ),
+                  //color: Colors.blue
+                ),
                 Container(
                   //height: 40,
                   width: 40,
@@ -156,13 +156,13 @@ class HomePageState extends State<HomePage>
           //width: 20,
         ),
         Container(
-            //height: 20,
-            //width: 500,
-            //color: Colors.pink
+          //height: 20,
+          //width: 500,
+          //color: Colors.pink
             child: deltaMeter()),
         Container(height: 5
-            //color: Colors.green
-            ),
+          //color: Colors.green
+        ),
       ])
     ]);
   }
@@ -178,6 +178,58 @@ class HomePageState extends State<HomePage>
 
     final String style = 'mapbox://styles/svtappstate/cl3c61ivy006f14miaq4xr5da';
 
+    //=================
+
+    return Row ( width: 100, children: [
+        //Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          //Column( children: [
+          Container(child: MapboxMap(
+
+          accessToken: token,
+    styleString: style,
+    initialCameraPosition: CameraPosition(
+    zoom: 15.0,
+    target: LatLng(14.508, 46.048),
+    ),
+
+    // The onMapCreated callback should be used for everything related
+    // to updating map components via the MapboxMapController instance
+    onMapCreated: (MapboxMapController controller) async {
+    // Acquire current location (returns the LatLng instance)
+    final result = await acquireCurrentLocation();
+
+    // You can either use the moveCamera or animateCamera, but the former
+    // causes a sudden movement from the initial to 'new' camera position,
+    // while animateCamera gives a smooth animated transition
+    await controller.animateCamera(
+    CameraUpdate.newLatLng(result),
+    );
+
+    // Add a circle denoting current user location
+    await controller.addCircle(
+    CircleOptions(
+    circleRadius: 8.0,
+    circleColor: '#006992',
+    circleOpacity: 0.8,
+
+    // YOU NEED TO PROVIDE THIS FIELD!!!
+    // Otherwise, you'll get a silent exception somewhere in the stack
+    // trace, but the parameter is never marked as @required, so you'll
+    // never know unless you check the stack trace
+    geometry: result,
+    draggable: true,
+    ),
+    );
+    }));
+    //),
+    //]
+    //)]);//)]);//]);
+    //])]);
+
+
+    //===============
+
+/*
     return MapboxMap(
           accessToken: token,
           styleString: style,
@@ -211,11 +263,11 @@ class HomePageState extends State<HomePage>
                 // trace, but the parameter is never marked as @required, so you'll
                 // never know unless you check the stack trace
                 geometry: result,
-                draggable: false,
+                draggable: true,
               ),
             );
-          });
-  }
+          }); */
+    }
 
   Widget loHiVoltMeter() {
     //TODO: Globalize Fields for Stateful behavior
@@ -293,7 +345,7 @@ class HomePageState extends State<HomePage>
         minimum: 0.0,
         maximum: 45.0,
         axisTrackStyle:
-            LinearAxisTrackStyle(thickness: 10, color: Colors.transparent),
+        LinearAxisTrackStyle(thickness: 10, color: Colors.transparent),
         barPointers: [
           LinearBarPointer(
             value: _startHiTempMarkerValue.toDouble(),
@@ -376,7 +428,7 @@ class HomePageState extends State<HomePage>
                         image: DecorationImage(
                           alignment: Alignment.bottomLeft,
                           image:
-                              ExactAssetImage('images/SunergyYosef-yellow.png'),
+                          ExactAssetImage('images/SunergyYosef-yellow.png'),
                           fit: BoxFit.fill,
                         ),
                       )),
@@ -575,7 +627,7 @@ class HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        //TODO: Leave BT Settings and possible side menu
+      //TODO: Leave BT Settings and possible side menu
         appBar: AppBar(
           centerTitle: true,
           title: const Text("Rose Dash Pre-Alpha"),
@@ -647,11 +699,11 @@ class HomePageState extends State<HomePage>
                               dense: true,
                               leading: Icon(Icons.devices),
                               title:
-                                  Text(devices[i].device.name ?? "Unknown.."),
+                              Text(devices[i].device.name ?? "Unknown.."),
                               subtitle:
-                                  Text(devices[i].device.address.toString()),
+                              Text(devices[i].device.address.toString()),
                               trailing:
-                                  Text(devices[i].device.bondState.stringValue),
+                              Text(devices[i].device.bondState.stringValue),
                               onTap: () {
                                 if (devices[i].isPaired == true) {
                                   setState(() {
@@ -663,7 +715,7 @@ class HomePageState extends State<HomePage>
                                 } else {
                                   FlutterBluetoothSerial.instance
                                       .bondDeviceAtAddress(
-                                          devices[i].device.address)
+                                      devices[i].device.address)
                                       .then((bool value) {
                                     devices[i].isPaired = value;
                                   });
@@ -696,20 +748,20 @@ class HomePageState extends State<HomePage>
                       if (messages[i].text.isNotEmpty) {
                         if (messages[i].text[0] != 'G') {
                           _startSOCMarkerValue = int.parse(
-                                  messages[i].text.substring(0, 2),
-                                  radix: 16) /
+                              messages[i].text.substring(0, 2),
+                              radix: 16) /
                               2;
                           _startMarkerValueHi = int.parse(
-                                  messages[i].text.substring(3, 7),
-                                  radix: 16) /
+                              messages[i].text.substring(3, 7),
+                              radix: 16) /
                               10000;
                           _startMarkerValueLo = int.parse(
-                                  messages[i].text.substring(8, 12),
-                                  radix: 16) /
+                              messages[i].text.substring(8, 12),
+                              radix: 16) /
                               10000;
                           _packVoltSum = int.parse(
-                                  messages[i].text.substring(13, 17),
-                                  radix: 16) /
+                              messages[i].text.substring(13, 17),
+                              radix: 16) /
                               100;
                           _startHiTempMarkerValue = int.parse(
                               messages[i].text.substring(18, 20),
@@ -718,8 +770,8 @@ class HomePageState extends State<HomePage>
                               _startMarkerValueHi - _startMarkerValueLo;
                         } else {
                           _startCurrentDraw = (int.parse(
-                                  messages[i].text.substring(1, 3),
-                                  radix: 16)) *
+                              messages[i].text.substring(1, 3),
+                              radix: 16)) *
                               0.1;
                         }
                         return Text(messages[i].text);
@@ -739,7 +791,8 @@ class HomePageState extends State<HomePage>
                       _selectedDevice == null
                           ? Text("No Device Selected")
                           : Text(
-                              "Connected to ${_selectedDevice.name} ::: ${_selectedDevice.address}"),
+                          "Connected to ${_selectedDevice
+                              .name} ::: ${_selectedDevice.address}"),
                     ],
                   ),
                 ),
@@ -755,11 +808,13 @@ class HomePageState extends State<HomePage>
       setState(() {
         devices = bondedDevices
             .map(
-              (device) => DeviceWithAvailability(
-                device,
-                DeviceAvailability.maybe,
-              )..isPaired = true,
-            )
+              (device) =>
+          DeviceWithAvailability(
+            device,
+            DeviceAvailability.maybe,
+          )
+            ..isPaired = true,
+        )
             .toList();
       });
     });
@@ -783,7 +838,7 @@ class HomePageState extends State<HomePage>
         }
         if (!isPaired) {
           DeviceWithAvailability d =
-              DeviceWithAvailability(r.device, DeviceAvailability.yes, r.rssi);
+          DeviceWithAvailability(r.device, DeviceAvailability.yes, r.rssi);
           d.isPaired = false;
           devices.add(d);
         }
@@ -849,8 +904,8 @@ class HomePageState extends State<HomePage>
             _selectedDevice.name ?? "Unknown",
             backspacesCounter > 0
                 ? _messageBuffer
-                    .substring(0, _messageBuffer.length - backspacesCounter)
-                    .trim()
+                .substring(0, _messageBuffer.length - backspacesCounter)
+                .trim()
                 : (_messageBuffer + dataString.substring(0, index)).trim(),
           ),
         );
@@ -863,9 +918,9 @@ class HomePageState extends State<HomePage>
       );
     } else {
       _messageBuffer = (backspacesCounter > 0
-              ? _messageBuffer.substring(
-                  0, _messageBuffer.length - backspacesCounter)
-              : _messageBuffer + dataString).trim();
+          ? _messageBuffer.substring(
+          0, _messageBuffer.length - backspacesCounter)
+          : _messageBuffer + dataString).trim();
     }
     speedo = speedometer();
     speedo.axes[1].pointers[0].onValueChanged((speed.toDouble()));
