@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models.dart';
 import '../utils.dart';
 //import 'customButtonPage.dart';
+import 'package:sprintf/sprintf.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
 //import 'package:digital_lcd/digital_lcd.dart';
@@ -74,7 +75,7 @@ class HomePageState extends State<HomePage>
                 Container(height: 20, child: Text("State of Charge")),
                 Container(
                     child: SixteenSegmentDisplay(
-                      value: _startMarkerValueHi.toString(),
+                      value: sprintf("%0.3f",[_startMarkerValueHi]),
                       size: 4.0,
                       backgroundColor: Colors.transparent,
                       segmentStyle: RectSegmentStyle(
@@ -84,7 +85,7 @@ class HomePageState extends State<HomePage>
                 Container(height: 20, child: Text("High Cell (Volt)")),
                 Container(
                     child: SixteenSegmentDisplay(
-                      value: _startMarkerValueLo.toString(),
+                      value: sprintf("%0.3f",[_startMarkerValueLo]),
                       size: 4.0,
                       backgroundColor: Colors.transparent,
                       segmentStyle: RectSegmentStyle(
@@ -94,7 +95,8 @@ class HomePageState extends State<HomePage>
                 Container(height: 20, child: Text("Low Cell (Volt)")),
                 Container(
                     child: SixteenSegmentDisplay(
-                      value: _packVoltSum.toString(),
+                      //TODO:Ask team if we need more precision on this value
+                      value: sprintf("%0.1f",[_packVoltSum]),
                       size: 4.0,
                       backgroundColor: Colors.transparent,
                       segmentStyle: RectSegmentStyle(
@@ -536,19 +538,21 @@ class HomePageState extends State<HomePage>
   Widget nav() {
     return FlutterMap(
       options: MapOptions(
+        //center: latLng.LatLng(56.1304, 106.3468),
         center: latLng.LatLng(36.221366, -81.644684),
         zoom: 13.0,
       ),
       layers: [
         TileLayerOptions(
-          urlTemplate: "https://api.mapbox.com/simport 'package:cached_network_image/cached_network_image.dart';tyles/v1/svtappstate/cl3c61ivy006f14miaq4xr5da/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ",
+          urlTemplate: "https://api.mapbox.com/styles/v1/svtappstate/cl3ewi1da003215o6b97pbc56/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ",
         ),
         MarkerLayerOptions(
           markers: [
             Marker(
               width: 80.0,
               height: 80.0,
-              point: latLng.LatLng(51.5, -0.09),
+              //point: latLng.LatLng(56.1304, 106.3468),
+              point: latLng.LatLng(36.221366, -81.644684),
               builder: (ctx) =>
                   Container(
                   ),
@@ -609,17 +613,10 @@ class HomePageState extends State<HomePage>
                           height: 450,
                           width: 450,
                           child:
-                          AnimatedSwitcher(
-                              transitionBuilder: AnimatedSwitcher.defaultTransitionBuilder,
-                              duration: const Duration(milliseconds: 5),
-                              child:IndexedStack(
-                                // This key causes the AnimatedSwitcher to interpret this as a "new"
-                                // child each time the count changes, so that it will begin its animation
-                                // when the count changes.
-                                key: ValueKey<int>(_index % 2 == 0? 1: 0), // add this line
+                          IndexedStack(
                             index: _index,
-                            children: [Container(margin: EdgeInsets.symmetric(vertical: 0, horizontal: 30), child:voltWidget()), Center(child: ClipOval(child: Container(height: 500, width: 500, child: nav()))), Center(child:voltWidget())],
-                          ))),
+                            children: [Container(margin: EdgeInsets.symmetric(vertical: 0, horizontal: 30), child:voltWidget()), Center(child: ClipRRect(borderRadius: BorderRadius.horizontal(left: Radius.elliptical(150, 150), right: Radius.elliptical(150, 150)), child: Container(height: 500, width: 500, child: nav()))), Center(child:voltWidget())],
+                          )),
                       Container(height: 10,),
                       Row(
                         children: [
@@ -891,7 +888,7 @@ class HomePageState extends State<HomePage>
   }
 
   Future pollFaults() async {
-    connection.output.add(ascii.encode("soc#"));
+    connection.output.add(ascii.encode("ptc#"));
     await connection.output.allSent;
   }
 }

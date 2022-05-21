@@ -30,6 +30,7 @@ dependencies:
   latlong: ^0.6.1
   latlong2: ^0.8.1
   cached_network_image: ^3.2.1
+  sprintf: ^6.0.0
 
 
 dev_dependencies:
