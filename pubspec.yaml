@@ -31,6 +31,7 @@ dependencies:
   latlong2: ^0.8.1
   cached_network_image: ^3.2.1
   sprintf: ^6.0.0
+  flutter_map_tile_caching: ^4.0.1
 
 
 dev_dependencies:

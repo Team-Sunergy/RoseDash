@@ -31,6 +31,7 @@ import 'package:flutter/material.dart';
 
 // Offline Maps
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 
 
 SfRadialGauge speedo;
