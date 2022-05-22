@@ -27,6 +27,8 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 31
+    // uncomment if we need to later
+   //compileSdkVersion rootProject.ext.compileSdkVersion
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -37,9 +39,12 @@ android {
         applicationId "com.example.bt01_serial_test"
         minSdkVersion 20
         targetSdkVersion 30
+        // uncomment if we need to later
+        //targetSdkVersion rootProject.ext.targetSdkVersion
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
     }
 
     buildTypes {

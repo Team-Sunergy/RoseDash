@@ -546,6 +546,7 @@ class HomePageState extends State<HomePage>
       layers: [
         TileLayerOptions(
           urlTemplate: "https://api.mapbox.com/styles/v1/svtappstate/cl3ewi1da003215o6b97pbc56/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ",
+            tileProvider: StorageCachingTileProvider()
         ),
         MarkerLayerOptions(
           markers: [
@@ -892,4 +893,19 @@ class HomePageState extends State<HomePage>
     connection.output.add(ascii.encode("ptc#"));
     await connection.output.allSent;
   }
+}
+
+class StorageCachingTileProvider extends TileProvider {
+  @override
+  ImageProvider<Object> getImage(Coords<num> coords, TileLayerOptions options) {
+    FMTCImageProvider(
+      provider: this,
+      options: options,
+      coords: coords,
+      httpClient:  'https://api.mapbox.com/v4/svtappstate.b0xrcr0g.json?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ',
+    );    throw UnimplementedError();
+  }
+  
+  
+  
 }
