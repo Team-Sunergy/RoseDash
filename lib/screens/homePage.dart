@@ -1,33 +1,25 @@
 //import 'dart:convert';
 //import 'dart:ffi';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
-import 'package:bt01_serial_test/widgets/customButtonWidget.dart';
-import 'package:bt01_serial_test/widgets/gameButton.dart';
-//import 'package:bt01_serial_test/widgets/speedometer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import '../constants.dart';
+
 import '../models.dart';
 import '../utils.dart';
-//import 'customButtonPage.dart';
+
 import 'package:sprintf/sprintf.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
-//import 'package:digital_lcd/digital_lcd.dart';
-//import 'package:digital_lcd/hex_color.dart';
+
 
 // Navigation Imports
 import 'package:flutter_map/flutter_map.dart';
 import "package:latlong2/latlong.dart" as latLng;
-
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 // Offline Maps
 import 'package:cached_network_image/cached_network_image.dart';
@@ -538,10 +530,11 @@ class HomePageState extends State<HomePage>
   @override
   Widget nav() {
     return FlutterMap(
+      mapController: MapController,
       options: MapOptions(
-        //center: latLng.LatLng(56.1304, 106.3468),
         center: latLng.LatLng(36.221366, -81.644684),
         zoom: 13.0,
+
       ),
       layers: [
         TileLayerOptions(
