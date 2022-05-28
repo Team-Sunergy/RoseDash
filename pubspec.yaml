@@ -6,31 +6,24 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  flutter_bluetooth_serial: ^0.2.2
-  shared_preferences: ^2.0.6
+
   syncfusion_flutter_gauges: ^20.1.52
   flutter_launcher_icons: ^0.9.2
   digital_lcd: ^1.0.2
   segment_display: ^0.5.0
-  flutter_neumorphic: ^3.2.0
   intl: ^0.17.0
-  location: ^4.4.0
-  mapbox_gl:
-    git:
-      url: https://github.com/tobrun/flutter-mapbox-gl.git
   flutter_map: ^0.14.0
-  latlng: ^0.1.0
-  latlong: ^0.6.1
   latlong2: ^0.8.1
   cached_network_image: ^3.2.1
   sprintf: ^6.0.0
+  flutter_blue: ^0.8.0
 
 
 dev_dependencies:
