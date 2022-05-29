@@ -4,15 +4,22 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
 
 class Speedometer extends StatefulWidget {
-  double speed = 0.0;
-  void setSpeed(newSpeed) {
-    speed = newSpeed;
-  }
+  final Stream<double> speedStream;
+  Speedometer({required this.speedStream});
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
 
+  double speed = 0.0;
+  void setSpeed(newSpeed) {
+    setState(() {speed = newSpeed;});
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    widget.speedStream.listen((speed) {setSpeed(speed);});
+  }
   @override
   Widget build(BuildContext context) {
     return SfRadialGauge(axes: <RadialAxis>[
@@ -28,8 +35,8 @@ class _SpeedometerState extends State<Speedometer> {
                 children: <Widget>[
                   // Added image widget as an annotation
                   Container(
-                      width: 200.00,
-                      height: 200.00,
+                      width: 250.00,
+                      height: 250.00,
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
@@ -49,16 +56,16 @@ class _SpeedometerState extends State<Speedometer> {
         showTicks: false,
         pointers: <GaugePointer>[
           NeedlePointer(
-              value: widget.speed,
+              value: speed,
               onValueChanged: (double newValue) {
                 setState(() {
-                  widget.speed = newValue;
+                  speed = newValue;
                 });
               },
-              needleColor: Colors.amberAccent,
-              needleLength: 2,
-              needleStartWidth: 0,
-              needleEndWidth: 3,
+              needleColor: Color(0xffd9950b).withOpacity(1),
+              needleLength: 4,
+              needleStartWidth: 0.5,
+              needleEndWidth: 5,
               tailStyle: TailStyle(
                   length: 0.0455,
                   width: 1.5,
@@ -130,7 +137,7 @@ class _SpeedometerState extends State<Speedometer> {
             GaugeAnnotation(
               widget: Container(
                 child: SixteenSegmentDisplay(
-                    value: widget.speed.toInt().toString() + ' mph',
+                    value: speed.toInt().toString() + ' mph',
                     size: 2.5,
                     backgroundColor: Colors.transparent,
                     segmentStyle: RectSegmentStyle(
