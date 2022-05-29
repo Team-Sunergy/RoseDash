@@ -175,7 +175,7 @@ packages:
       name: dbus
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.3"
+    version: "0.7.4"
   digital_lcd:
     dependency: "direct main"
     description:
@@ -302,14 +302,14 @@ packages:
       name: http_parser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.0"
+    version: "4.0.1"
   image:
     dependency: transitive
     description:
       name: image
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.3"
+    version: "3.2.0"
   ini:
     dependency: transitive
     description:
@@ -392,10 +392,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "1f969376beb87989c083e190576cb8bc73c136cf"
+      resolved-ref: "734b70701dbbfb967154e0547d3474e2a1478e95"
       url: "https://github.com/tobrun/flutter-mapbox-gl.git"
     source: git
-    version: "0.15.0"
+    version: "0.16.0"
   mapbox_gl_dart:
     dependency: transitive
     description:
@@ -408,19 +408,19 @@ packages:
     description:
       path: mapbox_gl_platform_interface
       ref: HEAD
-      resolved-ref: "1f969376beb87989c083e190576cb8bc73c136cf"
+      resolved-ref: "734b70701dbbfb967154e0547d3474e2a1478e95"
       url: "https://github.com/tobrun/flutter-mapbox-gl.git"
     source: git
-    version: "0.15.0"
+    version: "0.16.0"
   mapbox_gl_web:
     dependency: transitive
     description:
       path: mapbox_gl_web
       ref: HEAD
-      resolved-ref: "1f969376beb87989c083e190576cb8bc73c136cf"
+      resolved-ref: "734b70701dbbfb967154e0547d3474e2a1478e95"
       url: "https://github.com/tobrun/flutter-mapbox-gl.git"
     source: git
-    version: "0.15.0"
+    version: "0.16.0"
   matcher:
     dependency: transitive
     description:
@@ -497,7 +497,7 @@ packages:
       name: path_provider_linux
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.6"
+    version: "2.1.7"
   path_provider_macos:
     dependency: transitive
     description:
@@ -518,7 +518,7 @@ packages:
       name: path_provider_windows
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.6"
+    version: "2.0.7"
   pedantic:
     dependency: transitive
     description:
@@ -754,14 +754,14 @@ packages:
       name: syncfusion_flutter_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.1.56"
+    version: "20.1.57"
   syncfusion_flutter_gauges:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_gauges
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "20.1.56"
+    version: "20.1.57"
   synchronized:
     dependency: transitive
     description:
@@ -866,7 +866,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.4.1"
+    version: "6.1.0"
   yaml:
     dependency: transitive
     description:
