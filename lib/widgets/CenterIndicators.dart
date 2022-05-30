@@ -1,0 +1,165 @@
+import 'package:flutter/material.dart';
+import 'package:sprintf/sprintf.dart';
+import 'package:segment_display/segment_display.dart';
+
+class CenterIndicators extends StatefulWidget {
+
+  final Stream<double> socStream;
+  final Stream<double> lowStream;
+  final Stream<double> hiStream;
+  final Stream<double> packVoltStream;
+  final Stream<int> hiTempStream;
+  final Stream<double> currentDrawStream;
+
+  CenterIndicators(
+      {required this.socStream,
+        required this.lowStream,
+        required this.hiStream,
+        required this.packVoltStream,
+        required this.hiTempStream,
+        required this.currentDrawStream});
+
+  @override
+  createState() => _CenterIndicatorsState();
+}
+
+class _CenterIndicatorsState extends State<CenterIndicators> {
+
+  double soc = 82.8;
+  double low = 32.2;
+  double high = 34.2;
+  double packVoltSum = 0.0;
+  double currentDraw = 10.0;
+  int highTemp = 31;
+
+  void _setSOC(val) {
+    setState(() {
+      soc = val;
+    });
+  }
+
+  void _setLow(val) {
+    setState(() {
+      low = val;
+    });
+  }
+
+  void _setHigh(val) {
+    setState(() {
+      high = val;
+    });
+  }
+
+  void _setPackVoltSum(val) {
+    setState(() {
+      packVoltSum = val;
+    });
+  }
+
+  void _setHighTemp(val) {
+    setState(() {
+      highTemp = val;
+    });
+  }
+
+  void _setCurrentDraw(val) {
+    setState(() {
+      currentDraw = val;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.socStream.listen((soc) {
+      _setSOC(soc);
+    });
+    widget.lowStream.listen((low) {
+      _setLow(low);
+    });
+    widget.hiStream.listen((hi) {
+      _setHigh(hi);
+    });
+    widget.packVoltStream.listen((pvs) {
+      _setPackVoltSum(pvs);
+    });
+    widget.hiTempStream.listen((hiTemp) {
+      _setHighTemp(hiTemp);
+    });
+    widget.currentDrawStream.listen((cd) {
+      _setCurrentDraw(cd);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(children: [
+        Container(
+            //width: 150,
+            //color: Colors.red,
+            child: SixteenSegmentDisplay(
+          value: soc.toString() + "%",
+          size: 4.0,
+          backgroundColor: Colors.transparent,
+          segmentStyle: RectSegmentStyle(
+              enabledColor: Color(0xffedd711),
+              disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+        )),
+        Container(height: 20, child: Text("State of Charge")),
+        Container(
+            child: SixteenSegmentDisplay(
+          value: sprintf("%0.3f", [high]),
+          size: 4.0,
+          backgroundColor: Colors.transparent,
+          segmentStyle: RectSegmentStyle(
+              enabledColor: Color(0xffedd711),
+              disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+        )),
+        Container(height: 20, child: Text("High Cell (Volt)")),
+        Container(
+            child: SixteenSegmentDisplay(
+          value: sprintf("%0.3f", [low]),
+          size: 4.0,
+          backgroundColor: Colors.transparent,
+          segmentStyle: RectSegmentStyle(
+              enabledColor: Color(0xffedd711),
+              disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+        )),
+        Container(height: 20, child: Text("Low Cell (Volt)")),
+        Container(
+            child: SixteenSegmentDisplay(
+          //TODO:Ask team if we need more precision on this value
+          value: sprintf("%0.1f", [packVoltSum]),
+          size: 4.0,
+          backgroundColor: Colors.transparent,
+          segmentStyle: RectSegmentStyle(
+              enabledColor: Color(0xffedd711),
+              disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+        )),
+        Container(height: 20, child: Text("Pack (Volt)")),
+        Container(
+            child: SixteenSegmentDisplay(
+          value: highTemp.toString(),
+          size: 4.0,
+          backgroundColor: Colors.transparent,
+          segmentStyle: RectSegmentStyle(
+              enabledColor: Color(0xffedd711),
+              disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+        )),
+        Container(height: 20, child: Text("Hi Cell (ºCel)")),
+        Container(
+            child: SixteenSegmentDisplay(
+          value: currentDraw.toString(),
+          size: 4.0,
+          backgroundColor: Colors.transparent,
+          segmentStyle: RectSegmentStyle(
+              enabledColor: Color(0xffedd711),
+              disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
+        )),
+        //Signed Value from PID of BMS
+        Container(height: 20, child: Text("Current Draw"))
+      ]),
+    );
+  }
+}
