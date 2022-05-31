@@ -1,4 +1,3 @@
-import 'package:cherry_toast/resources/arrays.dart';
 import 'package:flutter/material.dart';
 
 // Import the firebase_core and cloud_firestore plugin

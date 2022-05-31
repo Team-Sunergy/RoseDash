@@ -8,13 +8,11 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 // Custom Widgets
 import '../widgets/CenterIndicators.dart';
+import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 import '../widgets/VoltMeter.dart';
-import '../widgets/Nav.dart';
 import '../widgets/AddBMSData.dart';
 
-// Push Notifications
-import 'package:cherry_toast/cherry_toast.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -32,7 +30,6 @@ class HomePageState extends State<HomePage> {
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
   StreamController<double> _speedController = StreamController<double>.broadcast();
   StreamController<double> _deltaController = StreamController<double>.broadcast();
-  Nav nav = Nav();
   // This is for the IndexedStack
   int _leftIndex = 0;
   int _rightIndex = 0;
@@ -213,7 +210,7 @@ class HomePageState extends State<HomePage> {
                               .horizontal(left: Radius.elliptical(150, 150),
                               right: Radius.elliptical(150, 150)),
                               child: Container(
-                                  height: 500, width: 500, child: nav))),
+                                  height: 500, width: 500, child: Nav()))),
                           Center(child: VoltMeter(socStream: _socController.stream,
                                                   lowStream: _lowController.stream,
                                                   hiStream: _hiController.stream,

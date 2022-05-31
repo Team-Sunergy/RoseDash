@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:intl/intl.dart';
@@ -47,8 +48,8 @@ class _LoHiVoltMeterState extends State<LoHiVoltMeter> {
               angle: 90 * math.pi / 180,
               child: IconButton(
                 onPressed: () => {},
-                icon: Icon(Icons.battery_4_bar_outlined,
-                    color: Color(0xffc2b11d), size: 27),
+                icon: Image.asset('images/outline_battery_4_bar_black_24dp.png',
+                    color: Color(0xffc2b11d)),
                 //onPressed: null,
               ),
             ),
@@ -63,8 +64,8 @@ class _LoHiVoltMeterState extends State<LoHiVoltMeter> {
               angle: 90 * math.pi / 180,
               child: IconButton(
                 onPressed: () => {},
-                icon: Icon(Icons.battery_6_bar_outlined,
-                    color: Color(0xffedd711), size: 30),
+                icon: Image.asset('images/outline_battery_6_bar_black_24dp.png',
+                    color: Color(0xffedd711)),
                 //onPressed: null,
               ),
             ),

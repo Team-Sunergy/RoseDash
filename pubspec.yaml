@@ -21,12 +21,13 @@ dependencies:
   intl: ^0.17.0
   flutter_map: ^0.14.0
   latlong2: ^0.8.1
-  cached_network_image: ^3.2.1
+  cached_network_image: ^3.2.0
   sprintf: ^6.0.0
   flutter_blue: ^0.8.0
   firebase_core: ^1.17.1
   cloud_firestore: ^3.1.17
-  cherry_toast: ^1.0.4
+  mapbox_gl: ^0.16.0
+
 
 
 dev_dependencies:
@@ -46,6 +47,8 @@ flutter:
   assets:
     - images/yosef.png
     - images/SunergyYosef-yellow.png
+    - images/outline_battery_4_bar_black_24dp.png
+    - images/outline_battery_6_bar_black_24dp.png
   #   - images/a_dot_ham.jpeg
 
   # fonts:

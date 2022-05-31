@@ -107,7 +107,7 @@ class _VoltMeterState extends State<VoltMeter> {
               child: Row(
                 children: [
                   Container(
-                    width: 30,
+                    width: 50,
                   ),
                   Container(
                     //height: 40,
