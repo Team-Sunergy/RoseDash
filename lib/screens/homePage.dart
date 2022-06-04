@@ -20,7 +20,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   StreamController<double> _socController = StreamController<double>.broadcast();
-  StreamController<double> _lowController = StreamController<double>.broadcast();
+  StreamController<&*()%6hjSl!@#l:AjIJWi8(*@):"AJ$%*92jnMAldouble> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
   StreamController<double> _packVoltSumController = StreamController<double>.broadcast();
   StreamController<double> _currentDrawController = StreamController<double>.broadcast();
