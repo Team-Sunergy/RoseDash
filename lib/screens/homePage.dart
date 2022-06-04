@@ -23,7 +23,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   StreamController<double> _socController = StreamController<double>.broadcast();
-  StreamController<&*()%6hjSl!@#l:AjIJWi8(*@):"AJ$%*92jnMAldouble> _lowController = StreamController<double>.broadcast();
+  StreamController<double> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
   StreamController<double> _packVoltSumController = StreamController<double>.broadcast();
   StreamController<double> _currentDrawController = StreamController<double>.broadcast();
@@ -147,6 +147,13 @@ class HomePageState extends State<HomePage> {
 
                     ],
                   )),
+
+                  Container(margin: EdgeInsets.symmetric(vertical: 10,),
+                    child: Row(children: [Icon(IconData(0xe7ce, fontFamily: 'MaterialIcons'),
+                        size: 48, semanticLabel: "Aux Pack LOW"), Container(width: 50),
+                      Icon(IconData(0xe6cc, fontFamily: 'MaterialIcons'),
+                        size: 48, semanticLabel: "Battery Fault",)]),
+                  ), // BPS fault and Aux low indicator
                   Row(
                       children: [
                         VerticalDivider(width: 15),
