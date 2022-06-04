@@ -1,11 +1,11 @@
-import 'package:flutter/cupertino.dart';
+// @dart=2.9
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
 
 class Speedometer extends StatefulWidget {
   final Stream<double> speedStream;
-  Speedometer({required this.speedStream});
+  Speedometer({this.speedStream});
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {

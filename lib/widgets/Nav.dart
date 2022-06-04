@@ -1,42 +1,35 @@
 import 'package:flutter/material.dart';
-// Navigation Imports
-import 'package:flutter_map/flutter_map.dart';
-import "package:latlong2/latlong.dart" as latLng;
-// Offline Maps
-import 'package:cached_network_image/cached_network_image.dart';
-
+import 'package:mapbox_gl/mapbox_gl.dart';
+import 'dart:async';
 
 class Nav extends StatefulWidget {
-  @override createState() => _NavState();
+  @override
+  createState() => _NavState();
 }
 
 class _NavState extends State<Nav> {
+bool ready = false;
+late MapboxMap map;
+  @override
+  void initState() {
+    super.initState();
+    createMap();
+  }
+
+  void doSomething() {
+    setState((){
+      ready = true;
+    });
+  }
+ Future<void> createMap() async{
+   map = new MapboxMap(initialCameraPosition: CameraPosition(target: LatLng(39.0921803,-94.4170527)),
+     accessToken: 'pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ',
+     styleString: 'mapbox://styles/svtappstate/cl3c61ivy006f14miaq4xr5da',
+     onStyleLoadedCallback: () => {doSomething()},);
+   setState((){});
+ }
   @override
   Widget build(BuildContext context) {
-    return FlutterMap(
-      options: MapOptions(
-        //center: latLng.LatLng(56.1304, 106.3468),
-        center: latLng.LatLng(36.221366, -81.644684),
-        zoom: 13.0,
-      ),
-      layers: [
-        TileLayerOptions(
-          urlTemplate: "https://api.mapbox.com/styles/v1/svtappstate/cl3ewi1da003215o6b97pbc56/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoic3Z0YXBwc3RhdGUiLCJhIjoiY2wzYXBzOTgwMDgwYTNrbmo2bHFhYmszeCJ9.H8CwlSNpBsRe4fH7Y4QMPQ",
-        ),
-        MarkerLayerOptions(
-          markers: [
-            Marker(
-              width: 80.0,
-              height: 80.0,
-              //point: latLng.LatLng(56.1304, 106.3468),
-              point: latLng.LatLng(36.221366, -81.644684),
-              builder: (ctx) =>
-                  Container(
-                  ),
-            ),
-          ],
-        ),
-      ],
-    );
+   return map;
   }
 }
