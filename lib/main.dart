@@ -5,6 +5,9 @@ import 'screens/homePage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+// Lock in landscape
+import 'package:flutter/services.dart';
+
 void main() {
   MyApp app = MyApp();
   runApp(app);
@@ -14,6 +17,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // Set landscape orientation
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
 
     return FutureBuilder(
       // Initialize FlutterFire
