@@ -8,6 +8,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 // Custom Widgets
 import '../widgets/CenterIndicators.dart';
+import './FullScreenNav.dart';
 import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 import '../widgets/VoltMeter.dart';
@@ -45,12 +46,14 @@ class HomePageState extends State<HomePage> {
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
   StreamSubscription<Object> reader;
+  Nav navInstance;
 
 
   @override
   void initState() {
     // Calling superclass initState
     super.initState();
+    navInstance = new Nav();
     // Will be set to true on reconnect or 1st connect
     bool connected = false;
     // Reconnect to previously found device
@@ -225,7 +228,7 @@ class HomePageState extends State<HomePage> {
                               .horizontal(left: Radius.elliptical(150, 150),
                               right: Radius.elliptical(150, 150)),
                               child: Container(
-                                  height: 500, width: 500, child: Nav()))),
+                                  height: 500, width: 500, child: navInstance))),
                           Center(child: VoltMeter(socStream: _socController.stream,
                                                   lowStream: _lowController.stream,
                                                   hiStream: _hiController.stream,
@@ -251,7 +254,24 @@ class HomePageState extends State<HomePage> {
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (_rightIndex == 0) VerticalDivider(width: 65),
-                        VerticalDivider(width: 150),
+                        if (_rightIndex != 1)
+                          VerticalDivider(width: 150),
+                        if (_rightIndex == 1)
+                          VerticalDivider(width: 44,),
+                        if (_rightIndex == 1)
+                           ElevatedButton(onPressed: () {
+                            setState(() {
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav()),);
+                            });
+                          },
+                            child: Icon(Icons.fullscreen, color: Color(
+                                0xffedd711), size: 40,),
+                            style: ElevatedButton.styleFrom(primary: Color(
+                                0xff03050a),
+                              shape: CircleBorder(),
+                              padding: EdgeInsets.all(11),),),
+                        if (_rightIndex == 1)
+                          VerticalDivider(width: 44),
                         if (_rightIndex < 2 ) ElevatedButton(onPressed: () {
                           setState(() {
                             ++_rightIndex;
