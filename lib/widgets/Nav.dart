@@ -41,6 +41,7 @@ class _NavState extends State<Nav> {
 
   void setLocation(Position location) {
     print(location.heading);
+    if (this.mounted)
     setState(() async {
       position = location;
       await _mapController.animateCamera(

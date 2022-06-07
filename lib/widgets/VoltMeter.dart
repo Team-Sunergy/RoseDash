@@ -38,30 +38,35 @@ class _VoltMeterState extends State<VoltMeter> {
   StreamController<double> _deltaController = StreamController<double>();
 
   void _setSOC(val) {
+    if (this.mounted)
     setState(() {
       soc = val;
     });
   }
 
   void _setLow(val) {
+    if (this.mounted)
     setState(() {
       low = val;
     });
   }
 
   void _setHigh(val) {
+    if (this.mounted)
     setState(() {
       high = val;
     });
   }
 
   void _setPackVoltSum(val) {
+    if (this.mounted)
     setState(() {
       packVoltSum = val;
     });
   }
 
   void _setHighTemp(val) {
+    if (this.mounted)
     setState(() {
       highTemp = val;
     });

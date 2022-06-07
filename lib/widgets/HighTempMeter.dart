@@ -13,6 +13,7 @@ class _HighTempMeterState extends State<HighTempMeter> {
   int highTemp = 0;
 
   void setHighTemp(val) {
+    if (this.mounted)
     setState(() {highTemp = val;});
   }
 

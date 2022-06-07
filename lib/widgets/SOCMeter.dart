@@ -13,6 +13,7 @@ class _SOCMeterState extends State<SOCMeter> {
   double soc = 82.8;
 
   void setSOC(val) {
+    if (this.mounted)
     setState(() {soc = val;});
   }
 

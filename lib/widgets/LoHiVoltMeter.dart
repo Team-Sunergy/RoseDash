@@ -17,10 +17,12 @@ class _LoHiVoltMeterState extends State<LoHiVoltMeter> {
   double high = 34.2;
 
   void setLow(val) {
+    if (this.mounted)
     setState(() {low = val;});
   }
 
   void setHigh(val) {
+    if (this.mounted)
     setState(() {high = val;});
   }
 

@@ -16,6 +16,7 @@ class _DeltaMeterState extends State<DeltaMeter> {
   double delta = 0.0;
 
   void setDelta(val) {
+    if (this.mounted)
     setState(() {delta = val;});
   }
 

@@ -12,6 +12,7 @@ class _SpeedometerState extends State<Speedometer> {
 
   double speed = 0.0;
   void setSpeed(newSpeed) {
+    if (this.mounted)
     setState(() {speed = newSpeed;});
   }
 
@@ -58,6 +59,7 @@ class _SpeedometerState extends State<Speedometer> {
           NeedlePointer(
               value: speed,
               onValueChanged: (double newValue) {
+                if (this.mounted)
                 setState(() {
                   speed = newValue;
                 });

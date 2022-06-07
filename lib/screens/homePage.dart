@@ -12,6 +12,7 @@ import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 import '../widgets/VoltMeter.dart';
 import '../widgets/AddBMSData.dart';
+import '../widgets/TroubleCodes.dart';
 
 // Location Streaming
 import 'package:geolocator/geolocator.dart';
@@ -24,6 +25,11 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  StreamController<int> _ctcControllerZero = StreamController<int>.broadcast();
+  StreamController<int> _ctcControllerOne = StreamController<int>.broadcast();
+  StreamController<int> _ctcControllerTwo = StreamController<int>.broadcast();
+  StreamController<int> _ctcControllerThree = StreamController<int>.broadcast();
+  StreamController<int> _ctcControllerFour = StreamController<int>.broadcast();
   StreamController<double> _socController = StreamController<double>.broadcast();
   StreamController<double> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
@@ -97,6 +103,7 @@ class HomePageState extends State<HomePage> {
               // OBD2 Request Call
               //obd2Req("nice\n");
             }
+            if (this.mounted)
             setState(() {
               _connectedDevice = r.device;
             });
@@ -140,12 +147,11 @@ class HomePageState extends State<HomePage> {
                         currentDrawStream: _currentDrawController.stream,
                         deltaStream: _deltaController.stream,
                         hiTempStream: _hiTempController.stream,)),
-                      Center(child: VoltMeter(socStream: _socController.stream,
-                        lowStream: _lowController.stream,
-                        hiStream: _hiController.stream,
-                        packVoltStream: _packVoltSumController.stream,
-                        deltaStream: _deltaController.stream,
-                        hiTempStream: _hiTempController.stream,))
+                      Center(child: TroubleCodes(tcStream0: _ctcControllerZero.stream,
+                                                 tcStream1: _ctcControllerOne.stream,
+                                                 tcStream2: _ctcControllerTwo.stream,
+                                                 tcStream3: _ctcControllerThree.stream,
+                                                 tcStream4: _ctcControllerFour.stream,))
 
                     ],
                   )),
@@ -268,9 +274,9 @@ class HomePageState extends State<HomePage> {
         ])
     );
   }
-  void obd2Req(val) {
+  void obd2Req(val) async{
     // Writing Request to Arduino:
-    c.write(utf8.encode(val));
+    await c.write(utf8.encode(val), withoutResponse: true);
   }
 
   void notify() async {
@@ -284,43 +290,75 @@ class HomePageState extends State<HomePage> {
 
           reader = c.value.listen((event) {});
 
-          reader.onData((data) {
+          reader.onData((data) async{
             //print(utf8.decode(data));
             // This is where we receive our CAN Messages
             String message = utf8.decode(data);
             if (message.isNotEmpty) {
               //print(message);
-              if (message.substring(0, 1) != 'G') {
+              if (message[0] == 'C') {
+                int tc0 = 0;
+                int tc1 = 0;
+                int tc2 = 0;
+                int tc3 = 0;
+                int tc4 = 0;
+                int count = 0;
+                print("\n\ninside CTC block\n\n");
+                for (int i = 1; i < message.length; i += 2) {
+                  if (count == 0) {
+                    tc0 = int.parse(message.substring(1, 3), radix: 16);
+                    _ctcControllerZero.add(tc0);
+                  }
+                  else if (count == 1) {
+                    tc1 = int.parse(message.substring(3, 5), radix: 16);
+                    _ctcControllerOne.add(tc1);
+                  }
+                  else if (count == 2) {
+                    tc2 = int.parse(message.substring(5, 7), radix: 16);
+                    _ctcControllerTwo.add(tc2);
+                  }
+                  else if (count == 3) {
+                    tc3 = int.parse(message.substring(7, 9), radix: 16);
+                    _ctcControllerThree.add(tc3);
+                  }
+                  else if (count == 4) {
+                    tc4 = int.parse(message.substring(9, 11), radix: 16);
+                    _ctcControllerFour.add(tc4);
+                  }
+                  count++;
+                }
+              }
+              else if (message[0] == 'G') {
                 _socController.add(int.parse(
-                    message.substring(0, 2),
+                    message.substring(1, 3),
                     radix: 16) /
                     2);
                 _hiController.add(int.parse(
-                    message.substring(3, 7),
+                    message.substring(4, 8),
                     radix: 16) /
                     10000);
                 _lowController.add(int.parse(
-                    message.substring(8, 12),
+                    message.substring(9, 13),
                     radix: 16) /
                     10000);
                 _packVoltSumController.add(int.parse(
-                    message.substring(13, 17),
+                    message.substring(14, 18),
                     radix: 16) /
                     100);
                 _hiTempController.add(int.parse(
-                    message.substring(18, 20),
+                    message.substring(19, 21),
                     radix: 16));
                 // Arithmetic is performed in VoltMeter Widget
                 _deltaController.add(0);
-              } else {
+              } else if (message[0] == 'H') {
                 _currentDrawController.add((int.parse(
                     message.substring(1, 3),
                     radix: 16)) *
                     0.1);
               }
+              await obd2Req("ctc#");
+              _speedController.add(50.0);
             }
-            _speedController.add(50.0);
-            //obd2Req("soc#");
           });
         }
       }
