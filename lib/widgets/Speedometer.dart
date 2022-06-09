@@ -2,24 +2,23 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Speedometer extends StatefulWidget {
-  final Stream<double> speedStream;
-  Speedometer({this.speedStream});
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
 
   double speed = 0.0;
-  void setSpeed(newSpeed) {
+  void setSpeed(Position pos) {
     if (this.mounted)
-    setState(() {speed = newSpeed;});
+    setState(() {speed = pos.speed;});
   }
 
   @override
   void initState() {
     super.initState();
-    widget.speedStream.listen((speed) {setSpeed(speed);});
+    Geolocator.getPositionStream().listen((speed) {setSpeed(speed);});
   }
   @override
   Widget build(BuildContext context) {

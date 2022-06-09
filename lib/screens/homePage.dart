@@ -37,7 +37,6 @@ class HomePageState extends State<HomePage> {
   StreamController<double> _packVoltSumController = StreamController<double>.broadcast();
   StreamController<double> _currentDrawController = StreamController<double>.broadcast();
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
-  StreamController<double> _speedController = StreamController<double>.broadcast();
   StreamController<double> _deltaController = StreamController<double>.broadcast();
   // This is for the IndexedStack
   int _leftIndex = 0;
@@ -142,7 +141,7 @@ class HomePageState extends State<HomePage> {
                     index: _leftIndex,
                     children: [Container(margin: EdgeInsets.symmetric(
                         vertical: 0, horizontal: 0),
-                        child: Speedometer(speedStream: _speedController.stream)),
+                        child: Speedometer()),
                       Center(child: AddBMSData(socStream: _socController.stream,
                         lowStream: _lowController.stream,
                         hiStream: _hiController.stream,
@@ -377,7 +376,6 @@ class HomePageState extends State<HomePage> {
                     0.1);
               }
               await obd2Req("ctc#");
-              _speedController.add(50.0);
             }
           });
         }
