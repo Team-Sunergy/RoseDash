@@ -35,7 +35,7 @@ class _FullScreenNavState extends State<FullScreenNav> {
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(11),),),
         ),
-        Positioned(bottom: 0, left: 0, child: Speedometer())
+        Positioned(bottom: 0, left: 15, child: Speedometer())
       ],
     );
   }
