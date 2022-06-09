@@ -15,6 +15,8 @@ class Nav extends StatefulWidget {
 
 class _NavState extends State<Nav> {
   bool ready = false;
+  Circle? _circle;
+  late Circle _userPos;
   late MapboxMap map;
   late StreamSubscription<Position> positionStream;
   late MapboxMapController _mapController;
@@ -47,22 +49,22 @@ class _NavState extends State<Nav> {
       await _mapController.animateCamera(
         CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
       );
-
+      if (_circle != null) {
+        await _mapController.removeCircle(_circle!);
+      }
       // Add a circle denoting current user location
-      await _mapController.addCircle(
-        CircleOptions(
-          circleRadius: 8.0,
-          circleColor: '#006992',
-          circleOpacity: 0.8,
+      _circle = await _mapController.addCircle( CircleOptions(
+        circleRadius: 8.0,
+        circleColor: '#006992',
+        circleOpacity: 0.8,
 
-          // YOU NEED TO PROVIDE THIS FIELD!!!
-          // Otherwise, you'll get a silent exception somewhere in the stack
-          // trace, but the parameter is never marked as @required, so you'll
-          // never know unless you check the stack trace
-          geometry: LatLng(position.latitude, position.longitude),
-          draggable: false,
-        ),
-      );
+        // YOU NEED TO PROVIDE THIS FIELD!!!
+        // Otherwise, you'll get a silent exception somewhere in the stack
+        // trace, but the parameter is never marked as @required, so you'll
+        // never know unless you check the stack trace
+        geometry: LatLng(position.latitude, position.longitude),
+        draggable: false,
+      ));
 
     });
   }

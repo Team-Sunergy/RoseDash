@@ -1,6 +1,8 @@
+import 'package:bt01_serial_test/widgets/Speedometer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../widgets/Nav.dart';
+import '../widgets/Speedometer.dart';
 class FullScreenNav extends StatefulWidget {
   @override State<StatefulWidget> createState() => _FullScreenNavState();
 }
@@ -33,6 +35,7 @@ class _FullScreenNavState extends State<FullScreenNav> {
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(11),),),
         ),
+        Positioned(bottom: 0, left: 0, child: Speedometer())
       ],
     );
   }
