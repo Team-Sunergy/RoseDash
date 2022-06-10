@@ -27,6 +27,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   StreamController<List<String>> _ctcController = StreamController<List<String>>.broadcast();
+  StreamController<List<String>> _ptcController = StreamController<List<String>>.broadcast();
   StreamController<double> _socController = StreamController<double>.broadcast();
   StreamController<double> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
@@ -145,7 +146,7 @@ class HomePageState extends State<HomePage> {
                         currentDrawStream: _currentDrawController.stream,
                         deltaStream: _deltaController.stream,
                         hiTempStream: _hiTempController.stream,)),
-                      Center(child: TroubleCodes(ctcStream: _ctcController.stream))
+                      Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
 
                     ],
                   )),
@@ -307,14 +308,14 @@ class HomePageState extends State<HomePage> {
             String message = utf8.decode(data);
             if (message.isNotEmpty) {
               //print(message);
-              if (message[0] == 'C') {
+              if (message[0] == 'C' || message[0] == 'P' ) {
                 int obd2Length = int.parse(message.substring(1, message.indexOf('_')));
                 if (obd2Length != 0) {
                   List<String> tcList;
                   for (int i = message.indexOf('_') + 1; i < message.length; i += 4) {
-                    tcList.add(message.substring(i, i + 5));
+                    tcList.add("P" + message.substring(i, i + 5));
                   }
-                  _ctcController.add(tcList);
+                  message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
                 }
               }
               else if (message[0] == 'G') {
