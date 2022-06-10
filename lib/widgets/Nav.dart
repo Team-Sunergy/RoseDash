@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:async';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart' as gl;
 import 'package:location/location.dart';
 import 'package:mapbox_gl_platform_interface/mapbox_gl_platform_interface.dart';
 
@@ -18,9 +18,9 @@ class _NavState extends State<Nav> {
   Circle? _circle;
   late Circle _userPos;
   late MapboxMap map;
-  late StreamSubscription<Position> positionStream;
+  late StreamSubscription<gl.Position> positionStream;
   late MapboxMapController _mapController;
-  Position position = new Position(accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0, timestamp: DateTime.now(), latitude: 20, longitude: 20);
+  gl.Position position = new gl.Position(accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0, timestamp: DateTime.now(), latitude: 20, longitude: 20);
 
 
   Future<LatLng> acquireCurrentLocation() async {
@@ -33,15 +33,15 @@ class _NavState extends State<Nav> {
   @override
   void initState() {
     super.initState();
-    positionStream  = Geolocator.getPositionStream()
-        .listen((Position position) {
+    positionStream  = gl.Geolocator.getPositionStream(locationSettings: gl.LocationSettings(accuracy: gl.LocationAccuracy.best))
+        .listen((gl.Position position) {
       // Handle position changes
       setLocation(position);
     });
     createMap();
   }
 
-  void setLocation(Position location) {
+  void setLocation(gl.Position location) {
     print(location.heading);
     if (this.mounted)
     setState(() async {

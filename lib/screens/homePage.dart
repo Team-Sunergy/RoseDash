@@ -26,11 +26,7 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  StreamController<int> _ctcControllerZero = StreamController<int>.broadcast();
-  StreamController<int> _ctcControllerOne = StreamController<int>.broadcast();
-  StreamController<int> _ctcControllerTwo = StreamController<int>.broadcast();
-  StreamController<int> _ctcControllerThree = StreamController<int>.broadcast();
-  StreamController<int> _ctcControllerFour = StreamController<int>.broadcast();
+  StreamController<List<String>> _ctcController = StreamController<List<String>>.broadcast();
   StreamController<double> _socController = StreamController<double>.broadcast();
   StreamController<double> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
@@ -149,11 +145,7 @@ class HomePageState extends State<HomePage> {
                         currentDrawStream: _currentDrawController.stream,
                         deltaStream: _deltaController.stream,
                         hiTempStream: _hiTempController.stream,)),
-                      Center(child: TroubleCodes(tcStream0: _ctcControllerZero.stream,
-                                                 tcStream1: _ctcControllerOne.stream,
-                                                 tcStream2: _ctcControllerTwo.stream,
-                                                 tcStream3: _ctcControllerThree.stream,
-                                                 tcStream4: _ctcControllerFour.stream,))
+                      Center(child: TroubleCodes(ctcStream: _ctcController.stream))
 
                     ],
                   )),
@@ -316,35 +308,13 @@ class HomePageState extends State<HomePage> {
             if (message.isNotEmpty) {
               //print(message);
               if (message[0] == 'C') {
-                int tc0 = 0;
-                int tc1 = 0;
-                int tc2 = 0;
-                int tc3 = 0;
-                int tc4 = 0;
-                int count = 0;
-                print("\n\ninside CTC block\n\n");
-                for (int i = 1; i < message.length; i += 2) {
-                  if (count == 0) {
-                    tc0 = int.parse(message.substring(1, 3), radix: 16);
-                    _ctcControllerZero.add(tc0);
+                int obd2Length = int.parse(message.substring(1, message.indexOf('_')));
+                if (obd2Length != 0) {
+                  List<String> tcList;
+                  for (int i = message.indexOf('_') + 1; i < message.length; i += 4) {
+                    tcList.add(message.substring(i, i + 5));
                   }
-                  else if (count == 1) {
-                    tc1 = int.parse(message.substring(3, 5), radix: 16);
-                    _ctcControllerOne.add(tc1);
-                  }
-                  else if (count == 2) {
-                    tc2 = int.parse(message.substring(5, 7), radix: 16);
-                    _ctcControllerTwo.add(tc2);
-                  }
-                  else if (count == 3) {
-                    tc3 = int.parse(message.substring(7, 9), radix: 16);
-                    _ctcControllerThree.add(tc3);
-                  }
-                  else if (count == 4) {
-                    tc4 = int.parse(message.substring(9, 11), radix: 16);
-                    _ctcControllerFour.add(tc4);
-                  }
-                  count++;
+                  _ctcController.add(tcList);
                 }
               }
               else if (message[0] == 'G') {
@@ -375,7 +345,10 @@ class HomePageState extends State<HomePage> {
                     radix: 16)) *
                     0.1);
               }
+              // Poll for Current Trouble Codes
               await obd2Req("ctc#");
+              // Poll for Pending Trouble Codes
+              await obd2Req("ptc#");
             }
           });
         }

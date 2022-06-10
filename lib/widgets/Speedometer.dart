@@ -12,13 +12,13 @@ class _SpeedometerState extends State<Speedometer> {
   double speed = 0.0;
   void setSpeed(Position pos) {
     if (this.mounted)
-    setState(() {speed = pos.speed;});
+    setState(() {speed = pos.speed * 2.236936;});
   }
 
   @override
   void initState() {
     super.initState();
-    Geolocator.getPositionStream().listen((speed) {setSpeed(speed);});
+    Geolocator.getPositionStream(locationSettings: LocationSettings(accuracy: LocationAccuracy.best)).listen((speed) {setSpeed(speed);});
   }
   @override
   Widget build(BuildContext context) {

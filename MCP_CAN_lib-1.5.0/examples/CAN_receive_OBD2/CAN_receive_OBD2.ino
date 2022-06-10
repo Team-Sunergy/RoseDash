@@ -44,28 +44,45 @@ void setup()
 
 void loop()
 {
+  char mphstring[128]; 
   request req;
-  /*unsigned long rotationsInASecond = 0;
-  unsigned long duration = 0;
-  while (duration != -1 && duration < 1000) {
+  unsigned long rotationsInASecond = 0;
+  unsigned long durationA = 0;
+  unsigned long durationB = 0;
+  //unsigned long durationC = 0;
+  //unsigned long durationD = 0;
+  bool accurateReading;
+  /*while (durationA < 1000) {
+    //accurateReading = true;
+    //durationD = durationA;
     for (int i = 0; i < 16; i++) {
-      duration += pulseInLong(speedpin, HIGH, 10);
-      if (i == 0 && duration == 0) {
-          duration = -1;
-          break;
-        }
+      //durationC = durationA;
+      durationA += pulseIn(speedpin,HIGH, 10);
+      /*if (durationC == durationA) {
+        accurateReading = false;
+        break;  
+      }
     }
-    if (duration != -1) rotationsInASecond++;
+    //if (!accurateReading) durationA = durationD;
+    if (durationA != durationB /*&& accurateReading) {
+      rotationsInASecond++;
+      durationB = durationA;
+    }
   }
-  if (duration != -1) {
+  if (rotationsInASecond > 0) {
+    rotationsInASecond *= 1000;
+  sprintf(mphstring, "rotations in a second is %d ", rotationsInASecond);
+  Serial.println(mphstring);
+  }
+  if (rotationsInASecond > 0) {
     unsigned long rpm = rotationsInASecond / 60;
     // Rose's revolutional distance is ~5.7583 ft //
     unsigned long mph = (5.7583 * rpm * 60 / 5280); 
-    char mphstring[128]; 
+    
     sprintf(mphstring, "%d mph rpm: %d", mph, rpm);
-    //Serial.println(mphstring);
+    Serial.println(mphstring);
   }*/
-  bool notOwn = true;
+  bool extendedFrame = false;
   if(!digitalRead(CAN0_INT))                         // If CAN0_INT pin is low, read receive buffer
   {
     CAN0.readMsgBuf(&rxId, &len, rxBuf);      // Read data: len = data length, buf = data byte(s)
@@ -82,8 +99,6 @@ void loop()
       sprintf(msgString, " REMOTE REQUEST FRAME");
       //Serial.print(msgString);
     } else if(rxId == 0x286 || rxId == 0x287 || rxId == 0x288) {
-      int count = 0;
-      do { 
         for(byte i = 0; i<len; i++){
              // Delineates between 286 msg and 287
             if (i == 0 && rxId == 0x286) sprintf(msgString, "G%.2X", rxBuf[i]);
@@ -99,42 +114,101 @@ void loop()
         } 
         Serial.println();
         Bluetooth.println();
-        notOwn = false;
-        count++;
-      } while (count < 50 && rxId == 0x286);
     } else if (rxId == 0x7EB /*|| rxId == 0x7E3 */|| rxId == 0x8) {
         delay(50);
         int count = 0;
-        while (count < 50) {
-            for(int i = 0; i<len; i++){
+        int obd2Length = 0;
+        
               /*String s1 = "\n\nrxBuf[";
               String s2 = String(i);
               String s3 = "] == ";
               String s4 = String(rxBuf[i]);
               String s5 = s1 + s2 + s3 + s4 + "\n\n";*/
-              if (rxBuf[1] == 67) {
-                if (i == 0) sprintf(msgString, "C");
-                else if (i != 1 && i != len - 1) sprintf(msgString, "%.2X", rxBuf[i]);
-                else if (i != 1) sprintf(msgString, "%.2X", rxBuf[i]);
-                else sprintf(msgString, "");
-                if (i == len - 1) sprintf(msgString, "-");
+              if (rxBuf[1] == 67 || rxBuf[2] == 67) {
+                sprintf(msgString, "C");
+                if (rxBuf[0] == 16) {
+                  obd2Length = rxBuf[1] - 2;
+                  sprintf(msgString, "C%d_%.2X%.2X%.2X%.2X", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
+                  obd2Length -= 4;
+                  // ISO-15765 Flow Control Response
+                  byte obdmsg[8] = {0x30,0,0,0,0,0,0,0};
+                  CAN0.sendMsgBuf(0x7E3, 8, obdmsg);
+                  int upper = ceil(obd2Length / 7);
+                  for (int i = 0; i < upper; i++) {
+                    do {
+                      CAN0.readMsgBuf(&rxId, &len, rxBuf);
+                    } while(rxId != 0x7EB && rxBuf[0] != 0x21 + i);
+                    int count = 7;
+                    int j = 0;
+                    char* msgDigest = "";
+                    while (obd2Length != 0 && count != 0) {
+                      sprintf(msgDigest, "%.2X", rxBuf[j++]);
+                      strcat(msgString, msgDigest);
+                      obd2Length--;
+                      count--;  
+                    }
+                  }
+                  Bluetooth.print(msgString);
+                  Serial.print(msgString);  
+                } else
+                {
+                  obd2Length = rxBuf[2] * 2;
+                  sprintf(msgString, "C%d_", obd2Length);
+                  obd2Length /= 2;
+                  int i = 4;
+                  char* msgDigest = "";
+                  while (obd2Length != 0) {
+                    sprintf(msgDigest, "%.2X%.2X", rxBuf[i++], rxBuf[i++]);
+                    strcat(msgString, msgDigest);
+                    obd2Length--;
+                  }
+                  Bluetooth.print(msgString);
+                  Serial.print(msgString); 
+                }
               }
-              else if (rxBuf[1] == 71) {
-                if (i == 0) sprintf(msgString, "PTC-");
-                else if (i != 1 && i != len - 1) sprintf(msgString, "%.2X-", rxBuf[i]);
-                else if (i != 1) sprintf(msgString, "%.2X", rxBuf[i]);
-                else sprintf(msgString, "");
+                else if (rxBuf[1] == 71) {
+                if (rxBuf[0] == 16) {
+                  obd2Length = rxBuf[1] - 2;
+                  sprintf(msgString, "P%d_%.2X%.2X%.2X%.2X", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
+                  obd2Length -= 4;
+                  // ISO-15765 Flow Control Response
+                  byte obdmsg[8] = {0x30,0,0,0,0,0,0,0};
+                  CAN0.sendMsgBuf(0x7E3, 8, obdmsg);
+                  int upper = ceil(obd2Length / 7);
+                  for (int i = 0; i < upper; i++) {
+                    do {
+                      CAN0.readMsgBuf(&rxId, &len, rxBuf);
+                    } while(rxId != 0x7EB && rxBuf[0] != 0x21 + i);
+                    int count = 7;
+                    int j = 0;
+                    char* msgDigest = "";
+                    while (obd2Length != 0 && count != 0) {
+                      sprintf(msgDigest, "%.2X", rxBuf[j++]);
+                      strcat(msgString, msgDigest);
+                      obd2Length--;
+                      count--;  
+                    }
+                  }
+                  Bluetooth.print(msgString);
+                  Serial.print(msgString);  
+                } else
+                {
+                  obd2Length = rxBuf[2] * 2;
+                  sprintf(msgString, "P%d_", obd2Length);
+                  obd2Length /= 2;
+                  int i = 4;
+                  char* msgDigest = "";
+                  while (obd2Length != 0) {
+                    sprintf(msgDigest, "%.2X%.2X", rxBuf[i++], rxBuf[i++]);
+                    strcat(msgString, msgDigest);
+                    obd2Length--;
+                  }
+                  Bluetooth.print(msgString);
+                  Serial.print(msgString); 
+                }
               }
-              else if (i == 0) sprintf(msgString, "%.2x", rxBuf[i]);
-              else sprintf(msgString, "-%.2X", rxBuf[i]);
-              Bluetooth.print(msgString);
-              Serial.print(msgString);
-            }
-      
       Serial.println();
       Bluetooth.println();
-      count++;
-        }
     }     
     delay(10); 
   }
@@ -143,7 +217,7 @@ void loop()
     char str[80];
     memset(str, 0, 80);
     int i = 0;
-    while(Bluetooth.peek() > 0 && notOwn) {
+    while(Bluetooth.peek() > 0) {
       if (Bluetooth.peek() >= 'a' && Bluetooth.peek() <= 'z') {
         //Serial.print((char)Bluetooth.read());
         str[i++] = Bluetooth.read();

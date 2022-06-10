@@ -2,48 +2,24 @@ import 'package:flutter/material.dart';
 
 class TroubleCodes extends StatefulWidget {
 
-  final Stream<int> tcStream0;
-  final Stream<int> tcStream1;
-  final Stream<int> tcStream2;
-  final Stream<int> tcStream3;
-  final Stream<int> tcStream4;
+  final Stream<List<String>> ctcStream;
 
-  TroubleCodes({required this.tcStream0,
-    required this.tcStream1,
-    required this.tcStream2,
-    required this.tcStream3,
-    required this.tcStream4,});
+  TroubleCodes({required this.ctcStream});
 
   @override
   createState () => _TroubleCodesState();
 }
 
 class _TroubleCodesState extends State<TroubleCodes> {
-  late int _tc0;
-  late int _tc1;
-  late int _tc2;
-  late int _tc3;
-  late int _tc4;
+  List<String>? _ctcs;
 
-  void setTroubleCodes(int tc, int id) {
+  void setTroubleCodes(List<String> ctcs, int id) {
     if (this.mounted) {
-
           setState(() {
             switch (id) {
+              // Delineate between obd2 message types
               case 0:
-                _tc0 = tc;
-                break;
-              case 1:
-                _tc1 = tc;
-                break;
-              case 2:
-                _tc2 = tc;
-                break;
-              case 3:
-                _tc3 = tc;
-                break;
-              case 4:
-                _tc4 = tc;
+                _ctcs = ctcs;
                 break;
           }});
       }
@@ -52,57 +28,38 @@ class _TroubleCodesState extends State<TroubleCodes> {
     @override
     void initState() {
       super.initState();
-      _tc0 = _tc1 = _tc2 = _tc3 = _tc4 = 2;
-      widget.tcStream0.listen((tc0) {
-        setTroubleCodes(tc0, 0);
-      });
-      widget.tcStream1.listen((tc1) {
-        setTroubleCodes(tc1, 1);
-      });
-      widget.tcStream2.listen((tc2) {
-        setTroubleCodes(tc2, 2);
-      });
-      widget.tcStream3.listen((tc3) {
-        setTroubleCodes(tc3, 3);
-      });
-      widget.tcStream4.listen((tc4) {
-        setTroubleCodes(tc4, 4);
+      widget.ctcStream.listen((ctcs) {
+        setTroubleCodes(ctcs, 0);
       });
     }
 
     @override
     Widget build(BuildContext context) {
-      return ListView.builder(
-          itemCount: 1, itemBuilder: (BuildContext context, int index) {
-          return  Column(
-            children: [
-              Text(
-                    "Trouble Code ID1: " + _tc0.toString(),
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 15),),
-              Text(
-                "Trouble Code ID2: " + _tc1.toString(),
-                style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 15),),
-              Text(
-                "Trouble Code ID3: " + _tc2.toString(),
-                style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 15),),
-              Text(
-                "Trouble Code ID4: " + _tc3.toString(),
-                style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 15),),
-              Text(
-                "Trouble Code ID5: " + _tc4.toString(),
-                style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 15),),
-            ],
-          );
-    });
+      return Column(
+        children: [
+          Container(
+            child: Text("Current Trouble Codes"),
+          ),
+          Expanded(child:
+          ListView.builder(
+              itemCount: 1, itemBuilder: (BuildContext context, int index) {
+              if (_ctcs != null)
+                return  Column(
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _ctcs?.length,
+                    itemBuilder: (context, index) {
+                      return Text(_ctcs![index]);
+                    },
+                  )
+                ],
+              );
+              else
+                return Container();
+          })
+          ),
+        ],
+      );
   }
 }
