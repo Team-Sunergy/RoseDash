@@ -29,8 +29,8 @@ class _HighTempMeterState extends State<HighTempMeter> {
         interval: 3,
         minorTicksPerInterval: 10,
         orientation: LinearGaugeOrientation.vertical,
-        minimum: 0.0,
-        maximum: 45.0,
+        minimum: 20,
+        maximum: 70,
         axisTrackStyle:
         LinearAxisTrackStyle(thickness: 10, color: Colors.transparent),
         barPointers: [
