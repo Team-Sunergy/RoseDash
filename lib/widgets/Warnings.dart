@@ -84,11 +84,11 @@ class _WarningsState extends State<Warnings> {
     } else { return Container(margin: EdgeInsets.symmetric(vertical: 10,),
       child: Row(
           children: [
-            if (warningsSet)
+            //if (warningsSet)
               IconButton(onPressed: () => {updateView()}, icon: Icon(IconData(0xe7ce, fontFamily: 'MaterialIcons'),
                   size: 48, semanticLabel: "Aux Pack LOW",  color: Colors.red,)),
               Container(width: 50),
-              if (warningsSet)
+            //if (warningsSet)
               IconButton(onPressed: () => {updateView()}, icon: Icon(IconData(0xe6cc, fontFamily: 'MaterialIcons'),
                 size: 48, semanticLabel: "Battery Fault",  color: Colors.red,))
           ]),
