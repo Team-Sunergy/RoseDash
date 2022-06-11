@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+/*import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
@@ -95,4 +95,4 @@ class _NavState extends State<Nav> {
     positionStream.cancel();
   }
 
-}
+}*/
