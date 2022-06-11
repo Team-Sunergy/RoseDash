@@ -9,15 +9,16 @@ import 'package:flutter_blue/flutter_blue.dart';
 // Custom Widgets
 import '../widgets/CenterIndicators.dart';
 import '../widgets/Warnings.dart';
-import './FullScreenNav.dart';
-import '../widgets/Nav.dart';
+//import './FullScreenNav.dart';
+//import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 import '../widgets/VoltMeter.dart';
 import '../widgets/AddBMSData.dart';
 import '../widgets/TroubleCodes.dart';
+import '../widgets/NavDirections.dart';
 
 // Location Streaming
-import 'package:geolocator/geolocator.dart';
+//import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
   // This is for the IndexedStack
@@ -43,14 +44,14 @@ class HomePageState extends State<HomePage> {
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
   StreamSubscription<Object> reader;
-  Nav navInstance;
+  //Nav navInstance;
 
 
   @override
   void initState() {
     // Calling superclass initState
     super.initState();
-    navInstance = new Nav();
+    //navInstance = new Nav();
     // Will be set to true on reconnect or 1st connect
     bool connected = false;
     // Reconnect to previously found device
@@ -220,7 +221,7 @@ class HomePageState extends State<HomePage> {
                               .horizontal(left: Radius.elliptical(150, 150),
                               right: Radius.elliptical(150, 150)),
                               child: Container(
-                                  height: 500, width: 500, child: navInstance))),
+                                  height: 500, width: 500, child: Container()/*navInstance*/))),
                           Center(child: VoltMeter(socStream: _socController.stream,
                                                   lowStream: _lowController.stream,
                                                   hiStream: _hiController.stream,
@@ -253,7 +254,7 @@ class HomePageState extends State<HomePage> {
                         if (HomePage.rightIndex == 1)
                            ElevatedButton(onPressed: () {
                             setState(() {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav()),);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => NavDirections()/*FullScreenNav()*/),);
                             });
                           },
                             child: Icon(Icons.fullscreen, color: Color(

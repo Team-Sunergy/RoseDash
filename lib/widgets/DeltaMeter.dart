@@ -33,8 +33,8 @@ class _DeltaMeterState extends State<DeltaMeter> {
       interval: 0.005,
       minorTicksPerInterval: 5,
       orientation: LinearGaugeOrientation.horizontal,
-      minimum: 0.0,
-      maximum: 0.015,
+      minimum: 0.0005,
+      maximum: 0.005,
       axisTrackStyle: LinearAxisTrackStyle(
           thickness: 10, color: Colors.white.withOpacity(0.05)),
       barPointers: [
