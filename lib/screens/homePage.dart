@@ -8,6 +8,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 // Custom Widgets
 import '../widgets/CenterIndicators.dart';
+import '../widgets/Warnings.dart';
 import './FullScreenNav.dart';
 import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
@@ -19,6 +20,9 @@ import '../widgets/TroubleCodes.dart';
 import 'package:geolocator/geolocator.dart';
 
 class HomePage extends StatefulWidget {
+  // This is for the IndexedStack
+  static int leftIndex = 0;
+  static int rightIndex = 0;
   @override
   State<StatefulWidget> createState() => HomePageState();
   FlutterBlue flutterBlue = FlutterBlue.instance;
@@ -35,9 +39,6 @@ class HomePageState extends State<HomePage> {
   StreamController<double> _currentDrawController = StreamController<double>.broadcast();
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
   StreamController<double> _deltaController = StreamController<double>.broadcast();
-  // This is for the IndexedStack
-  int _leftIndex = 0;
-  int _rightIndex = 0;
   List<BluetoothService> _services;
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
@@ -135,7 +136,7 @@ class HomePageState extends State<HomePage> {
                   width: 450,
                   child:
                   IndexedStack(
-                    index: _leftIndex,
+                    index: HomePage.leftIndex,
                     children: [Container(margin: EdgeInsets.symmetric(
                         vertical: 0, horizontal: 0),
                         child: Speedometer()),
@@ -150,19 +151,12 @@ class HomePageState extends State<HomePage> {
 
                     ],
                   )),
-
-                  Container(margin: EdgeInsets.symmetric(vertical: 10,),
-                    child: Row(children: [Icon(IconData(0xe7ce, fontFamily: 'MaterialIcons'),
-                        size: 48, semanticLabel: "Aux Pack LOW"), Container(width: 50),
-                      Icon(IconData(0xe6cc, fontFamily: 'MaterialIcons'),
-                        size: 48, semanticLabel: "Battery Fault",)]),
-                  ), // BPS fault and Aux low indicator
                   Row(
                       children: [
                         VerticalDivider(width: 15),
-                        if (_leftIndex > 0) ElevatedButton(onPressed: () {
+                        if (HomePage.leftIndex > 0) ElevatedButton(onPressed: () {
                           setState(() {
-                            --_leftIndex;
+                            --HomePage.leftIndex;
                           });
                         },
                           child: Icon(
@@ -172,11 +166,11 @@ class HomePageState extends State<HomePage> {
                               0xff03050a),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
-                        if (_leftIndex == 0) VerticalDivider(width: 65),
+                        if (HomePage.leftIndex == 0) VerticalDivider(width: 65),
                         VerticalDivider(width: 150),
-                        if (_leftIndex < 2 ) ElevatedButton(onPressed: () {
+                        if (HomePage.leftIndex < 2 ) ElevatedButton(onPressed: () {
                           setState(() {
-                            ++_leftIndex;
+                            ++HomePage.leftIndex;
                           });
                         },
                           child: Icon(Icons.arrow_forward_ios, color: Color(
@@ -185,18 +179,24 @@ class HomePageState extends State<HomePage> {
                               0xff03050a),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
-                        if (_leftIndex == 2) VerticalDivider(width: 65),
+                        if (HomePage.leftIndex == 2) VerticalDivider(width: 65),
                       ]
                   ),
                 ],
               ),
-              VerticalDivider(width: 70),
-              CenterIndicators(socStream: _socController.stream,
-                               hiStream: _hiController.stream,
-                               lowStream: _lowController.stream,
-                               packVoltStream: _packVoltSumController.stream,
-                               hiTempStream: _hiTempController.stream,
-                               currentDrawStream: _currentDrawController.stream,),
+              VerticalDivider(width: 50),
+              Column( children: [Container( height: 400, child:
+                CenterIndicators(socStream: _socController.stream,
+                                 hiStream: _hiController.stream,
+                                 lowStream: _lowController.stream,
+                                 packVoltStream: _packVoltSumController.stream,
+                                 hiTempStream: _hiTempController.stream,
+                                 currentDrawStream: _currentDrawController.stream,),), Container(
+                height: 100,
+                width: 146,
+                child:
+                Warnings(ctcStream: _ctcController.stream, apwiStream: _ptcController.stream),)
+              ]),
               VerticalDivider(width: 50),
               Column(
                 children: [
@@ -206,7 +206,7 @@ class HomePageState extends State<HomePage> {
                       width: 450,
                       child:
                       IndexedStack(
-                        index: _rightIndex,
+                        index: HomePage.rightIndex,
                         children: [
                           Container(margin: EdgeInsets.symmetric(
                               vertical: 0, horizontal: 30),
@@ -233,9 +233,9 @@ class HomePageState extends State<HomePage> {
                   Row(
                       children: [
                         VerticalDivider(width: 15),
-                        if (_rightIndex > 0) ElevatedButton(onPressed: () {
+                        if (HomePage.rightIndex > 0) ElevatedButton(onPressed: () {
                           setState(() {
-                            --_rightIndex;
+                            --HomePage.rightIndex;
                           });
                         },
                           child: Icon(
@@ -245,12 +245,12 @@ class HomePageState extends State<HomePage> {
                               0xff03050a),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
-                        if (_rightIndex == 0) VerticalDivider(width: 65),
-                        if (_rightIndex != 1)
+                        if (HomePage.rightIndex == 0) VerticalDivider(width: 65),
+                        if (HomePage.rightIndex != 1)
                           VerticalDivider(width: 150),
-                        if (_rightIndex == 1)
+                        if (HomePage.rightIndex == 1)
                           VerticalDivider(width: 44,),
-                        if (_rightIndex == 1)
+                        if (HomePage.rightIndex == 1)
                            ElevatedButton(onPressed: () {
                             setState(() {
                               Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav()),);
@@ -262,11 +262,11 @@ class HomePageState extends State<HomePage> {
                                 0xff03050a),
                               shape: CircleBorder(),
                               padding: EdgeInsets.all(11),),),
-                        if (_rightIndex == 1)
+                        if (HomePage.rightIndex == 1)
                           VerticalDivider(width: 44),
-                        if (_rightIndex < 2 ) ElevatedButton(onPressed: () {
+                        if (HomePage.rightIndex < 2 ) ElevatedButton(onPressed: () {
                           setState(() {
-                            ++_rightIndex;
+                            ++HomePage.rightIndex;
                           });
                         },
                           child: Icon(Icons.arrow_forward_ios, color: Color(
@@ -275,7 +275,7 @@ class HomePageState extends State<HomePage> {
                               0xff03050a),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
-                        if (_rightIndex == 2) VerticalDivider(width: 65),
+                        if (HomePage.rightIndex == 2) VerticalDivider(width: 65),
                       ]
                   ),
                   Container(height: 10,),
@@ -334,7 +334,7 @@ class HomePageState extends State<HomePage> {
                 _packVoltSumController.add(int.parse(
                     message.substring(14, 18),
                     radix: 16) /
-                    100);
+                    10);
                 _hiTempController.add(int.parse(
                     message.substring(19, 21),
                     radix: 16));
