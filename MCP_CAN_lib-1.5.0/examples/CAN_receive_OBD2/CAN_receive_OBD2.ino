@@ -7,7 +7,7 @@ SoftwareSerial Bluetooth(4, 5); // RX, TX
 long unsigned int rxId;
 unsigned char len = 0;
 unsigned char rxBuf[8];
-                        // Array to store serial string
+char msgString[128];                        // Array to store serial string
 int speedpin = 8;
 #define CAN0_INT 2                              // Set INT to pin 2
 MCP_CAN CAN0(10);                               // Set CS to pin 10
@@ -44,8 +44,6 @@ void setup()
 
 void loop()
 {
-  char msgString[128];
-  char tcString[512];
   char mphstring[128]; 
   request req;
   unsigned long rotationsInASecond = 0;
@@ -101,7 +99,6 @@ void loop()
       sprintf(msgString, " REMOTE REQUEST FRAME");
       //Serial.print(msgString);
     } else if(rxId == 0x286 || rxId == 0x287 || rxId == 0x288) {
-        //memset(msgString, '\0', 128 * sizeof(char));
         for(byte i = 0; i<len; i++){
              // Delineates between 286 msg and 287
             if (i == 0 && rxId == 0x286) sprintf(msgString, "G%.2X", rxBuf[i]);
@@ -117,97 +114,102 @@ void loop()
         } 
         Serial.println();
         Bluetooth.println();
-        memset(msgString, '\0', 128 * sizeof(char));
     } else if (rxId == 0x7EB /*|| rxId == 0x7E3 */|| rxId == 0x8) {
-        delay(50);
-        int count = 0;
-        int obd2Length = 0;
-        
-              /*String s1 = "\n\nrxBuf[";
-              String s2 = String(i);
-              String s3 = "] == ";
-              String s4 = String(rxBuf[i]);
-              String s5 = s1 + s2 + s3 + s4 + "\n\n";*/
-              if (rxBuf[1] == 67 || rxBuf[2] == 67) {
-                //sprintf(tcString, "C");
-                if (rxBuf[0] == 16) {
-                  obd2Length = rxBuf[1] - 2;
-                  //sprintf(tcString, "C%d_%.2X%.2X%.2X%.2X", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
-                  obd2Length -= 4;
-                  // ISO-15765 Flow Control Response
-                  byte obdmsg[8] = {0x30,0,0,0,0,0,0,0};
-                  CAN0.sendMsgBuf(0x7E3, 8, obdmsg);
-                  int upper = ceil(obd2Length / 7);
-                  for (int i = 0; i < upper; i++) {
-                    do {
-                      CAN0.readMsgBuf(&rxId, &len, rxBuf);
-                    } while(rxId != 0x7EB && rxBuf[0] != 0x21 + i);
-                    int count = 7;
-                    int j = 0;
-                    char* msgDigest = "";
-                    while (obd2Length != 0 && count != 0) {
-                      sprintf(msgDigest, "%.2X", rxBuf[j++]);
-                      strcat(tcString, msgDigest);
-                      obd2Length--;
-                      count--;  
-                    }
-                  }
-                  Bluetooth.print(tcString);
-                  Serial.print(tcString);  
-                } else
-                {
-                  obd2Length = rxBuf[0] * 2;
-                  sprintf(tcString, "C%d_", obd2Length);
-                  Serial.print(tcString);
-                  Serial.print(rxBuf[4], HEX);
-                  Serial.print(rxBuf[5], HEX);
-                  if (obd2Length == 4) {
-                    Serial.print(rxBuf[6], HEX);
-                    Serial.print(rxBuf[7], HEX);
-                  }
+        /*for(byte i = 0; i<len; i++){
+              sprintf(msgString, " 0x%.2X", rxBuf[i]);
+              Serial.print(msgString);
+            }
+      Serial.println();*/
+      int obd2Length;
+      if (rxBuf[1] == 67 || rxBuf[2] == 67) {
+        Serial.print("C");
+        Bluetooth.print("C");
+        if (rxBuf[0] == 16) {
+          obd2Length = rxBuf[1] - 2;
+          sprintf(msgString, "%d_%.2X%.2X%.2X%.2X", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
+          Serial.print(msgString);
+          Bluetooth.print(msgString);
+          obd2Length -= 4;
+          // ISO-15765 Flow Control Response
+          byte obdmsg[8] = {0x30,0,0,0,0,0,0,0};
+          while(!CAN0.sendMsgBuf(0x7E3, 8, obdmsg)) {}
+          int upper = ceil(obd2Length / 7);
+          for (int i = 0; i < upper; i++) {
+            do {
+                  CAN0.readMsgBuf(&rxId, &len, rxBuf);
+               } while(rxId != 0x7EB && rxBuf[0] != 0x21 + i);
+                int count = 7;
+                int j = 0;
+                while (obd2Length != 0 && count != 0) {
+                  sprintf(msgString, "%.2X", rxBuf[j++]);
+                  Serial.print(msgString);
+                  Bluetooth.print(msgString);
+                  obd2Length--;
+                  count--;  
                 }
-              }
-              else if (rxBuf[1] == 71) {
-                if (rxBuf[0] == 16) {
-                  obd2Length = rxBuf[1] - 2;
-                  sprintf(tcString, "P%d_%.2X%.2X%.2X%.2X", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
-                  obd2Length -= 4;
-                  // ISO-15765 Flow Control Response
-                  byte obdmsg[8] = {0x30,0,0,0,0,0,0,0};
-                  CAN0.sendMsgBuf(0x7E3, 8, obdmsg);
-                  int upper = ceil(obd2Length / 7);
-                  for (int i = 0; i < upper; i++) {
-                    do {
-                      CAN0.readMsgBuf(&rxId, &len, rxBuf);
-                    } while(rxId != 0x7EB && rxBuf[0] != 0x21 + i);
-                    int count = 7;
-                    int j = 0;
-                    char* msgDigest = "";
-                    while (obd2Length != 0 && count != 0) {
-                      sprintf(msgDigest, "%.2X", rxBuf[j++]);
-                      strcat(tcString, msgDigest);
-                      obd2Length--;
-                      count--;  
-                    }
-                  }
-                  Bluetooth.print(tcString);
-                  Serial.print(tcString); 
-                } else
-                {
-                  obd2Length = rxBuf[0] * 2;
-                  sprintf(tcString, "P%d_", obd2Length);
-                  Serial.print(tcString);
-                  Serial.print(rxBuf[4], HEX);
-                  Serial.print(rxBuf[5], HEX);
-                  if (obd2Length == 4) {
-                    Serial.print(rxBuf[6], HEX);
-                    Serial.print(rxBuf[7], HEX);
-                  }
-                 } 
+          }
+        } else 
+        {
+          obd2Length = rxBuf[0];
+          sprintf(msgString, "%d_", obd2Length);
+          Serial.print(msgString);
+          Bluetooth.print(msgString);
+          obd2Length /= 2;
+          int offset = 3; 
+          while (obd2Length != 0) {
+            sprintf(msgString, "%.2X%.2X", rxBuf[offset], rxBuf[offset + 1]);
+            Serial.print(msgString);
+            Bluetooth.print(msgString);
+            obd2Length -= 2;
+            offset += 2;
+          }
+        }
+      } else if (rxBuf[1] == 71 || rxBuf[2] == 71) {
+        //Serial.print("P");
+        //Bluetooth.print("P");
+        if (rxBuf[0] == 16) {
+          obd2Length = rxBuf[1] - 2;
+          sprintf(msgString, "%d_%.2X%.2X%.2X%.2X", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
+          //Serial.print(msgString);
+          //Bluetooth.print(msgString);
+          obd2Length -= 4;
+          // ISO-15765 Flow Control Response
+          byte obdmsg[8] = {0x30,0,0,0,0,0,0,0};
+          while(!CAN0.sendMsgBuf(0x7E3, 8, obdmsg)) {}
+          int upper = ceil(obd2Length / 7);
+          for (int i = 0; i < upper; i++) {
+            do {
+                  CAN0.readMsgBuf(&rxId, &len, rxBuf);
+               } while(rxId != 0x7EB && rxBuf[0] != 0x21 + i);
+                int count = 7;
+                int j = 0;
+                while (obd2Length != 0 && count != 0) {
+                  sprintf(msgString, "%.2X", rxBuf[j++]);
+                  //Serial.print(msgString);
+                  //Bluetooth.print(msgString);
+                  obd2Length--;
+                  count--;  
                 }
+          }
+        } else 
+        {
+          obd2Length = rxBuf[0];
+          //sprintf(msgString, "%d_", obd2Length);
+          //Serial.print(msgString);
+          //Bluetooth.print(msgString);
+          obd2Length /= 2;
+          int offset = 3; 
+          while (obd2Length != 0) {
+            //sprintf(msgString, "%.2X%.2X", rxBuf[offset], rxBuf[offset + 1]);
+            //Serial.print(msgString);
+            //Bluetooth.print(msgString);
+            obd2Length -= 2;
+            offset += 2;
+          }
+        }
+      }
       Serial.println();
-      Bluetooth.println();
-      //memset(tcString, '\0', 128 * sizeof(char));
+      //Bluetooth.println();
     }     
     delay(10); 
   }
