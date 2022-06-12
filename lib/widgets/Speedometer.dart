@@ -42,7 +42,7 @@ class _SpeedometerState extends State<Speedometer> {
                         image: DecorationImage(
                           alignment: Alignment.bottomLeft,
                           image:
-                          ExactAssetImage('images/SunergyYosef-yellow.png'),
+                          ExactAssetImage('images/Yosef_dental.png'),
                           fit: BoxFit.fill,
                         ),
                       )),

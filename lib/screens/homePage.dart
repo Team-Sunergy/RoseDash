@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // BLE Library
 import 'package:flutter_blue/flutter_blue.dart';
@@ -31,8 +32,8 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  StreamController<List<String>> _ctcController = StreamController<List<String>>.broadcast();
-  StreamController<List<String>> _ptcController = StreamController<List<String>>.broadcast();
+  StreamController<Set<String>> _ctcController = StreamController<Set<String>>.broadcast();
+  StreamController<Set<String>> _ptcController = StreamController<Set<String>>.broadcast();
   StreamController<double> _socController = StreamController<double>.broadcast();
   StreamController<double> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
@@ -44,6 +45,9 @@ class HomePageState extends State<HomePage> {
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
   StreamSubscription<Object> reader;
+  Set<String> tcList = new Set<String>();
+  int obd2Length = 0;
+  bool connected = false;
   //Nav navInstance;
 
 
@@ -53,7 +57,6 @@ class HomePageState extends State<HomePage> {
     super.initState();
     //navInstance = new Nav();
     // Will be set to true on reconnect or 1st connect
-    bool connected = false;
     // Reconnect to previously found device
     widget.flutterBlue.connectedDevices
         .asStream()
@@ -80,6 +83,9 @@ class HomePageState extends State<HomePage> {
       }
     });
     if (!connected) {
+      widget.flutterBlue.stopScan();
+      // Conduct Scan
+      widget.flutterBlue.startScan();
       // Listen to scan results
       widget.flutterBlue.scanResults.listen((List<ScanResult> result) async {
         BluetoothDevice device;
@@ -99,6 +105,7 @@ class HomePageState extends State<HomePage> {
               } catch (e) {
                 print(e);
               }
+
               // Begin CAN communications
               notify();
               // OBD2 Request Call
@@ -107,12 +114,19 @@ class HomePageState extends State<HomePage> {
             if (this.mounted)
             setState(() {
               _connectedDevice = r.device;
+              connected = true;
             });
           }
         }
       });
-      // Conduct Scan
-      widget.flutterBlue.startScan();
+    }
+  }
+
+  void changeToTCPage() {
+    if (this.mounted) {
+      setState(() {
+        HomePage.leftIndex = 2;
+      });
     }
   }
 
@@ -196,7 +210,7 @@ class HomePageState extends State<HomePage> {
                 height: 100,
                 width: 146,
                 child:
-                Warnings(ctcStream: _ctcController.stream, apwiStream: _ptcController.stream),)
+                Warnings(ctcStream: _ctcController.stream, apwiStream: _ptcController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
               ]),
               VerticalDivider(width: 50),
               Column(
@@ -287,9 +301,17 @@ class HomePageState extends State<HomePage> {
         ])
     );
   }
-  void obd2Req(val) async{
+  Future<Null> obd2Req(val) async{
     // Writing Request to Arduino:
-    await c.write(utf8.encode(val), withoutResponse: true);
+    int retry = 0;
+    do {
+      try {
+        return await c.write(utf8.encode(val));
+      } catch (e) {
+        await Future.delayed(Duration(milliseconds: 100));
+        ++retry;
+      }
+    } while(retry < 3);
   }
 
   void notify() async {
@@ -299,7 +321,16 @@ class HomePageState extends State<HomePage> {
         if (characteristic.uuid.toString() ==
             "0000ffe1-0000-1000-8000-00805f9b34fb") {
           c = characteristic;
-          await c.setNotifyValue(true);
+          int retry = 0;
+          do {
+            try {
+              await c.setNotifyValue(true);
+              retry = 3;
+            } on PlatformException {
+              await Future.delayed(Duration(milliseconds: 100));
+              ++retry;
+            }
+          } while(retry < 3);
 
           reader = c.value.listen((event) {});
 
@@ -308,16 +339,32 @@ class HomePageState extends State<HomePage> {
             // This is where we receive our CAN Messages
             String message = utf8.decode(data);
             if (message.isNotEmpty) {
-              //print(message);
+
               if (message[0] == 'C' || message[0] == 'P' ) {
-                int obd2Length = int.parse(message.substring(1, message.indexOf('_')));
-                if (obd2Length != 0) {
-                  List<String> tcList;
-                  for (int i = message.indexOf('_') + 1; i < message.length; i += 4) {
-                    tcList.add("P" + message.substring(i, i + 5));
-                  }
-                  message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
+
+                int newObd2Length = int.parse(message.substring(1, message.indexOf('_')));
+                if (newObd2Length != obd2Length && obd2Length != 0){
+                  // Clear the Set and Broadcast it to the TC Widget
+                  tcList.clear();
+                  _ctcController.add(tcList);
+                  _ptcController.add(tcList);
                 }
+                // Initialize obd2Length with new unique length
+                obd2Length = newObd2Length;
+                if (obd2Length != 0) {
+                  for (int i = message.indexOf('_') + 1; i < message.length; i += 4) {
+                    String test = "P" + message.substring(i, i + 4);
+                    tcList.add(test);
+                  }
+
+                  message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
+                  } else
+                  {
+                    // Clear the Set and Broadcast it to the TC Widget
+                    tcList.clear();
+                    _ctcController.add(tcList);
+                    _ptcController.add(tcList);
+                  }
               }
               else if (message[0] == 'G') {
                 _socController.add(int.parse(
@@ -347,8 +394,10 @@ class HomePageState extends State<HomePage> {
                     radix: 16)) *
                     0.1);
               }
+
               // Poll for Current Trouble Codes
               await obd2Req("ctc#");
+
               // Poll for Pending Trouble Codes
               await obd2Req("ptc#");
             }
