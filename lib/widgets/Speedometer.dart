@@ -169,7 +169,17 @@ class _SpeedometerState extends State<Speedometer> {
                         segmentStyle: RectSegmentStyle(
                             enabledColor: Colors.yellow,
                             disabledColor: Color(0xff635b0e).withOpacity(0.05))),
-                    SizedBox(height: 3,),
+                  ],
+                ),
+              ),
+              angle: 85,
+              positionFactor: 0.73,
+            ),
+            GaugeAnnotation(
+              widget: Container(
+                height: 40,
+                child: Column(
+                  children: [
                     Row(
                       children: [
                         Container(width: 165,),
@@ -203,7 +213,7 @@ class _SpeedometerState extends State<Speedometer> {
                 ),
               ),
               angle: 85,
-              positionFactor: 0.7,
+              positionFactor: 0.85,
             ),
           ]),
 

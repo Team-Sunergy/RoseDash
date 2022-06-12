@@ -10,14 +10,23 @@ import 'package:flutter/services.dart';
 
 void main() {
   MyApp app = MyApp();
+
   runApp(app);
 }
 
 class MyApp extends StatelessWidget {
 
+  void initState() {
+  }
+
+  void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);  // to re-show bars
+  }
+
   @override
   Widget build(BuildContext context) {
 
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     // Set landscape orientation
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeLeft,
@@ -39,13 +48,13 @@ class MyApp extends StatelessWidget {
             theme: ThemeData.dark(),
             darkTheme: ThemeData.dark(),
             home: HomePage(),
+            debugShowCheckedModeBanner: false,
           );
         }
         // Otherwise, show something whilst waiting for initialization to complete
         return CircularProgressIndicator();
       },
     );
-
 
 
   }
