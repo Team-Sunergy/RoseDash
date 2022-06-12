@@ -122,11 +122,9 @@ void loop()
       Serial.println();*/
       int obd2Length;
       if (rxBuf[1] == 67 || rxBuf[2] == 67) {
-        Serial.print("C");
-        Bluetooth.print("C");
         if (rxBuf[0] == 16) {
           obd2Length = rxBuf[1] - 2;
-          sprintf(msgString, "%d_%.2X%.2X%.2X%.2X", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
+          sprintf(msgString, "C%d_%.2X%.2X!%.2X%.2X!", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
           Serial.print(msgString);
           Bluetooth.print(msgString);
           obd2Length -= 4;
@@ -151,25 +149,29 @@ void loop()
         } else 
         {
           obd2Length = rxBuf[0];
-          sprintf(msgString, "%d_", obd2Length);
-          Serial.print(msgString);
-          Bluetooth.print(msgString);
-          obd2Length /= 2;
-          int offset = 3; 
-          while (obd2Length != 0) {
-            sprintf(msgString, "%.2X%.2X", rxBuf[offset], rxBuf[offset + 1]);
+
+            sprintf(msgString, "C%d_", rxBuf[2]);
             Serial.print(msgString);
             Bluetooth.print(msgString);
-            obd2Length -= 2;
-            offset += 2;
+            obd2Length /= 2;
+            int offset = 3; 
+            while (obd2Length > 0) {
+              sprintf(msgString, "%.2X%.2X!", rxBuf[offset], rxBuf[offset + 1]);
+              Serial.print(msgString);
+              Bluetooth.print(msgString);
+              obd2Length -= 2;
+              offset += 2;
+
           }
         }
+        Serial.println();
+        Bluetooth.println();
       } else if (rxBuf[1] == 71 || rxBuf[2] == 71) {
         //Serial.print("P");
         //Bluetooth.print("P");
         if (rxBuf[0] == 16) {
           obd2Length = rxBuf[1] - 2;
-          sprintf(msgString, "%d_%.2X%.2X%.2X%.2X", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
+          sprintf(msgString, "P%d_%.2X%.2X!%.2X%.2X!", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
           //Serial.print(msgString);
           //Bluetooth.print(msgString);
           obd2Length -= 4;
@@ -194,21 +196,25 @@ void loop()
         } else 
         {
           obd2Length = rxBuf[0];
-          //sprintf(msgString, "%d_", obd2Length);
-          //Serial.print(msgString);
-          //Bluetooth.print(msgString);
-          obd2Length /= 2;
-          int offset = 3; 
-          while (obd2Length != 0) {
-            //sprintf(msgString, "%.2X%.2X", rxBuf[offset], rxBuf[offset + 1]);
-            //Serial.print(msgString);
-            //Bluetooth.print(msgString);
-            obd2Length -= 2;
-            offset += 2;
-          }
+
+            sprintf(msgString, "P%d_", rxBuf[2]);
+            Serial.print(msgString);
+            Bluetooth.print(msgString);
+            obd2Length /= 2;
+            int offset = 3; 
+            while (obd2Length > 0) {
+              sprintf(msgString, "%.2X%.2X!", rxBuf[offset], rxBuf[offset + 1]);
+              Serial.print(msgString);
+              Bluetooth.print(msgString);
+              obd2Length -= 2;
+              offset += 2;
+            }
+
         }
+        Serial.println();
+        Bluetooth.println();
       }
-      Serial.println();
+      //Serial.println();
       //Bluetooth.println();
     }     
     delay(10); 

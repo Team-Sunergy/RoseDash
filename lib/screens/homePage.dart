@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:characters/characters.dart';
 // BLE Library
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -34,6 +34,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   StreamController<Set<String>> _ctcController = StreamController<Set<String>>.broadcast();
   StreamController<Set<String>> _ptcController = StreamController<Set<String>>.broadcast();
+  StreamController<Set<String>> _apwController = StreamController<Set<String>>.broadcast();
   StreamController<double> _socController = StreamController<double>.broadcast();
   StreamController<double> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
@@ -210,7 +211,7 @@ class HomePageState extends State<HomePage> {
                 height: 100,
                 width: 146,
                 child:
-                Warnings(ctcStream: _ctcController.stream, apwiStream: _ptcController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
+                Warnings(ctcStream: _ctcController.stream, apwiStream: _apwController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
               ]),
               VerticalDivider(width: 50),
               Column(
@@ -352,14 +353,15 @@ class HomePageState extends State<HomePage> {
                 // Initialize obd2Length with new unique length
                 obd2Length = newObd2Length;
                 if (obd2Length != 0) {
-                  for (int i = message.indexOf('_') + 1; i < message.length; i += 4) {
-                    String test = "P" + message.substring(i, i + 4);
-                    tcList.add(test);
-                  }
-
-                  message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
-                  } else
-                  {
+                      Iterable<Characters> faults = Characters(message).skip(message.indexOf('_') + 1).split(Characters('!'));
+                      faults.forEach((element) {
+                        String fault = "P" + element.toString();
+                        if (fault.length == 5)
+                        tcList.add(fault);
+                      });
+                      message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
+                } else
+                {
                     // Clear the Set and Broadcast it to the TC Widget
                     tcList.clear();
                     _ctcController.add(tcList);
