@@ -9,6 +9,7 @@ unsigned char len = 0;
 unsigned char rxBuf[8];
 char msgString[128];                        // Array to store serial string
 int speedpin = 8;
+const int VOL_PIN = A0;
 #define CAN0_INT 2                              // Set INT to pin 2
 MCP_CAN CAN0(10);                               // Set CS to pin 10
 
@@ -35,7 +36,7 @@ void setup()
   }
   
   CAN0.setMode(MCP_NORMAL);                     // Set operation mode to normal so the MCP2515 sends acks to received data.
-
+  pinMode(VOL_PIN, INPUT);
   pinMode(CAN0_INT, INPUT);                            // Configuring pin for /INT input
   pinMode(speedpin, INPUT);
   //Serial.println("MCP2515 Library Receive Example...");
@@ -82,6 +83,25 @@ void loop()
     sprintf(mphstring, "%d mph rpm: %d", mph, rpm);
     Serial.println(mphstring);
   }*/
+  
+  // Added 6/12 for reading AUX voltage, no message is being sent via bt 
+  int value;
+  float volt;
+  bool auxWarning;
+
+  value = analogRead( VOL_PIN );
+  volt = value * 5.0 / 1023.0;
+
+  Serial.println( "Value: " );
+  Serial.print( value );
+  Serial.println( "  Volt: " );
+  Serial.print( volt );
+  //sprintf(msgString, "%c",auxWarning);
+  //Bluetooth.print(msgString);
+  //Serial.print(msgString);
+  // Added 6/12 for reading AUX voltage
+
+  
   bool extendedFrame = false;
   if(!digitalRead(CAN0_INT))                         // If CAN0_INT pin is low, read receive buffer
   {
