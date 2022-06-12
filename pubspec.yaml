@@ -32,6 +32,7 @@ dependencies:
   location: ^4.4.0
   flutter_mapbox_navigation: ^0.0.26
   characters: ^1.2.0
+  slide_digital_clock: ^1.0.2
 
 
 

@@ -141,10 +141,10 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
-          Container(height: 100,),
+          Container(height: 150,),
           Row(
             children: [
-              VerticalDivider(width: 100),
+              VerticalDivider(width: 50),
               Column (
                 children: [
               Container(
@@ -200,8 +200,9 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              VerticalDivider(width: 50),
-              Column( children: [Container( height: 400, child:
+              VerticalDivider(width: 90),
+              Column( children: [
+                Container( height: 400, child:
                 CenterIndicators(socStream: _socController.stream,
                                  hiStream: _hiController.stream,
                                  lowStream: _lowController.stream,

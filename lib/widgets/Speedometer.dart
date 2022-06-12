@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 class Speedometer extends StatefulWidget {
   @override _SpeedometerState createState() => _SpeedometerState();
@@ -46,6 +47,7 @@ class _SpeedometerState extends State<Speedometer> {
                           fit: BoxFit.fill,
                         ),
                       )),
+
                 ],
               ),
             )
@@ -157,18 +159,54 @@ class _SpeedometerState extends State<Speedometer> {
             ),
             GaugeAnnotation(
               widget: Container(
-                child: SixteenSegmentDisplay(
-                    value: 'Range:828mi',
-                    size: 1.25,
-                    backgroundColor: Colors.transparent,
-                    segmentStyle: RectSegmentStyle(
-                        enabledColor: Colors.yellow,
-                        disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+                height: 40,
+                child: Column(
+                  children: [
+                    SixteenSegmentDisplay(
+                        value: 'Range:828mi',
+                        size: 1.25,
+                        backgroundColor: Colors.transparent,
+                        segmentStyle: RectSegmentStyle(
+                            enabledColor: Colors.yellow,
+                            disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+                    SizedBox(height: 3,),
+                    Row(
+                      children: [
+                        Container(width: 165,),
+                        DigitalClock(
+                          digitAnimationStyle: Curves.bounceInOut,
+                          is24HourTimeFormat: false,
+                          showSecondsDigit: false,
+                          amPmDigitTextStyle: TextStyle(
+                            color: Color(0xffc2b11d).withOpacity(0.5),
+                            fontSize: 10,
+                          ),
+                          secondDigitDecoration: BoxDecoration(color: Colors.transparent),
+                          secondDigitTextStyle: TextStyle(
+                            color: Color(0xffedd711),
+                            fontSize: 15,
+                          ),
+                          hourMinuteDigitDecoration: BoxDecoration(color: Colors.transparent),
+                          hourMinuteDigitTextStyle: TextStyle(
+                            color: Color(0xffedd711),
+                            fontSize: 16,
+                          ),
+                          areaDecoration: BoxDecoration(
+                            color: Colors.transparent,
+                            border: Border.all(color: Colors.transparent),
+                          ),
+
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               angle: 85,
               positionFactor: 0.7,
-            )
+            ),
           ]),
+
     ]);
   }
 }

@@ -297,7 +297,6 @@ class _NavDirectionsState extends State<NavDirections> {
   Future<void> _onEmbeddedRouteEvent(e) async {
     _distanceRemaining = await _directions.distanceRemaining;
     _durationRemaining = await _directions.durationRemaining;
-
     switch (e.eventType) {
       case MapBoxEvent.progress_change:
         var progressEvent = e.data as RouteProgressEvent;
