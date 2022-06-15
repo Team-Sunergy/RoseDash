@@ -31,6 +31,8 @@ dependencies:
   mapbox_gl_platform_interface: ^0.16.0
   location: ^4.4.0
   flutter_mapbox_navigation: ^0.0.26
+  characters: ^1.2.0
+  slide_digital_clock: ^1.0.2
 
 
 
@@ -50,6 +52,7 @@ flutter:
 
   assets:
     - images/yosef.png
+    - images/Yosef_dental.png
     - images/SunergyYosef-yellow.png
     - images/outline_battery_4_bar_black_24dp.png
     - images/outline_battery_6_bar_black_24dp.png

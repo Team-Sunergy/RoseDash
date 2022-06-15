@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class TroubleCodes extends StatefulWidget {
 
-  final Stream<List<String>> ctcStream;
-  final Stream<List<String>> ptcStream;
+  final Stream<Set<String>> ctcStream;
+  final Stream<Set<String>> ptcStream;
 
   TroubleCodes({required this.ctcStream, required this.ptcStream});
 
@@ -12,10 +12,10 @@ class TroubleCodes extends StatefulWidget {
 }
 
 class _TroubleCodesState extends State<TroubleCodes> {
-  List<String>? _ctcs;
-  List<String>? _ptcs;
+  Set<String>? _ctcs;
+  Set<String>? _ptcs;
 
-  void setTroubleCodes(List<String> tcs, int id) {
+  void setTroubleCodes(Set<String> tcs, int id) {
     if (this.mounted) {
           setState(() {
             switch (id) {
@@ -58,7 +58,7 @@ class _TroubleCodesState extends State<TroubleCodes> {
                     shrinkWrap: true,
                     itemCount: _ctcs?.length,
                     itemBuilder: (context, index) {
-                      return Text(_ctcs![index]);
+                      return Text(_ctcs!.elementAt(index));
                     },
                   )
                 ],
@@ -80,7 +80,7 @@ class _TroubleCodesState extends State<TroubleCodes> {
                     shrinkWrap: true,
                     itemCount: _ptcs?.length,
                     itemBuilder: (context, index) {
-                      return Text(_ptcs![index]);
+                      return Text(_ptcs!.elementAt(index));
                     },
                   )
                 ],

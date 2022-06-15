@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 class Speedometer extends StatefulWidget {
   @override _SpeedometerState createState() => _SpeedometerState();
@@ -42,10 +43,11 @@ class _SpeedometerState extends State<Speedometer> {
                         image: DecorationImage(
                           alignment: Alignment.bottomLeft,
                           image:
-                          ExactAssetImage('images/SunergyYosef-yellow.png'),
+                          ExactAssetImage('images/Yosef_dental.png'),
                           fit: BoxFit.fill,
                         ),
                       )),
+
                 ],
               ),
             )
@@ -81,6 +83,7 @@ class _SpeedometerState extends State<Speedometer> {
         ],
       ),
       RadialAxis(
+        centerX: 0.51,
         useRangeColorForAxis: true,
         showAxisLine: false,
         showLabels: false,
@@ -91,32 +94,38 @@ class _SpeedometerState extends State<Speedometer> {
               startValue: 0,
               endValue: 16,
               startWidth: 0,
-              endWidth: 10,
+              endWidth: 5,
               color: Color(0xffc2b11d)),
           GaugeRange(
               startValue: 17,
               endValue: 32,
               startWidth: 5,
-              endWidth: 15,
+              endWidth: 10,
               color: Color(0xff03050a)),
           GaugeRange(
               startValue: 33,
               endValue: 48,
-              startWidth: 7,
-              endWidth: 20,
+              startWidth: 10,
+              endWidth: 13,
               color: Color(0xffedd711)),
           GaugeRange(
               startValue: 49,
               endValue: 64,
-              startWidth: 20,
-              endWidth: 20,
+              startWidth: 13,
+              endWidth: 16,
               color: Color(0xff03050a)),
           GaugeRange(
               startValue: 65,
               endValue: 80,
-              startWidth: 10,
+              startWidth: 16,
               endWidth: 20,
               color: Color(0xffc2b11d)),
+          GaugeRange(
+              startValue: 81,
+              endValue: 100,
+              startWidth: 20,
+              endWidth: 23,
+              color: Color(0xff03050a)),
         ],
       ),
       RadialAxis(
@@ -125,7 +134,7 @@ class _SpeedometerState extends State<Speedometer> {
           showTicks: true,
           radiusFactor: 0.9,
           minimum: 0,
-          maximum: 80,
+          maximum: 81,
           majorTickStyle: MajorTickStyle(
               color: Color(0xffc2b11d), dashArray: <double>[5, 5]),
           minorTickStyle: MinorTickStyle(color: Color(0xff635b0e)),
@@ -150,18 +159,64 @@ class _SpeedometerState extends State<Speedometer> {
             ),
             GaugeAnnotation(
               widget: Container(
-                child: SixteenSegmentDisplay(
-                    value: 'Range:828mi',
-                    size: 1.25,
-                    backgroundColor: Colors.transparent,
-                    segmentStyle: RectSegmentStyle(
-                        enabledColor: Colors.yellow,
-                        disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+                height: 40,
+                child: Column(
+                  children: [
+                    SixteenSegmentDisplay(
+                        value: 'Range:828mi',
+                        size: 1.25,
+                        backgroundColor: Colors.transparent,
+                        segmentStyle: RectSegmentStyle(
+                            enabledColor: Colors.yellow,
+                            disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+                  ],
+                ),
               ),
               angle: 85,
-              positionFactor: 0.7,
-            )
+              positionFactor: 0.73,
+            ),
+            GaugeAnnotation(
+              widget: Container(
+                height: 40,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(width: 165,),
+                        DigitalClock(
+                          digitAnimationStyle: Curves.bounceInOut,
+                          is24HourTimeFormat: false,
+                          showSecondsDigit: false,
+                          amPmDigitTextStyle: TextStyle(
+                            color: Color(0xffc2b11d).withOpacity(0.5),
+                            fontSize: 10,
+                          ),
+                          secondDigitDecoration: BoxDecoration(color: Colors.transparent),
+                          secondDigitTextStyle: TextStyle(
+                            color: Color(0xffedd711),
+                            fontSize: 15,
+                          ),
+                          hourMinuteDigitDecoration: BoxDecoration(color: Colors.transparent),
+                          hourMinuteDigitTextStyle: TextStyle(
+                            color: Color(0xffedd711),
+                            fontSize: 16,
+                          ),
+                          areaDecoration: BoxDecoration(
+                            color: Colors.transparent,
+                            border: Border.all(color: Colors.transparent),
+                          ),
+
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              angle: 85,
+              positionFactor: 0.85,
+            ),
           ]),
+
     ]);
   }
 }

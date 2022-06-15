@@ -1,8 +1,10 @@
 // @dart=2.9
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
+import 'package:characters/characters.dart';
 // BLE Library
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -29,10 +31,18 @@ class HomePage extends StatefulWidget {
   FlutterBlue flutterBlue = FlutterBlue.instance;
   final Map<Guid, List<int>> readValues = <Guid, List<int>>{};
 }
+class UnderHood {
+  int cellId;
+  double instV;
+  bool isShunting;
+  double intRes;
+  double openV;
+}
 
 class HomePageState extends State<HomePage> {
-  StreamController<List<String>> _ctcController = StreamController<List<String>>.broadcast();
-  StreamController<List<String>> _ptcController = StreamController<List<String>>.broadcast();
+  StreamController<Set<String>> _ctcController = StreamController<Set<String>>.broadcast();
+  StreamController<Set<String>> _ptcController = StreamController<Set<String>>.broadcast();
+  StreamController<Set<String>> _apwController = StreamController<Set<String>>.broadcast();
   StreamController<double> _socController = StreamController<double>.broadcast();
   StreamController<double> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
@@ -40,10 +50,15 @@ class HomePageState extends State<HomePage> {
   StreamController<double> _currentDrawController = StreamController<double>.broadcast();
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
   StreamController<double> _deltaController = StreamController<double>.broadcast();
+  StreamController<Object> _underHoodController = StreamController<Object>.broadcast();
   List<BluetoothService> _services;
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
   StreamSubscription<Object> reader;
+  Set<String> tcList = new Set<String>();
+  Set<String> apwSet = new Set<String>();
+  int obd2Length = 0;
+  bool connected = false;
   //Nav navInstance;
 
 
@@ -53,7 +68,6 @@ class HomePageState extends State<HomePage> {
     super.initState();
     //navInstance = new Nav();
     // Will be set to true on reconnect or 1st connect
-    bool connected = false;
     // Reconnect to previously found device
     widget.flutterBlue.connectedDevices
         .asStream()
@@ -80,6 +94,9 @@ class HomePageState extends State<HomePage> {
       }
     });
     if (!connected) {
+      widget.flutterBlue.stopScan();
+      // Conduct Scan
+      widget.flutterBlue.startScan();
       // Listen to scan results
       widget.flutterBlue.scanResults.listen((List<ScanResult> result) async {
         BluetoothDevice device;
@@ -99,6 +116,7 @@ class HomePageState extends State<HomePage> {
               } catch (e) {
                 print(e);
               }
+
               // Begin CAN communications
               notify();
               // OBD2 Request Call
@@ -107,12 +125,19 @@ class HomePageState extends State<HomePage> {
             if (this.mounted)
             setState(() {
               _connectedDevice = r.device;
+              connected = true;
             });
           }
         }
       });
-      // Conduct Scan
-      widget.flutterBlue.startScan();
+    }
+  }
+
+  void changeToTCPage() {
+    if (this.mounted) {
+      setState(() {
+        HomePage.leftIndex = 2;
+      });
     }
   }
 
@@ -126,10 +151,10 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
-          Container(height: 100,),
+          Container(height: 150,),
           Row(
             children: [
-              VerticalDivider(width: 100),
+              VerticalDivider(width: 50),
               Column (
                 children: [
               Container(
@@ -147,7 +172,8 @@ class HomePageState extends State<HomePage> {
                         packVoltStream: _packVoltSumController.stream,
                         currentDrawStream: _currentDrawController.stream,
                         deltaStream: _deltaController.stream,
-                        hiTempStream: _hiTempController.stream,)),
+                        hiTempStream: _hiTempController.stream,
+                        underHoodStream: _underHoodController.stream,)),
                       Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
 
                     ],
@@ -185,8 +211,9 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              VerticalDivider(width: 50),
-              Column( children: [Container( height: 400, child:
+              VerticalDivider(width: 90),
+              Column( children: [
+                Container( height: 400, child:
                 CenterIndicators(socStream: _socController.stream,
                                  hiStream: _hiController.stream,
                                  lowStream: _lowController.stream,
@@ -196,7 +223,7 @@ class HomePageState extends State<HomePage> {
                 height: 100,
                 width: 146,
                 child:
-                Warnings(ctcStream: _ctcController.stream, apwiStream: _ptcController.stream),)
+                Warnings(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream, apwiStream: _apwController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
               ]),
               VerticalDivider(width: 50),
               Column(
@@ -287,9 +314,17 @@ class HomePageState extends State<HomePage> {
         ])
     );
   }
-  void obd2Req(val) async{
+  Future<Null> obd2Req(val) async{
     // Writing Request to Arduino:
-    await c.write(utf8.encode(val), withoutResponse: true);
+    int retry = 0;
+    do {
+      try {
+        return await c.write(utf8.encode(val));
+      } catch (e) {
+        await Future.delayed(Duration(milliseconds: 100));
+        ++retry;
+      }
+    } while(retry < 3);
   }
 
   void notify() async {
@@ -299,7 +334,16 @@ class HomePageState extends State<HomePage> {
         if (characteristic.uuid.toString() ==
             "0000ffe1-0000-1000-8000-00805f9b34fb") {
           c = characteristic;
-          await c.setNotifyValue(true);
+          int retry = 0;
+          do {
+            try {
+              await c.setNotifyValue(true);
+              retry = 3;
+            } on PlatformException {
+              await Future.delayed(Duration(milliseconds: 100));
+              ++retry;
+            }
+          } while(retry < 3);
 
           reader = c.value.listen((event) {});
 
@@ -308,15 +352,63 @@ class HomePageState extends State<HomePage> {
             // This is where we receive our CAN Messages
             String message = utf8.decode(data);
             if (message.isNotEmpty) {
-              //print(message);
-              if (message[0] == 'C' || message[0] == 'P' ) {
-                int obd2Length = int.parse(message.substring(1, message.indexOf('_')));
-                if (obd2Length != 0) {
-                  List<String> tcList;
-                  for (int i = message.indexOf('_') + 1; i < message.length; i += 4) {
-                    tcList.add("P" + message.substring(i, i + 5));
+
+              if (message[0] == 'r') {
+                print(message);
+                  UnderHood uh = new UnderHood();
+                  Iterable<Characters> components = Characters(message).skip(message.indexOf('!') + 1).split(Characters('!'));
+                  for (int i = 0; i < components.length; i++) {
+                    if (i == 0) {
+                      print("cell id = " + int.parse(components.elementAt(i).toString(), radix: 16).toString());
+                      uh.cellId = int.parse(components.elementAt(i).toString(), radix: 16);
+                    } else if (i == 1){
+                      uh.instV = int.parse(components.elementAt(i).toString(), radix: 16)/10000.toDouble();
+                    } else if (i == 2) {
+                      uh.isShunting = components.elementAt(i).toString() == '1';
+                    } else if (i == 3) {
+                      uh.intRes = int.parse(components.elementAt(i).toString(), radix: 16)/100.toDouble();
+                    } else if (i == 4) {
+                      uh.openV = int.parse(components.elementAt(i).toString(), radix: 16)/10000.toDouble();
+                    }
                   }
-                  message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
+                  _underHoodController.add(uh);
+              }
+              if (message[0] == 'C' || message[0] == 'P' ) {
+
+                int newObd2Length = int.parse(message.substring(1, message.indexOf('_')));
+                if (newObd2Length != obd2Length && obd2Length != 0){
+                  // Clear the Set and Broadcast it to the TC Widget
+                  tcList.clear();
+                  _ctcController.add(tcList);
+                  _ptcController.add(tcList);
+                }
+                // Initialize obd2Length with new unique length
+                obd2Length = newObd2Length;
+                if (obd2Length != 0) {
+                      Iterable<Characters> faults = Characters(message).skip(message.indexOf('_') + 1).split(Characters('!'));
+                      faults.forEach((element) {
+                        String fault = "P" + element.toString();
+                        if (fault.length == 5)
+                        tcList.add(fault);
+                      });
+                      message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
+                } else
+                {
+                    // Clear the Set and Broadcast it to the TC Widget
+                    tcList.clear();
+                    _ctcController.add(tcList);
+                    _ptcController.add(tcList);
+                  }
+              }
+
+              else if (message[0] == 'V') {
+                var auxPackVoltage = num.tryParse(message.substring(1, 4)).toDouble();
+                if (auxPackVoltage < 2) {
+                  apwSet.add(auxPackVoltage.toString());
+                  _apwController.add(apwSet);
+                } else {
+                  apwSet.clear();
+                  _apwController.add(apwSet);
                 }
               }
               else if (message[0] == 'G') {
@@ -347,8 +439,10 @@ class HomePageState extends State<HomePage> {
                     radix: 16)) *
                     0.1);
               }
+
               // Poll for Current Trouble Codes
               await obd2Req("ctc#");
+
               // Poll for Pending Trouble Codes
               await obd2Req("ptc#");
             }
