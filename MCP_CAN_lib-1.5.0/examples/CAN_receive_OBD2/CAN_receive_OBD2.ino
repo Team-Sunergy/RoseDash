@@ -92,15 +92,8 @@ void loop()
   value = analogRead( VOL_PIN );
   volt = value * 5.0 / 1023.0;
 
-  Serial.println( "Value: " );
-  Serial.print( value );
-  Serial.println( "  Volt: " );
-  Serial.print( volt );
-  //sprintf(msgString, "%c",auxWarning);
-  //Bluetooth.print(msgString);
-  //Serial.print(msgString);
-  // Added 6/12 for reading AUX voltage
-
+  Serial.println("V" + String(volt));
+  Bluetooth.println("V" + String(volt));
   
   bool extendedFrame = false;
   if(!digitalRead(CAN0_INT))                         // If CAN0_INT pin is low, read receive buffer
@@ -119,6 +112,9 @@ void loop()
       sprintf(msgString, " REMOTE REQUEST FRAME");
       //Serial.print(msgString);
     } else if(rxId == 0x286 || rxId == 0x287 || rxId == 0x288) {
+        int count = 0;
+        do {
+          String telMes = "";
         for(byte i = 0; i<len; i++){
              // Delineates between 286 msg and 287
             if (i == 0 && rxId == 0x286) sprintf(msgString, "G%.2X", rxBuf[i]);
@@ -129,11 +125,12 @@ void loop()
             else if (rxId == 0x288 && i == 0) sprintf(msgString, "I%.2X", rxBuf[i]);
             else if (rxId == 0x288) sprintf(msgString, "%.2X", rxBuf[i]);
             else sprintf(msgString, "%.2X", rxBuf[i]);
-            Bluetooth.print(msgString);
-            Serial.print(msgString);
+            telMes += msgString;
         } 
-        Serial.println();
-        Bluetooth.println();
+        Serial.println(telMes);
+        Bluetooth.println(telMes);
+        count++;
+        } while (rxId == 0x286 && count < 50);
     } else if (rxId == 0x7EB /*|| rxId == 0x7E3 */|| rxId == 0x8) {
         /*for(byte i = 0; i<len; i++){
               sprintf(msgString, " 0x%.2X", rxBuf[i]);
@@ -141,7 +138,48 @@ void loop()
             }
       Serial.println();*/
       int obd2Length;
-      if (rxBuf[1] == 67 || rxBuf[2] == 67) {
+      if(rxId == 0x8){
+        int count = 0;
+        while (count < 50) {
+          // Checksum add 8 to BroadcastID
+          uint32_t checksum = 16;
+          bool valid = true;
+          String batMsg = "";
+          for(byte i = 0; i<len; i++){
+                if (i < len - 1) checksum += rxBuf[i];
+                else {
+                  checksum &= 0xff;
+                  if (checksum != rxBuf[i]) valid = false;
+                }
+                if (i == 0) sprintf(msgString, "r!%.2X", rxBuf[i]);
+                switch (i) {
+                  case 1:
+                  case 6:
+                    sprintf(msgString, "!%.2X", rxBuf[i]);
+                    break;
+                   case 3:
+                    // Shunting is bit 16
+                    sprintf(msgString, "!%.1X!%.2X", rxBuf[i] & 0x80, rxBuf[i]);
+                    break;
+                   case 5:
+                    sprintf(msgString, "!%.2X", rxBuf[i]);
+                    break;
+                   case 2:
+                   case 4:
+                    sprintf(msgString, "%.2X", rxBuf[i]);
+                    break;
+                    
+                }
+                batMsg += msgString;
+          }
+          if (valid) {
+            Serial.println(batMsg);
+            Bluetooth.println(batMsg);
+          }
+          count++;
+        }
+      }
+      else if (rxBuf[1] == 67 || rxBuf[2] == 67) {
         if (rxBuf[0] == 16) {
           obd2Length = rxBuf[1] - 2;
           sprintf(msgString, "C%d_%.2X%.2X!%.2X%.2X!", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);

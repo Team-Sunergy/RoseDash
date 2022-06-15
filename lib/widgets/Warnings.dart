@@ -6,9 +6,10 @@ class Warnings extends StatefulWidget {
 
 
   final Stream<Set<String>> ctcStream;
+  final Stream<Set<String>> ptcStream;
   final Stream<Set<String>> apwiStream;
   final Function() callback;
-  Warnings({this.ctcStream, this.apwiStream, this.callback});
+  Warnings({this.ctcStream, this.ptcStream, this.apwiStream, this.callback});
 
   @override
   State<StatefulWidget> createState() => _WarningsState();
@@ -48,6 +49,9 @@ class _WarningsState extends State<Warnings> {
   void initState() {
     super.initState();
     widget.ctcStream.listen((ctcs) {
+      setTroubleCodes(ctcs, 0);
+    });
+    widget.ptcStream.listen((ctcs) {
       setTroubleCodes(ctcs, 0);
     });
     widget.apwiStream.listen((apwi) {

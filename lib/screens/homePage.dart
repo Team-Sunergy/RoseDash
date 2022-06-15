@@ -1,6 +1,7 @@
 // @dart=2.9
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:characters/characters.dart';
@@ -30,6 +31,13 @@ class HomePage extends StatefulWidget {
   FlutterBlue flutterBlue = FlutterBlue.instance;
   final Map<Guid, List<int>> readValues = <Guid, List<int>>{};
 }
+class UnderHood {
+  int cellId;
+  double instV;
+  bool isShunting;
+  double intRes;
+  double openV;
+}
 
 class HomePageState extends State<HomePage> {
   StreamController<Set<String>> _ctcController = StreamController<Set<String>>.broadcast();
@@ -42,11 +50,13 @@ class HomePageState extends State<HomePage> {
   StreamController<double> _currentDrawController = StreamController<double>.broadcast();
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
   StreamController<double> _deltaController = StreamController<double>.broadcast();
+  StreamController<Object> _underHoodController = StreamController<Object>.broadcast();
   List<BluetoothService> _services;
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
   StreamSubscription<Object> reader;
   Set<String> tcList = new Set<String>();
+  Set<String> apwSet = new Set<String>();
   int obd2Length = 0;
   bool connected = false;
   //Nav navInstance;
@@ -162,7 +172,8 @@ class HomePageState extends State<HomePage> {
                         packVoltStream: _packVoltSumController.stream,
                         currentDrawStream: _currentDrawController.stream,
                         deltaStream: _deltaController.stream,
-                        hiTempStream: _hiTempController.stream,)),
+                        hiTempStream: _hiTempController.stream,
+                        underHoodStream: _underHoodController.stream,)),
                       Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
 
                     ],
@@ -212,7 +223,7 @@ class HomePageState extends State<HomePage> {
                 height: 100,
                 width: 146,
                 child:
-                Warnings(ctcStream: _ctcController.stream, apwiStream: _apwController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
+                Warnings(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream, apwiStream: _apwController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
               ]),
               VerticalDivider(width: 50),
               Column(
@@ -342,6 +353,26 @@ class HomePageState extends State<HomePage> {
             String message = utf8.decode(data);
             if (message.isNotEmpty) {
 
+              if (message[0] == 'r') {
+                print(message);
+                  UnderHood uh = new UnderHood();
+                  Iterable<Characters> components = Characters(message).skip(message.indexOf('!') + 1).split(Characters('!'));
+                  for (int i = 0; i < components.length; i++) {
+                    if (i == 0) {
+                      print("cell id = " + int.parse(components.elementAt(i).toString(), radix: 16).toString());
+                      uh.cellId = int.parse(components.elementAt(i).toString(), radix: 16);
+                    } else if (i == 1){
+                      uh.instV = int.parse(components.elementAt(i).toString(), radix: 16)/10000.toDouble();
+                    } else if (i == 2) {
+                      uh.isShunting = components.elementAt(i).toString() == '1';
+                    } else if (i == 3) {
+                      uh.intRes = int.parse(components.elementAt(i).toString(), radix: 16)/100.toDouble();
+                    } else if (i == 4) {
+                      uh.openV = int.parse(components.elementAt(i).toString(), radix: 16)/10000.toDouble();
+                    }
+                  }
+                  _underHoodController.add(uh);
+              }
               if (message[0] == 'C' || message[0] == 'P' ) {
 
                 int newObd2Length = int.parse(message.substring(1, message.indexOf('_')));
@@ -368,6 +399,17 @@ class HomePageState extends State<HomePage> {
                     _ctcController.add(tcList);
                     _ptcController.add(tcList);
                   }
+              }
+
+              else if (message[0] == 'V') {
+                var auxPackVoltage = num.tryParse(message.substring(1, 4)).toDouble();
+                if (auxPackVoltage < 2) {
+                  apwSet.add(auxPackVoltage.toString());
+                  _apwController.add(apwSet);
+                } else {
+                  apwSet.clear();
+                  _apwController.add(apwSet);
+                }
               }
               else if (message[0] == 'G') {
                 _socController.add(int.parse(
