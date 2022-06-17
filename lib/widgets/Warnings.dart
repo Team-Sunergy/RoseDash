@@ -61,9 +61,10 @@ class _WarningsState extends State<Warnings> {
 
   @override
   Widget build(BuildContext context) {
-        if (tcSet && apwSet) {
-          return Container(margin: EdgeInsets.symmetric(vertical: 10,),
+        if (!tcSet && !apwSet) {
+          return Container(margin: EdgeInsets.symmetric(vertical: 10),
             child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   IconButton(onPressed: () => {updateView()},
                       icon: Icon(IconData(0xe7ce, fontFamily: 'MaterialIcons'),

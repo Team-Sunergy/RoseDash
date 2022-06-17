@@ -149,6 +149,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color(0xff181818),
       //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
           Container(height: 150,),
@@ -190,7 +191,7 @@ class HomePageState extends State<HomePage> {
                             Icons.arrow_back_ios_new, color: Color(
                               0xffedd711),),
                           style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a),
+                              0xff03050a).withOpacity(0),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (HomePage.leftIndex == 0) VerticalDivider(width: 65),
@@ -203,7 +204,7 @@ class HomePageState extends State<HomePage> {
                           child: Icon(Icons.arrow_forward_ios, color: Color(
                               0xffedd711),),
                           style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a),
+                              0xff03050a).withOpacity(0),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (HomePage.leftIndex == 2) VerticalDivider(width: 65),
@@ -211,12 +212,11 @@ class HomePageState extends State<HomePage> {
                   ),
                 ],
               ),
-              VerticalDivider(width: 90),
+              VerticalDivider(width: 50),
               Column( children: [
-                Container( height: 400, child:
+                Container( height: 450, child:
                 CenterIndicators(),), Container(
-                height: 100,
-                width: 146,
+                margin: EdgeInsets.only(right: 20),
                 child:
                 Warnings(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream, apwiStream: _apwController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
               ]),
@@ -255,7 +255,7 @@ class HomePageState extends State<HomePage> {
                             Icons.arrow_back_ios_new, color: Color(
                               0xffedd711),),
                           style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a),
+                              0xff03050a).withOpacity(0),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (HomePage.rightIndex == 0) VerticalDivider(width: 65),
@@ -272,7 +272,7 @@ class HomePageState extends State<HomePage> {
                             child: Icon(Icons.fullscreen, color: Color(
                                 0xffedd711), size: 40,),
                             style: ElevatedButton.styleFrom(primary: Color(
-                                0xff03050a),
+                                0xff03050a).withOpacity(0),
                               shape: CircleBorder(),
                               padding: EdgeInsets.all(11),),),
                         if (HomePage.rightIndex == 1)
@@ -285,7 +285,7 @@ class HomePageState extends State<HomePage> {
                           child: Icon(Icons.arrow_forward_ios, color: Color(
                               0xffedd711),),
                           style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a),
+                              0xff03050a).withOpacity(0),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (HomePage.rightIndex == 2) VerticalDivider(width: 65),

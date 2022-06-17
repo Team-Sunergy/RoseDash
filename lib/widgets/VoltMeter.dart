@@ -93,11 +93,11 @@ class _VoltMeterState extends State<VoltMeter> {
         Row(
           children: [
             Container(
-              height: 394,
+              height: 350,
               child: Row(
                 children: [
                   Container(
-                    width: 50,
+                    width: 10,
                   ),
                   Container(
                     //height: 40,
@@ -107,13 +107,13 @@ class _VoltMeterState extends State<VoltMeter> {
                   ),
                   Container(
                     //height: 40,
-                    width: 40,
+                    width: 80,
                     //color: Colors.green
                   ),
                   Container(child: SOCMeter()),
                   Container(
                     //height: 40,
-                    width: 20,
+                    width: 70,
                     //color: Colors.green
                   ),
                   Container(

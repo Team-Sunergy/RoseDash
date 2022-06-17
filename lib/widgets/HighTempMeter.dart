@@ -36,10 +36,10 @@ class _HighTempMeterState extends State<HighTempMeter> {
     return SfLinearGauge(
         numberFormat: NumberFormat("##0º"),
         interval: 3,
-        minorTicksPerInterval: 10,
+        minorTicksPerInterval: 5,
         orientation: LinearGaugeOrientation.vertical,
-        minimum: 20,
-        maximum: 70,
+        minimum: 21,
+        maximum: 72,
         axisTrackStyle:
         LinearAxisTrackStyle(thickness: 10, color: Colors.transparent),
         barPointers: [
