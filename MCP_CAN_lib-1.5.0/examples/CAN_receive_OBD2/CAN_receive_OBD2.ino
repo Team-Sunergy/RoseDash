@@ -123,7 +123,8 @@ void loop()
             else if (rxId == 0x287 && i == 0) sprintf(msgString, "H%.2X", rxBuf[i]);
             else if (rxId == 0x287) sprintf(msgString, "%.2X", rxBuf[i]);
             else if (rxId == 0x288 && i == 0) sprintf(msgString, "I%.2X", rxBuf[i]);
-            else if (rxId == 0x288) sprintf(msgString, "%.2X", rxBuf[i]);
+            else if (rxId == 0x288 && (i == 1 || i == 2)) sprintf(msgString, "%.2X", rxBuf[i]);
+            else if (rxId == 0x288 && i > 2) sprintf(msgString, "");
             else sprintf(msgString, "%.2X", rxBuf[i]);
             telMes += msgString;
         } 
@@ -144,29 +145,31 @@ void loop()
           // Checksum add 8 to BroadcastID
           uint32_t checksum = 16;
           bool valid = true;
-          String batMsg = "";
+          String batMsg = "r";
+          sprintf(msgString, "");
           for(byte i = 0; i<len; i++){
                 if (i < len - 1) checksum += rxBuf[i];
                 else {
                   checksum &= 0xff;
                   if (checksum != rxBuf[i]) valid = false;
                 }
-                if (i == 0) sprintf(msgString, "r!%.2X", rxBuf[i]);
                 switch (i) {
+                  case 0:
                   case 1:
-                  case 6:
+                  case 5:
                     sprintf(msgString, "!%.2X", rxBuf[i]);
                     break;
                    case 3:
                     // Shunting is bit 16
                     sprintf(msgString, "!%.1X!%.2X", rxBuf[i] & 0x80, rxBuf[i]);
                     break;
-                   case 5:
-                    sprintf(msgString, "!%.2X", rxBuf[i]);
-                    break;
                    case 2:
                    case 4:
+                   case 6:
                     sprintf(msgString, "%.2X", rxBuf[i]);
+                    break;
+                   case 7:
+                    sprintf(msgString, "");
                     break;
                     
                 }

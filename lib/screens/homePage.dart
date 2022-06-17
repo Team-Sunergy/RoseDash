@@ -375,7 +375,7 @@ class HomePageState extends State<HomePage> {
               }
               if (message[0] == 'C' || message[0] == 'P' ) {
 
-                int newObd2Length = int.parse(message.substring(1, message.indexOf('_')));
+                int newObd2Length = int.parse(message.substring(1, message.indexOf("%d_")));
                 if (newObd2Length != obd2Length && obd2Length != 0){
                   // Clear the Set and Broadcast it to the TC Widget
                   tcList.clear();

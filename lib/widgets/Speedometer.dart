@@ -9,7 +9,7 @@ class Speedometer extends StatefulWidget {
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
-
+  int _targetSpeed = 0;
   double speed = 0.0;
   void setSpeed(Position pos) {
     if (this.mounted)
@@ -163,7 +163,7 @@ class _SpeedometerState extends State<Speedometer> {
                 child: Column(
                   children: [
                     SixteenSegmentDisplay(
-                        value: 'Range:828mi',
+                        value: "Tgt spd: " + _targetSpeed.toString(),
                         size: 1.25,
                         backgroundColor: Colors.transparent,
                         segmentStyle: RectSegmentStyle(
@@ -215,6 +215,7 @@ class _SpeedometerState extends State<Speedometer> {
               angle: 85,
               positionFactor: 0.85,
             ),
+
           ]),
 
     ]);
