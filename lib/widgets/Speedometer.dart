@@ -16,7 +16,7 @@ class _SpeedometerState extends State<Speedometer> {
       .snapshots(includeMetadataChanges: true);
 
   int _targetSpeed = 0;
-  double _speed = 0.0;
+  double _speed = 2.0;
   void setSpeed(QuerySnapshot snapshot) {
       snapshot.docs.forEach((doc) {
         if (this.mounted)
@@ -29,6 +29,7 @@ class _SpeedometerState extends State<Speedometer> {
   @override
   void initState() {
     super.initState();
+    _speedDB.listen((event) {setSpeed(event);});
   }
   @override
   Widget build(BuildContext context) {

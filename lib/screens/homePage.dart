@@ -214,12 +214,7 @@ class HomePageState extends State<HomePage> {
               VerticalDivider(width: 90),
               Column( children: [
                 Container( height: 400, child:
-                CenterIndicators(socStream: _socController.stream,
-                                 hiStream: _hiController.stream,
-                                 lowStream: _lowController.stream,
-                                 packVoltStream: _packVoltSumController.stream,
-                                 hiTempStream: _hiTempController.stream,
-                                 currentDrawStream: _currentDrawController.stream,),), Container(
+                CenterIndicators(),), Container(
                 height: 100,
                 width: 146,
                 child:
@@ -238,23 +233,13 @@ class HomePageState extends State<HomePage> {
                         children: [
                           Container(margin: EdgeInsets.symmetric(
                               vertical: 0, horizontal: 30),
-                              child: VoltMeter(socStream: _socController.stream,
-                                               lowStream: _lowController.stream,
-                                               hiStream: _hiController.stream,
-                                               packVoltStream: _packVoltSumController.stream,
-                                               deltaStream: _deltaController.stream,
-                                               hiTempStream: _hiTempController.stream,)),
+                              child: VoltMeter()),
                           Center(child: ClipRRect(borderRadius: BorderRadius
                               .horizontal(left: Radius.elliptical(150, 150),
                               right: Radius.elliptical(150, 150)),
                               child: Container(
                                   height: 500, width: 500, child: Container()/*navInstance*/))),
-                          Center(child: VoltMeter(socStream: _socController.stream,
-                                                  lowStream: _lowController.stream,
-                                                  hiStream: _hiController.stream,
-                                                  packVoltStream: _packVoltSumController.stream,
-                                                  deltaStream: _deltaController.stream,
-                                                  hiTempStream: _hiTempController.stream,))
+                          Center(child: VoltMeter())
                         ],
                       )),
                   Container(height: 10,),

@@ -3,34 +3,46 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoHiVoltMeter extends StatefulWidget {
-  final Stream<double> lowStream;
-  final Stream<double> highStream;
-  LoHiVoltMeter({required this.lowStream, required this.highStream});
   @override _LoHiVoltMeterState createState() => _LoHiVoltMeterState();
 }
 
 class _LoHiVoltMeterState extends State<LoHiVoltMeter> {
 
+  Stream _dB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
+
   double low = 32.2;
   double high = 34.2;
 
-  void setLow(val) {
+  void _setLow(val) {
     if (this.mounted)
     setState(() {low = val;});
   }
 
-  void setHigh(val) {
+  void _setHigh(val) {
     if (this.mounted)
     setState(() {high = val;});
+  }
+
+  void setMetrics(QuerySnapshot snapshot) {
+    snapshot.docs.forEach((doc) {
+      if (this.mounted)
+        setState(() {
+          _setLow(doc['lowVolt']);
+          _setHigh(doc['highVolt']);
+        });
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    widget.lowStream.listen((low) {setLow(low);});
-    widget.highStream.listen((high) {setHigh(high);});
+    _dB.listen((event) {setMetrics(event);});
   }
 
   @override

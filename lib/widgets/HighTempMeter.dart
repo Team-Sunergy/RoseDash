@@ -1,26 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HighTempMeter extends StatefulWidget {
-  final Stream<int> highTempStream;
-  HighTempMeter({required this.highTempStream});
   @override createState() => _HighTempMeterState();
 }
 
 class _HighTempMeterState extends State<HighTempMeter> {
 
-  int highTemp = 0;
+  Stream _dB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
 
-  void setHighTemp(val) {
-    if (this.mounted)
-    setState(() {highTemp = val;});
+  int _highTemp = 0;
+
+  void setHighTemp(QuerySnapshot snapshot) {
+    snapshot.docs.forEach((doc) {
+      if (this.mounted)
+        setState(() {
+          _highTemp = doc['hiTemp'];
+        });
+    });
   }
+
 
   @override
   void initState() {
     super.initState();
-    widget.highTempStream.listen((highTemp) {setHighTemp(highTemp);});
+    _dB.listen((highTempSnap) {setHighTemp(highTempSnap);});
   }
   @override
   Widget build(BuildContext context) {
@@ -36,7 +45,7 @@ class _HighTempMeterState extends State<HighTempMeter> {
         barPointers: [
           LinearBarPointer(
             enableAnimation: false,
-            value: highTemp.toDouble(),
+            value: _highTemp.toDouble(),
             edgeStyle: LinearEdgeStyle.endCurve,
             thickness: 8,
             color: Color(0xffedd711),

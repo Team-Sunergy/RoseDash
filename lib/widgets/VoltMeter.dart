@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bt01_serial_test/widgets/LoHiVoltMeter.dart';
 import 'LoHiVoltMeter.dart';
 import 'SOCMeter.dart';
@@ -9,26 +8,15 @@ import 'HighTempMeter.dart';
 import 'DeltaMeter.dart';
 
 class VoltMeter extends StatefulWidget {
-  final Stream<double> socStream;
-  final Stream<double> lowStream;
-  final Stream<double> hiStream;
-  final Stream<double> packVoltStream;
-  final Stream<int> hiTempStream;
-  final Stream<double> deltaStream;
-
-  VoltMeter(
-      {required this.socStream,
-      required this.lowStream,
-      required this.hiStream,
-      required this.packVoltStream,
-      required this.hiTempStream,
-      required this.deltaStream});
-
   @override
   _VoltMeterState createState() => _VoltMeterState();
 }
 
 class _VoltMeterState extends State<VoltMeter> {
+  Stream _dB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
   double soc = 82.8;
   double low = 32.2;
   double high = 34.2;
@@ -78,27 +66,24 @@ class _VoltMeterState extends State<VoltMeter> {
     _deltaController.add(high - low);
   }
 
+  void setMetrics(QuerySnapshot snapshot) {
+    snapshot.docs.forEach((doc) {
+      if (this.mounted)
+        setState(() {
+          _setSOC(doc['soc']);
+          _setLow(doc['lowVolt']);
+          _setHigh(doc['highVolt']);
+          _setDelta();
+          _setHighTemp(doc['hiTemp']);
+          _setPackVoltSum(doc['packVolt']);
+        });
+    });
+  }
+  
   @override
   void initState() {
     super.initState();
-    widget.socStream.listen((soc) {
-      _setSOC(soc);
-    });
-    widget.lowStream.listen((low) {
-      _setLow(low);
-    });
-    widget.hiStream.listen((hi) {
-      _setHigh(hi);
-    });
-    widget.packVoltStream.listen((pvs) {
-      _setPackVoltSum(pvs);
-    });
-    widget.deltaStream.listen((event) {
-      _setDelta();
-    });
-    widget.hiTempStream.listen((hiTemp) {
-      _setHighTemp(hiTemp);
-    });
+    _dB.listen((event) {setMetrics(event);});
   }
 
   @override
@@ -117,9 +102,7 @@ class _VoltMeterState extends State<VoltMeter> {
                   Container(
                     //height: 40,
                     //width: 20,
-                    child: LoHiVoltMeter(
-                        lowStream: widget.lowStream,
-                        highStream: widget.hiStream),
+                    child: LoHiVoltMeter(),
                     //color: Colors.blue
                   ),
                   Container(
@@ -127,7 +110,7 @@ class _VoltMeterState extends State<VoltMeter> {
                     width: 40,
                     //color: Colors.green
                   ),
-                  Container(child: SOCMeter(socStream: widget.socStream)),
+                  Container(child: SOCMeter()),
                   Container(
                     //height: 40,
                     width: 20,
@@ -135,7 +118,7 @@ class _VoltMeterState extends State<VoltMeter> {
                   ),
                   Container(
                       child:
-                          HighTempMeter(highTempStream: widget.hiTempStream)),
+                          HighTempMeter()),
                 ],
               ),
             ),

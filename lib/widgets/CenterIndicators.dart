@@ -1,29 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:segment_display/segment_display.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CenterIndicators extends StatefulWidget {
-
-  final Stream<double> socStream;
-  final Stream<double> lowStream;
-  final Stream<double> hiStream;
-  final Stream<double> packVoltStream;
-  final Stream<int> hiTempStream;
-  final Stream<double> currentDrawStream;
-
-  CenterIndicators(
-      {required this.socStream,
-        required this.lowStream,
-        required this.hiStream,
-        required this.packVoltStream,
-        required this.hiTempStream,
-        required this.currentDrawStream});
-
   @override
   createState() => _CenterIndicatorsState();
 }
 
 class _CenterIndicatorsState extends State<CenterIndicators> {
+
+  Stream _dB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
 
   double soc = 82.8;
   double low = 32.2;
@@ -74,27 +64,24 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
     });
   }
 
+  void setMetrics(QuerySnapshot snapshot) {
+    snapshot.docs.forEach((doc) {
+      if (this.mounted)
+        setState(() {
+          _setSOC(doc['soc']);
+          _setLow(doc['lowVolt']);
+          _setHigh(doc['highVolt']);
+          _setHighTemp(doc['hiTemp']);
+          _setPackVoltSum(doc['packVolt']);
+          _setCurrentDraw(doc['currentDraw']);
+        });
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    widget.socStream.listen((soc) {
-      _setSOC(soc);
-    });
-    widget.lowStream.listen((low) {
-      _setLow(low);
-    });
-    widget.hiStream.listen((hi) {
-      _setHigh(hi);
-    });
-    widget.packVoltStream.listen((pvs) {
-      _setPackVoltSum(pvs);
-    });
-    widget.hiTempStream.listen((hiTemp) {
-      _setHighTemp(hiTemp);
-    });
-    widget.currentDrawStream.listen((cd) {
-      _setCurrentDraw(cd);
-    });
+    _dB.listen((event) {setMetrics(event);});
   }
 
   @override
