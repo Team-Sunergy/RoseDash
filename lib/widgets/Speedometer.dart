@@ -88,7 +88,7 @@ class _SpeedometerState extends State<Speedometer> {
         showAxisLine: false,
         showLabels: false,
         showTicks: false,
-        radiusFactor: 1.05,
+        radiusFactor: 1,
         ranges: <GaugeRange>[
           GaugeRange(
               startValue: 0,
