@@ -1,6 +1,7 @@
 //@dart=2.9
 import 'package:bt01_serial_test/screens/homePage.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Warnings extends StatefulWidget {
 
@@ -18,6 +19,10 @@ class Warnings extends StatefulWidget {
 
 class _WarningsState extends State<Warnings> {
 
+  Stream _dB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
 
   bool tcSet = false;
   bool apwSet = false;
@@ -61,7 +66,7 @@ class _WarningsState extends State<Warnings> {
 
   @override
   Widget build(BuildContext context) {
-        if (!tcSet && !apwSet) {
+        if (tcSet && apwSet) {
           return Container(margin: EdgeInsets.symmetric(vertical: 10),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
