@@ -51,6 +51,7 @@ class HomePageState extends State<HomePage> {
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
   StreamController<double> _deltaController = StreamController<double>.broadcast();
   StreamController<Object> _underHoodController = StreamController<Object>.broadcast();
+  StreamController<double> _speedController = StreamController<double>.broadcast();
   List<BluetoothService> _services;
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
@@ -132,7 +133,9 @@ class HomePageState extends State<HomePage> {
       });
     }
   }
-
+routeSpeed(double val) {
+    _speedController.add(val);
+}
   void changeToTCPage() {
     if (this.mounted) {
       setState(() {
@@ -173,6 +176,7 @@ class HomePageState extends State<HomePage> {
                         currentDrawStream: _currentDrawController.stream,
                         deltaStream: _deltaController.stream,
                         hiTempStream: _hiTempController.stream,
+                        speedStream: _speedController.stream,
                         underHoodStream: _underHoodController.stream,)),
                       Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
 

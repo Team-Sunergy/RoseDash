@@ -6,14 +6,19 @@ import 'package:geolocator/geolocator.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 class Speedometer extends StatefulWidget {
+  final Function(double) callback;
+  Speedometer({this.callback});
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
   int _targetSpeed = 0;
-  double speed = 0.0;
+  double speed = 2.0;
   void setSpeed(Position pos) {
     if (this.mounted)
-    setState(() {speed = pos.speed * 2.236936;});
+    setState(() {
+      speed = pos.speed * 2.236936;
+      widget.callback.call(speed);
+    });
   }
 
   @override

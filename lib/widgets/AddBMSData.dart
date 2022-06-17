@@ -24,11 +24,11 @@ class AddBMSData extends StatefulWidget {
   final Stream<double> deltaStream;
   final Stream<int> hiTempStream;
   final Stream<Object> underHoodStream;
-  
+  final Stream<double> speedStream;
   AddBMSData({required this.socStream, required this.lowStream,
               required this.hiStream, required this.packVoltStream,
               required this.currentDrawStream, required this.hiTempStream,
-              required this.deltaStream, required this.underHoodStream});
+              required this.deltaStream, required this.speedStream, required this.underHoodStream});
 
  @override createState() => _AddBMSDataState();
 }
@@ -49,7 +49,7 @@ class _AddBMSDataState extends State<AddBMSData> {
   double currentDraw = 10.0;
   int highTemp = 31;
   double delta = 0.0;
-
+  double _speed = 0.0;
   int _cellID = 0;
   double _instantVoltage = 0;
   bool _isShunting = false;
@@ -101,6 +101,12 @@ class _AddBMSDataState extends State<AddBMSData> {
     });
   }
 
+  void _setSpeed(val) {
+    if (this.mounted)
+      setState(() {_speed = val;});
+
+  }
+
   void _setParams(val) {
     if (this.mounted)
       setState(() {
@@ -125,6 +131,7 @@ class _AddBMSDataState extends State<AddBMSData> {
     widget.hiTempStream.listen((hiTemp) {_setHighTemp(hiTemp);});
     widget.deltaStream.listen((delta) {_setDelta();});
     widget.underHoodStream.listen((event) {_setParams(event);});
+    widget.speedStream.listen((event) {_setSpeed(event);});
     _bms.listen(
     (snapshot) => {
       print("update occurred"),
@@ -147,6 +154,7 @@ class _AddBMSDataState extends State<AddBMSData> {
         'currentDraw': currentDraw,
         'delta': delta,
         'hiTemp': highTemp,
+        'speed' : _speed,
         'time': DateTime.now(),
         // 42
       })
