@@ -2,24 +2,33 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
-import 'package:geolocator/geolocator.dart';
+
 import 'package:slide_digital_clock/slide_digital_clock.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Speedometer extends StatefulWidget {
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
+  Stream _speedDB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
+
   int _targetSpeed = 0;
-  double speed = 0.0;
-  void setSpeed(Position pos) {
-    if (this.mounted)
-    setState(() {speed = pos.speed * 2.236936;});
+  double _speed = 0.0;
+  void setSpeed(QuerySnapshot snapshot) {
+      snapshot.docs.forEach((doc) {
+        if (this.mounted)
+          setState(() {
+            _speed = doc['speed'];
+          });
+      });
   }
 
   @override
   void initState() {
     super.initState();
-    Geolocator.getPositionStream(locationSettings: LocationSettings(accuracy: LocationAccuracy.best)).listen((speed) {setSpeed(speed);});
   }
   @override
   Widget build(BuildContext context) {
@@ -58,11 +67,11 @@ class _SpeedometerState extends State<Speedometer> {
         showTicks: false,
         pointers: <GaugePointer>[
           NeedlePointer(
-              value: speed,
+              value: _speed,
               onValueChanged: (double newValue) {
                 if (this.mounted)
                 setState(() {
-                  speed = newValue;
+                  _speed = newValue;
                 });
               },
               needleColor: Color(0xffd9950b).withOpacity(1),
@@ -147,7 +156,7 @@ class _SpeedometerState extends State<Speedometer> {
             GaugeAnnotation(
               widget: Container(
                 child: SixteenSegmentDisplay(
-                    value: speed.toInt().toString() + ' mph',
+                    value: _speed.toInt().toString() + ' mph',
                     size: 2.5,
                     backgroundColor: Colors.transparent,
                     segmentStyle: RectSegmentStyle(
