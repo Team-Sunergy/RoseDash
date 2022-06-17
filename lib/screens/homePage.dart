@@ -177,7 +177,10 @@ routeSpeed(double val) {
                         deltaStream: _deltaController.stream,
                         hiTempStream: _hiTempController.stream,
                         speedStream: _speedController.stream,
-                        underHoodStream: _underHoodController.stream,)),
+                        underHoodStream: _underHoodController.stream,
+                        ctcStream: _ctcController.stream,
+                        ptcStream: _ptcController.stream,
+                        apwiStream: _apwController.stream,)),
                       Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
 
                     ],

@@ -25,10 +25,15 @@ class AddBMSData extends StatefulWidget {
   final Stream<int> hiTempStream;
   final Stream<Object> underHoodStream;
   final Stream<double> speedStream;
+  final Stream<Set<String>> ctcStream;
+  final Stream<Set<String>> ptcStream;
+  final Stream<Set<String>> apwiStream;
   AddBMSData({required this.socStream, required this.lowStream,
               required this.hiStream, required this.packVoltStream,
               required this.currentDrawStream, required this.hiTempStream,
-              required this.deltaStream, required this.speedStream, required this.underHoodStream});
+              required this.deltaStream, required this.speedStream,
+              required this.underHoodStream, required this.ctcStream,
+              required this.ptcStream, required this.apwiStream});
 
  @override createState() => _AddBMSDataState();
 }
@@ -55,7 +60,34 @@ class _AddBMSDataState extends State<AddBMSData> {
   bool _isShunting = false;
   double _internalResistance = 0;
   double _openVoltage = 0;
+  Map<String, dynamic>? _ctcSet;
+  Map<String, dynamic>? _ptcSet;
+  Map<String, dynamic>? _apvSet;
 
+  void _setCTC(val) {
+    if (this.mounted)
+    setState(() {
+      _ctcSet = val;
+    });
+  }
+
+  void _setPTC(val) {
+    if (this.mounted)
+      setState(() {
+        _ptcSet = val;
+      });
+  }
+
+  void _setAPV(Set<String> val) {
+    if (this.mounted)
+
+      setState(() {
+
+        val.forEach((element) {
+          _apvSet![element] = element;
+        });
+      });
+  }
   void _setSOC(val) {
     if (this.mounted)
     setState(() {soc = val;});
@@ -132,6 +164,9 @@ class _AddBMSDataState extends State<AddBMSData> {
     widget.deltaStream.listen((delta) {_setDelta();});
     widget.underHoodStream.listen((event) {_setParams(event);});
     widget.speedStream.listen((event) {_setSpeed(event);});
+    widget.apwiStream.listen((event) {_setAPV(event);});
+    widget.ptcStream.listen((event) {_setPTC(event);});
+    widget.ctcStream.listen((event) {_setCTC(event);});
     _bms.listen(
     (snapshot) => {
       print("update occurred"),
@@ -155,6 +190,9 @@ class _AddBMSDataState extends State<AddBMSData> {
         'delta': delta,
         'hiTemp': highTemp,
         'speed' : _speed,
+        'ctcSet' : _ctcSet != null ? _ctcSet : 0,
+        'ptcSet' : _ptcSet != null ? _ptcSet : 0,
+        'apvSet' : _apvSet != null ? _apvSet : 0,
         'time': DateTime.now(),
         // 42
       })
