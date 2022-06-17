@@ -45,7 +45,7 @@ class _DeltaMeterState extends State<DeltaMeter> {
           value: delta,
           edgeStyle: LinearEdgeStyle.endCurve,
           thickness: 8,
-          color: Color(0xffedd711),
+          color: delta < 0.05 ? Color(0xffedd711) : Colors.red,
           borderColor: Color(0xff070b1a),
           borderWidth: 1.25,
         ),

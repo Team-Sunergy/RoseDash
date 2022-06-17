@@ -141,7 +141,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: Color(0xffedd711),
+              enabledColor: highTemp < 35 ? Color(0xffedd711) : Color(0xfff72119),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         Container(height: 20, child: Text("High Temp ºC", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
@@ -152,7 +152,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: Color(0xffedd711),
+              enabledColor: currentDraw <= 0 ? Color(0xff39ff14) : Color(0xfff72119) ,
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         //Signed Value from PID of BMS
