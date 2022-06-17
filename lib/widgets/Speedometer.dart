@@ -12,7 +12,7 @@ class Speedometer extends StatefulWidget {
 }
 class _SpeedometerState extends State<Speedometer> {
   int _targetSpeed = 0;
-  double speed = 2.0;
+  double speed = 0;
   void setSpeed(Position pos) {
     if (this.mounted)
     setState(() {
