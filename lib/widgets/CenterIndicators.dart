@@ -112,7 +112,8 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: Color(0xffedd711),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("State of Charge")),
+        Container(height: 20, child: Text("State of Charge", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
           value: sprintf("%0.3f", [high]),
@@ -122,7 +123,8 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: Color(0xffedd711),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("High Cell (Volt)")),
+        Container(height: 20, child: Text("High Cell Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
           value: sprintf("%0.3f", [low]),
@@ -132,7 +134,8 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: Color(0xffedd711),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("Low Cell (Volt)")),
+        Container(height: 20, child: Text("Low Cell Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
           //TODO:Ask team if we need more precision on this value
@@ -143,28 +146,30 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: Color(0xffedd711),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("Pack (Volt)")),
+        Container(height: 20, child: Text("Pack Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
           value: highTemp.toString(),
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: Color(0xffedd711),
+              enabledColor: highTemp < 35 ? Color(0xffedd711) : Color(0xfff72119),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("Hi Cell (ºCel)")),
+        Container(height: 20, child: Text("High Temp ºC", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
           value: currentDraw.toString(),
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: Color(0xffedd711),
+              enabledColor: currentDraw <= 0 ? Color(0xff39ff14) : Color(0xfff72119) ,
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         //Signed Value from PID of BMS
-        Container(height: 20, child: Text("Current Draw"))
+        Container(height: 20, child: Text("Current Draw", style: TextStyle(color: Colors.white70.withOpacity(0.65)),))
       ]),
     );
   }

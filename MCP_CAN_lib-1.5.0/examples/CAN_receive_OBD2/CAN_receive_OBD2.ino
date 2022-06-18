@@ -131,7 +131,7 @@ void loop()
         Serial.println(telMes);
         Bluetooth.println(telMes);
         count++;
-        } while (rxId == 0x286 && count < 50);
+        } while ((rxId == 0x286 || rxId == 0x287) && count < 50);
     } else if (rxId == 0x7EB /*|| rxId == 0x7E3 */|| rxId == 0x8) {
         /*for(byte i = 0; i<len; i++){
               sprintf(msgString, " 0x%.2X", rxBuf[i]);
@@ -230,7 +230,7 @@ void loop()
         Bluetooth.println();
         }
       } else if (rxBuf[1] == 71 || rxBuf[2] == 71) {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10; i++) {
         //Serial.print("P");
         //Bluetooth.print("P");
         if (rxBuf[0] == 16) {

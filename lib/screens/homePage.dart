@@ -152,6 +152,7 @@ routeSpeed(double val) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Color(0xff181818),
       //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
           Container(height: 150,),
@@ -197,7 +198,7 @@ routeSpeed(double val) {
                             Icons.arrow_back_ios_new, color: Color(
                               0xffedd711),),
                           style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a),
+                              0xff03050a).withOpacity(0),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (HomePage.leftIndex == 0) VerticalDivider(width: 65),
@@ -210,7 +211,7 @@ routeSpeed(double val) {
                           child: Icon(Icons.arrow_forward_ios, color: Color(
                               0xffedd711),),
                           style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a),
+                              0xff03050a).withOpacity(0),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (HomePage.leftIndex == 2) VerticalDivider(width: 65),
@@ -218,9 +219,9 @@ routeSpeed(double val) {
                   ),
                 ],
               ),
-              VerticalDivider(width: 90),
+              VerticalDivider(width: 50),
               Column( children: [
-                Container( height: 400, child:
+                Container( height: 450, child:
                 CenterIndicators(socStream: _socController.stream,
                                  hiStream: _hiController.stream,
                                  lowStream: _lowController.stream,
@@ -277,7 +278,7 @@ routeSpeed(double val) {
                             Icons.arrow_back_ios_new, color: Color(
                               0xffedd711),),
                           style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a),
+                              0xff03050a).withOpacity(0),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (HomePage.rightIndex == 0) VerticalDivider(width: 65),
@@ -294,7 +295,7 @@ routeSpeed(double val) {
                             child: Icon(Icons.fullscreen, color: Color(
                                 0xffedd711), size: 40,),
                             style: ElevatedButton.styleFrom(primary: Color(
-                                0xff03050a),
+                                0xff03050a).withOpacity(0),
                               shape: CircleBorder(),
                               padding: EdgeInsets.all(11),),),
                         if (HomePage.rightIndex == 1)
@@ -307,7 +308,7 @@ routeSpeed(double val) {
                           child: Icon(Icons.arrow_forward_ios, color: Color(
                               0xffedd711),),
                           style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a),
+                              0xff03050a).withOpacity(0),
                             shape: CircleBorder(),
                             padding: EdgeInsets.all(18),),),
                         if (HomePage.rightIndex == 2) VerticalDivider(width: 65),

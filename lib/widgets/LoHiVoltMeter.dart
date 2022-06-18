@@ -38,8 +38,8 @@ class _LoHiVoltMeterState extends State<LoHiVoltMeter> {
     return SfLinearGauge(
       numberFormat: NumberFormat("#0.000 v"),
       orientation: LinearGaugeOrientation.vertical,
-      minimum: 3.50,
-      maximum: 3.515,
+      minimum: 3.20,
+      maximum: 4.0,
       axisTrackStyle: LinearAxisTrackStyle(thickness: 2.5),
       markerPointers: [
         LinearWidgetPointer(

@@ -45,10 +45,29 @@ class _DeltaMeterState extends State<DeltaMeter> {
           value: delta,
           edgeStyle: LinearEdgeStyle.endCurve,
           thickness: 8,
-          color: Color(0xffedd711),
+          color: delta < 0.05 ? Color(0xffedd711) : Color(0xfff72119),
           borderColor: Color(0xff070b1a),
           borderWidth: 1.25,
         )
+      ],
+      markerPointers: [
+        LinearWidgetPointer(value: delta - 0.002, child: ClipRRect(borderRadius: BorderRadius
+            .horizontal(left: Radius.elliptical(5, 5),
+            right: Radius.elliptical(5, 5)),
+            child: Container(
+                height: 30, width: 30, child: Container( width: 30,
+                height: 30,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      delta.toStringAsPrecision(2),
+                      style: TextStyle(color: Colors.white, fontSize: 8.5),
+                    ),
+                  ],
+                )))),
+          position: LinearElementPosition.outside,
+          markerAlignment: LinearMarkerAlignment.start,)
       ],
       ranges: [
         LinearGaugeRange(

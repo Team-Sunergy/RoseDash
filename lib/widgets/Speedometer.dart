@@ -40,19 +40,24 @@ class _SpeedometerState extends State<Speedometer> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   // Added image widget as an annotation
-                  Container(
-                      width: 250.00,
-                      height: 250.00,
+                  Transform.rotate(
+                  angle: 0.2,
+                  child : Container(
+                      width: 270.00,
+                      height: 270.00,
                       decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
+                        shape: BoxShape.rectangle,
                         image: DecorationImage(
                           alignment: Alignment.bottomLeft,
+                          filterQuality: FilterQuality.high,
+                          colorFilter: ColorFilter.srgbToLinearGamma(),
                           image:
                           ExactAssetImage('images/Yosef_dental.png'),
                           fit: BoxFit.fill,
+                          opacity: 0.4,
                         ),
                       )),
-
+                  )
                 ],
               ),
             )
@@ -168,7 +173,7 @@ class _SpeedometerState extends State<Speedometer> {
                 child: Column(
                   children: [
                     SixteenSegmentDisplay(
-                        value: "Tgt spd: " + _targetSpeed.toString(),
+                        value: "Target: " + _targetSpeed.toString(),
                         size: 1.25,
                         backgroundColor: Colors.transparent,
                         segmentStyle: RectSegmentStyle(
