@@ -42,7 +42,7 @@ class UnderHood {
 class HomePageState extends State<HomePage> {
   StreamController<Set<String>> _ctcController = StreamController<Set<String>>.broadcast();
   StreamController<Set<String>> _ptcController = StreamController<Set<String>>.broadcast();
-  StreamController<Set<String>> _apwController = StreamController<Set<String>>.broadcast();
+  StreamController<String> _apwController = StreamController<String>.broadcast();
   StreamController<double> _socController = StreamController<double>.broadcast();
   StreamController<double> _lowController = StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
@@ -57,7 +57,7 @@ class HomePageState extends State<HomePage> {
   BluetoothDevice _connectedDevice;
   StreamSubscription<Object> reader;
   Set<String> tcList = new Set<String>();
-  Set<String> apwSet = new Set<String>();
+  String apwSet = "";
   int obd2Length = 0;
   bool connected = false;
   //Nav navInstance;
@@ -359,30 +359,10 @@ routeSpeed(double val) {
             // This is where we receive our CAN Messages
             String message = utf8.decode(data);
             if (message.isNotEmpty) {
-
-              if (message[0] == 'r') {
-                print(message);
-                  UnderHood uh = new UnderHood();
-                  Iterable<Characters> components = Characters(message).skip(message.indexOf('!') + 1).split(Characters('!'));
-                  for (int i = 0; i < components.length; i++) {
-                    if (i == 0) {
-                      print("cell id = " + int.parse(components.elementAt(i).toString(), radix: 16).toString());
-                      uh.cellId = int.parse(components.elementAt(i).toString(), radix: 16);
-                    } else if (i == 1){
-                      uh.instV = int.parse(components.elementAt(i).toString(), radix: 16)/10000.toDouble();
-                    } else if (i == 2) {
-                      uh.isShunting = components.elementAt(i).toString() == '1';
-                    } else if (i == 3) {
-                      uh.intRes = int.parse(components.elementAt(i).toString(), radix: 16)/100.toDouble();
-                    } else if (i == 4) {
-                      uh.openV = int.parse(components.elementAt(i).toString(), radix: 16)/10000.toDouble();
-                    }
-                  }
-                  _underHoodController.add(uh);
-              }
               if (message[0] == 'C' || message[0] == 'P' ) {
 
-                int newObd2Length = int.parse(message.substring(1, message.indexOf("%d_")));
+                Iterable<Characters> lenHelp = Characters(message).split(Characters('_'));
+                int newObd2Length = int.parse(lenHelp.elementAt(1).toString());
                 if (newObd2Length != obd2Length && obd2Length != 0){
                   // Clear the Set and Broadcast it to the TC Widget
                   tcList.clear();
@@ -392,30 +372,56 @@ routeSpeed(double val) {
                 // Initialize obd2Length with new unique length
                 obd2Length = newObd2Length;
                 if (obd2Length != 0) {
-                      Iterable<Characters> faults = Characters(message).skip(message.indexOf('_') + 1).split(Characters('!'));
-                      faults.forEach((element) {
-                        String fault = "P" + element.toString();
-                        if (fault.length == 5)
-                        tcList.add(fault);
-                      });
-                      message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
+                  Iterable<Characters> faults = lenHelp.elementAt(2).split(Characters('!'));
+                  faults.forEach((element) {
+                    String fault = "P" + element.toString();
+                    for (int i = 0; i < 50; i++) {
+                      print(fault);
+                    }
+                    if (fault.length == 5)
+                      tcList.add(fault);
+                  });
+                  message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
                 } else
                 {
-                    // Clear the Set and Broadcast it to the TC Widget
-                    tcList.clear();
-                    _ctcController.add(tcList);
-                    _ptcController.add(tcList);
-                  }
+                  // Clear the Set and Broadcast it to the TC Widget
+                  tcList.clear();
+                  _ctcController.add(tcList);
+                  _ptcController.add(tcList);
+                }
               }
+
+              if (message[0] == 'r') {
+                print(message);
+                  UnderHood uh = new UnderHood();
+                  Iterable<Characters> components = Characters(message).skip(message.indexOf('!') + 1).split(Characters('!'));
+                  for (int i = 0; i < components.length; i++) {
+                    if (i == 0) {
+                      print("cell id = " + int.parse(components.elementAt(i).toString(), radix: 16).toString());
+                      uh.cellId = int.parse(components.elementAt(i).toString().toLowerCase(), radix: 16);
+                    } else if (i == 1){
+                      uh.instV = int.parse(components.elementAt(i).toString().toLowerCase(), radix: 16)/10000.toDouble();
+                    } else if (i == 2) {
+                      uh.isShunting = components.elementAt(i).toString() == '1';
+                    } else if (i == 3) {
+                      uh.intRes = int.parse(components.elementAt(i).toString().toLowerCase(), radix: 16)/100.toDouble();
+                    } else if (i == 4) {
+                      String hex = components.elementAt(i).toString().toLowerCase();
+                      uh.openV = int.parse("0x$hex")/10000.toDouble();
+                    }
+                  }
+                  _underHoodController.add(uh);
+              }
+
 
               else if (message[0] == 'V') {
                 var auxPackVoltage = num.tryParse(message.substring(1, 4)).toDouble();
                 if (auxPackVoltage < 2) {
-                  apwSet.add(auxPackVoltage.toString());
-                  _apwController.add(apwSet);
+                  //apwSet.add(auxPackVoltage.toString());
+                  _apwController.add(auxPackVoltage.toString());
                 } else {
-                  apwSet.clear();
-                  _apwController.add(apwSet);
+                  //apwSet.clear();
+                  _apwController.add("");
                 }
               }
               else if (message[0] == 'G') {

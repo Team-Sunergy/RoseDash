@@ -27,7 +27,7 @@ class AddBMSData extends StatefulWidget {
   final Stream<double> speedStream;
   final Stream<Set<String>> ctcStream;
   final Stream<Set<String>> ptcStream;
-  final Stream<Set<String>> apwiStream;
+  final Stream<String> apwiStream;
   AddBMSData({required this.socStream, required this.lowStream,
               required this.hiStream, required this.packVoltStream,
               required this.currentDrawStream, required this.hiTempStream,
@@ -60,9 +60,9 @@ class _AddBMSDataState extends State<AddBMSData> {
   bool _isShunting = false;
   double _internalResistance = 0;
   double _openVoltage = 0;
-  Map<String, dynamic>? _ctcSet;
-  Map<String, dynamic>? _ptcSet;
-  Map<String, dynamic>? _apvSet;
+  Set<String>? _ctcSet;
+  Set<String>? _ptcSet;
+  String? _apv;
 
   void _setCTC(val) {
     if (this.mounted)
@@ -78,14 +78,11 @@ class _AddBMSDataState extends State<AddBMSData> {
       });
   }
 
-  void _setAPV(Set<String> val) {
+  void _setAPV(String val) {
     if (this.mounted)
 
       setState(() {
-
-        val.forEach((element) {
-          _apvSet![element] = element;
-        });
+          _apv = val;
       });
   }
   void _setSOC(val) {
@@ -190,9 +187,9 @@ class _AddBMSDataState extends State<AddBMSData> {
         'delta': delta,
         'hiTemp': highTemp,
         'speed' : _speed,
-        'ctcSet' : _ctcSet != null ? _ctcSet : 0,
-        'ptcSet' : _ptcSet != null ? _ptcSet : 0,
-        'apvSet' : _apvSet != null ? _apvSet : 0,
+        'ctcSet' : _ctcSet != null ? _ctcSet.toString() : 0,
+        'ptcSet' : _ptcSet != null ? _ptcSet.toString() : 0,
+        'apvSet' : _apv != null ? _apv : 0,
         'time': DateTime.now(),
         // 42
       })
