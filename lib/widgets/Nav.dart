@@ -1,11 +1,8 @@
-/*import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart' as gl;
-import 'package:location/location.dart';
-import 'package:mapbox_gl_platform_interface/mapbox_gl_platform_interface.dart';
 
 class Nav extends StatefulWidget {
 
@@ -44,29 +41,10 @@ class _NavState extends State<Nav> {
   void setLocation(gl.Position location) {
     print(location.heading);
     if (this.mounted)
-    setState(() async {
-      position = location;
-      await _mapController.animateCamera(
-        CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)),
-      );
-      if (_circle != null) {
-        await _mapController.removeCircle(_circle!);
-      }
-      // Add a circle denoting current user location
-      _circle = await _mapController.addCircle( CircleOptions(
-        circleRadius: 8.0,
-        circleColor: '#006992',
-        circleOpacity: 0.8,
-
-        // YOU NEED TO PROVIDE THIS FIELD!!!
-        // Otherwise, you'll get a silent exception somewhere in the stack
-        // trace, but the parameter is never marked as @required, so you'll
-        // never know unless you check the stack trace
-        geometry: LatLng(position.latitude, position.longitude),
-        draggable: false,
-      ));
-
-    });
+      setState(() {
+        position = location;
+        setCam();
+      });
   }
 
   void createMap() {
@@ -95,4 +73,25 @@ class _NavState extends State<Nav> {
     positionStream.cancel();
   }
 
-}*/
+  Future<void> setCam() async {
+    await _mapController.animateCamera(
+    CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
+    if (_circle != null) {
+      await _mapController.removeCircle(_circle!);
+    }
+
+    // Add a circle denoting current user location
+    _circle = await _mapController.addCircle( CircleOptions(
+      circleRadius: 8.0,
+      circleColor: '#006992',
+      circleOpacity: 0.8,
+
+      // YOU NEED TO PROVIDE THIS FIELD!!!
+      // Otherwise, you'll get a silent exception somewhere in the stack
+      // trace, but the parameter is never marked as @required, so you'll
+      // never know unless you check the stack trace
+      geometry: LatLng(position.latitude, position.longitude),
+      draggable: false,
+    ));
+  }
+}
