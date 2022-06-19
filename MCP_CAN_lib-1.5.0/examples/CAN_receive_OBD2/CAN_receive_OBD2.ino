@@ -1,8 +1,14 @@
+#include <TimeLib.h>
 #include <SoftwareSerial.h>
 #include <mcp_can.h>
 #include <SPI.h>
 
+
 SoftwareSerial Bluetooth(4, 5); // RX, TX
+// digital pin 2 is the hall pin
+int hall_pin = 7;
+// set number of hall trips for RPM reading (higher improves accuracy)
+float hall_thresh = 5.0;
 
 long unsigned int rxId;
 unsigned char len = 0;
@@ -25,6 +31,8 @@ void setup()
 {
   Serial.begin(115200);
     Bluetooth.begin(9600);
+    // make the hall pin an input:
+  pinMode(hall_pin, INPUT);
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
   if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK) {
     //Serial.println("MCP2515 Initialized Successfully!");
@@ -38,52 +46,48 @@ void setup()
   CAN0.setMode(MCP_NORMAL);                     // Set operation mode to normal so the MCP2515 sends acks to received data.
   pinMode(VOL_PIN, INPUT);
   pinMode(CAN0_INT, INPUT);                            // Configuring pin for /INT input
-  pinMode(speedpin, INPUT);
   //Serial.println("MCP2515 Library Receive Example...");
   //Bluetooth.println("MCP2515 Library Receive Example...");
 }
 
 void loop()
 {
-  char mphstring[128]; 
   request req;
-  unsigned long rotationsInASecond = 0;
-  unsigned long durationA = 0;
-  unsigned long durationB = 0;
-  //unsigned long durationC = 0;
-  //unsigned long durationD = 0;
-  bool accurateReading;
-  /*while (durationA < 1000) {
-    //accurateReading = true;
-    //durationD = durationA;
-    for (int i = 0; i < 16; i++) {
-      //durationC = durationA;
-      durationA += pulseIn(speedpin,HIGH, 10);
-      /*if (durationC == durationA) {
-        accurateReading = false;
-        break;  
+
+ // preallocate values for tach
+  float hall_count = 1.0;
+  float start = micros();
+  bool on_state = false;
+  // counting number of times the hall sensor is tripped
+  // but without double counting during the same trip
+  while(true){
+    if (digitalRead(hall_pin)==0){
+      if (on_state==false){
+        on_state = true;
+        hall_count+=1.0;
       }
+    } else{
+      on_state = false;
     }
-    //if (!accurateReading) durationA = durationD;
-    if (durationA != durationB /*&& accurateReading) {
-      rotationsInASecond++;
-      durationB = durationA;
-    }
-  }
-  if (rotationsInASecond > 0) {
-    rotationsInASecond *= 1000;
-  sprintf(mphstring, "rotations in a second is %d ", rotationsInASecond);
-  Serial.println(mphstring);
-  }
-  if (rotationsInASecond > 0) {
-    unsigned long rpm = rotationsInASecond / 60;
-    // Rose's revolutional distance is ~5.7583 ft //
-    unsigned long mph = (5.7583 * rpm * 60 / 5280); 
     
-    sprintf(mphstring, "%d mph rpm: %d", mph, rpm);
-    Serial.println(mphstring);
-  }*/
+    if (hall_count>=hall_thresh){
+      break;
+    }
+  }
   
+  // print information about Time and RPM
+  float end_time = micros();
+  float time_passed = ((end_time-start)/1000000.0);
+  Serial.print("Time Passed: ");
+  Serial.print(time_passed);
+  Serial.println("s");
+  float rpm_val = (hall_count/time_passed)*60.0 / 5;
+  Serial.print(rpm_val);
+  Serial.println(" RPM");
+  unsigned long mph = ((5.7583 /*1.34*/ * rpm_val * 60) / 5280);
+  Serial.println(mph);
+  delay(1);        // delay in between reads for stability
+
   // Added 6/12 for reading AUX voltage, no message is being sent via bt 
   int value;
   float volt;
@@ -92,8 +96,8 @@ void loop()
   value = analogRead( VOL_PIN );
   volt = value * 5.0 / 1023.0;
 
-  Serial.println("V" + String(volt));
-  Bluetooth.println("V" + String(volt));
+  //Serial.println("V" + String(volt));
+  //Bluetooth.println("V" + String(volt));
   
   bool extendedFrame = false;
   if(!digitalRead(CAN0_INT))                         // If CAN0_INT pin is low, read receive buffer
@@ -131,7 +135,7 @@ void loop()
         Serial.println(telMes);
         Bluetooth.println(telMes);
         count++;
-        } while (rxId == 0x286 && count < 50);
+        } while ((rxId == 0x286 || rxId == 0x287) && count < 50);
     } else if (rxId == 0x7EB /*|| rxId == 0x7E3 */|| rxId == 0x8) {
         /*for(byte i = 0; i<len; i++){
               sprintf(msgString, " 0x%.2X", rxBuf[i]);
@@ -183,9 +187,10 @@ void loop()
         }
       }
       else if (rxBuf[1] == 67 || rxBuf[2] == 67) {
+        for (int i = 0; i < 50; i++) {
         if (rxBuf[0] == 16) {
           obd2Length = rxBuf[1] - 2;
-          sprintf(msgString, "C%d_%.2X%.2X!%.2X%.2X!", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
+          sprintf(msgString, "C_%d_%.2X%.2X!%.2X%.2X!", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
           Serial.print(msgString);
           Bluetooth.print(msgString);
           obd2Length -= 4;
@@ -211,7 +216,7 @@ void loop()
         {
           obd2Length = rxBuf[0];
 
-            sprintf(msgString, "C%d_", rxBuf[2]);
+            sprintf(msgString, "C_%d_", rxBuf[2]);
             Serial.print(msgString);
             Bluetooth.print(msgString);
             obd2Length /= 2;
@@ -227,12 +232,14 @@ void loop()
         }
         Serial.println();
         Bluetooth.println();
+        }
       } else if (rxBuf[1] == 71 || rxBuf[2] == 71) {
+        for (int i = 0; i < 10; i++) {
         //Serial.print("P");
         //Bluetooth.print("P");
         if (rxBuf[0] == 16) {
           obd2Length = rxBuf[1] - 2;
-          sprintf(msgString, "P%d_%.2X%.2X!%.2X%.2X!", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
+          sprintf(msgString, "P_%d_%.2X%.2X!%.2X%.2X!", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
           //Serial.print(msgString);
           //Bluetooth.print(msgString);
           obd2Length -= 4;
@@ -258,7 +265,7 @@ void loop()
         {
           obd2Length = rxBuf[0];
 
-            sprintf(msgString, "P%d_", rxBuf[2]);
+            sprintf(msgString, "P_%d_", rxBuf[2]);
             Serial.print(msgString);
             Bluetooth.print(msgString);
             obd2Length /= 2;
@@ -274,6 +281,7 @@ void loop()
         }
         Serial.println();
         Bluetooth.println();
+        }
       }
       //Serial.println();
       //Bluetooth.println();
