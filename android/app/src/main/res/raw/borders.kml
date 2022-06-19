@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>ASC 2022 Official Route</name>
+    <description/>
+    <NetworkLink>
+      <name>ASC 2022 Official Route</name>
+      <Link>
+        <href><![CDATA[https://www.google.com/maps/d/u/2/kml?forcekml=1&mid=14uZZPPhrtfoTxX6XPClpYN0s3YFIlv_D]]></href>
+      </Link>
+    </NetworkLink>
+  </Document>
+</kml>

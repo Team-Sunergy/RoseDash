@@ -11,13 +11,13 @@ import 'package:flutter_blue/flutter_blue.dart';
 // Custom Widgets
 import '../widgets/CenterIndicators.dart';
 import '../widgets/Warnings.dart';
-//import './FullScreenNav.dart';
-//import '../widgets/Nav.dart';
+import './FullScreenNav.dart';
+import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 import '../widgets/VoltMeter.dart';
 import '../widgets/AddBMSData.dart';
 import '../widgets/TroubleCodes.dart';
-import '../widgets/NavDirections.dart';
+
 
 // Location Streaming
 //import 'package:geolocator/geolocator.dart';
@@ -59,14 +59,14 @@ class HomePageState extends State<HomePage> {
   Set<String> apwSet = new Set<String>();
   int obd2Length = 0;
   bool connected = false;
-  //Nav navInstance;
+  Nav navInstance;
 
 
   @override
   void initState() {
     // Calling superclass initState
     super.initState();
-    //navInstance = new Nav();
+    navInstance = new Nav();
     // Will be set to true on reconnect or 1st connect
     // Reconnect to previously found device
     widget.flutterBlue.connectedDevices
@@ -166,7 +166,7 @@ class HomePageState extends State<HomePage> {
                     index: HomePage.leftIndex,
                     children: [Container(margin: EdgeInsets.symmetric(
                         vertical: 0, horizontal: 0),
-                        child: Speedometer()),
+                        child: Speedometer(timeOn: true)),
                       Center(child: AddBMSData(socStream: _socController.stream,
                         lowStream: _lowController.stream,
                         hiStream: _hiController.stream,
@@ -175,7 +175,7 @@ class HomePageState extends State<HomePage> {
                         deltaStream: _deltaController.stream,
                         hiTempStream: _hiTempController.stream,
                         underHoodStream: _underHoodController.stream,)),
-                      Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
+                      Center(child: TroubleCodes())
 
                     ],
                   )),
@@ -238,7 +238,7 @@ class HomePageState extends State<HomePage> {
                               .horizontal(left: Radius.elliptical(150, 150),
                               right: Radius.elliptical(150, 150)),
                               child: Container(
-                                  height: 500, width: 500, child: Container()/*navInstance*/))),
+                                  height: 500, width: 500, child: navInstance))),
                           Center(child: VoltMeter())
                         ],
                       )),
@@ -266,7 +266,7 @@ class HomePageState extends State<HomePage> {
                         if (HomePage.rightIndex == 1)
                            ElevatedButton(onPressed: () {
                             setState(() {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => NavDirections()/*FullScreenNav()*/),);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav()),);
                             });
                           },
                             child: Icon(Icons.fullscreen, color: Color(
