@@ -6,11 +6,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Warnings extends StatefulWidget {
 
 
-  final Stream<Set<String>> ctcStream;
-  final Stream<Set<String>> ptcStream;
-  final Stream<Set<String>> apwiStream;
+
   final Function() callback;
-  Warnings({this.ctcStream, this.ptcStream, this.apwiStream, this.callback});
+  Warnings({this.callback});
 
   @override
   State<StatefulWidget> createState() => _WarningsState();
@@ -27,20 +25,25 @@ class _WarningsState extends State<Warnings> {
   bool tcSet = false;
   bool apwSet = false;
 
-  void setTroubleCodes(Set<String> warning, int id) {
+  void setTroubleCodes(QuerySnapshot snapshot) {
     if (this.mounted) {
       setState(() {
-        switch (id) {
-        // Delineate between obd2 message types
-          case 0:
-            if (warning.isNotEmpty) tcSet = true;
-            else tcSet = false;
-            break;
-          case 1:
-            if (warning.isNotEmpty) apwSet = true;
-            else apwSet = false;
-            break;
-        }
+        snapshot.docs.forEach((element) {
+          if (element['apvSet'] != "") {
+            apwSet = true;
+          } else
+          {
+            apwSet = false;
+          }
+          if (element['ctcSet'].toString() != "{}" ||
+              element['ptcSet'].toString() != "{}") {
+            tcSet = true;
+          } else
+          {
+            tcSet = false;
+          }
+        });
+
       });
     }
   }
@@ -53,14 +56,8 @@ class _WarningsState extends State<Warnings> {
   @override
   void initState() {
     super.initState();
-    widget.ctcStream.listen((ctcs) {
-      setTroubleCodes(ctcs, 0);
-    });
-    widget.ptcStream.listen((ctcs) {
-      setTroubleCodes(ctcs, 0);
-    });
-    widget.apwiStream.listen((apwi) {
-      setTroubleCodes(apwi, 1);
+    _dB.listen((event) {
+      setTroubleCodes(event);
     });
   }
 

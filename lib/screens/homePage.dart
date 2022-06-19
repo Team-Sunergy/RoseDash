@@ -218,7 +218,7 @@ class HomePageState extends State<HomePage> {
                 CenterIndicators(),), Container(
                 margin: EdgeInsets.only(right: 20),
                 child:
-                Warnings(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream, apwiStream: _apwController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
+                Warnings(callback: () => setState(() => HomePage.leftIndex = 2),),)
               ]),
               VerticalDivider(width: 50),
               Column(

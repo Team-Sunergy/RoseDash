@@ -8,6 +8,8 @@ import 'package:slide_digital_clock/slide_digital_clock.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Speedometer extends StatefulWidget {
+  bool timeOn = true;
+  Speedometer(this.timeOn);
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
@@ -200,7 +202,7 @@ class _SpeedometerState extends State<Speedometer> {
                     Row(
                       children: [
                         Container(width: 165,),
-                        DigitalClock(
+                        widget.timeOn ? DigitalClock(
                           digitAnimationStyle: Curves.bounceInOut,
                           is24HourTimeFormat: false,
                           showSecondsDigit: false,
@@ -223,7 +225,7 @@ class _SpeedometerState extends State<Speedometer> {
                             border: Border.all(color: Colors.transparent),
                           ),
 
-                        ),
+                        ) : Container(),
                       ],
                     ),
                   ],

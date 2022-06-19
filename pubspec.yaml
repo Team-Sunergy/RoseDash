@@ -26,11 +26,10 @@ dependencies:
   flutter_blue: ^0.8.0
   firebase_core: ^1.17.1
   cloud_firestore: ^3.1.17
-  #mapbox_gl: ^0.16.0
+  mapbox_gl: ^0.16.0
   geolocator: ^8.0.0
   mapbox_gl_platform_interface: ^0.16.0
   location: ^4.4.0
-  flutter_mapbox_navigation: ^0.0.26
   characters: ^1.2.0
   slide_digital_clock: ^1.0.2
 

@@ -216,13 +216,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.14.0"
-  flutter_mapbox_navigation:
-    dependency: "direct main"
-    description:
-      name: flutter_mapbox_navigation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.26"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -345,10 +338,31 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
+  mapbox_gl:
+    dependency: "direct main"
+    description:
+      name: mapbox_gl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.16.0"
+  mapbox_gl_dart:
+    dependency: transitive
+    description:
+      name: mapbox_gl_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   mapbox_gl_platform_interface:
     dependency: "direct main"
     description:
       name: mapbox_gl_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.16.0"
+  mapbox_gl_web:
+    dependency: transitive
+    description:
+      name: mapbox_gl_web
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.0"
