@@ -39,7 +39,6 @@ class _NavState extends State<Nav> {
   }
 
   void setLocation(gl.Position location) {
-    print(location.heading);
     if (this.mounted)
       setState(() {
         position = location;

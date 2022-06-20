@@ -1,5 +1,5 @@
+//@dart=2.9
 import 'package:bt01_serial_test/widgets/Speedometer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
@@ -8,7 +8,7 @@ class FullScreenNav extends StatefulWidget {
 }
 
 class _FullScreenNavState extends State<FullScreenNav> {
-  late Nav _nav;
+  Nav _nav;
   @override
   void initState() {
     super.initState();

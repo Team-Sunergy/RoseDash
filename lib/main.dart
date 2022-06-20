@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           );
         }
         // Otherwise, show something whilst waiting for initialization to complete
-        return CircularProgressIndicator();
+        return Center(child: SizedBox(width: 100, height: 100, child: CircularProgressIndicator()));
       },
     );
 
