@@ -78,14 +78,18 @@ void loop()
   // print information about Time and RPM
   float end_time = micros();
   float time_passed = ((end_time-start)/1000000.0);
-  Serial.print("Time Passed: ");
-  Serial.print(time_passed);
-  Serial.println("s");
+  //Serial.print("Time Passed: ");
+  //Serial.print(time_passed);
+  //Serial.println("s");
   float rpm_val = (hall_count/time_passed)*60.0 / 5;
   Serial.print(rpm_val);
   Serial.println(" RPM");
   unsigned long mph = ((5.7583 /*1.34*/ * rpm_val * 60) / 5280);
+  //char * speedmsg;
+  //sprintf(speedmsg,"S%d",mph);
+  Serial.print("S");
   Serial.println(mph);
+  //Bluetooth.println(speedmsg);
   delay(1);        // delay in between reads for stability
 
   // Added 6/12 for reading AUX voltage, no message is being sent via bt 
