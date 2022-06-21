@@ -29,14 +29,17 @@ class _WarningsState extends State<Warnings> {
     if (this.mounted) {
       setState(() {
         snapshot.docs.forEach((element) {
-          if (element['apvSet'] != "") {
+          if (element['apvSet'] != "" && element['apvSet'] != 0) {
             apwSet = true;
           } else
           {
             apwSet = false;
           }
-          if (element['ctcSet'].toString() != "{}" ||
-              element['ptcSet'].toString() != "{}") {
+          if ((element['ctcSet'].toString() != "{}" ||
+              element['ptcSet'].toString() != "{}") &&
+              (element['ctcSet'] != 0 ||
+              element['ptcSet'] != 0)) {
+            print(element['ctcSet'].toString());
             tcSet = true;
           } else
           {

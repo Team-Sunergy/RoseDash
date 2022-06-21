@@ -125,7 +125,7 @@ class _NavState extends State<Nav> {
               LatLng(position.latitude, position.longitude)));
     }
     if (_roseCircle != null) {
-      await _mapController.removeCircle(_circle!);
+      await _mapController.removeCircle(_roseCircle!);
     }
 
     // Add a circle denoting current user location
@@ -143,6 +143,3 @@ class _NavState extends State<Nav> {
     ));
   }
 }
-
-}
-

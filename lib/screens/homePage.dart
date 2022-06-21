@@ -162,7 +162,7 @@ class HomePageState extends State<HomePage> {
                         if (HomePage.rightIndex == 1)
                            ElevatedButton(onPressed: () {
                             setState(() {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav()),);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav(nav: navInstance,)),);
                             });
                           },
                             child: Icon(Icons.fullscreen, color: Color(
