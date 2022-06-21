@@ -28,21 +28,22 @@ class AddBMSData extends StatefulWidget {
   final Stream<Set<String>> ctcStream;
   final Stream<Set<String>> ptcStream;
   final Stream<String> apwiStream;
+  final Stream<double> latStream;
+  final Stream<double> longStream;
+  final Stream<double> altStream;
   AddBMSData({required this.socStream, required this.lowStream,
               required this.hiStream, required this.packVoltStream,
               required this.currentDrawStream, required this.hiTempStream,
               required this.deltaStream, required this.speedStream,
               required this.underHoodStream, required this.ctcStream,
-              required this.ptcStream, required this.apwiStream});
+              required this.ptcStream, required this.apwiStream,
+              required this.latStream, required this.longStream,
+              required this.altStream});
 
  @override createState() => _AddBMSDataState();
 }
 
 class _AddBMSDataState extends State<AddBMSData> {
-  Stream _bms = FirebaseFirestore.instance.collection('BMS')
-      .orderBy('time', descending: true)
-      .limit(1)
-      .snapshots(includeMetadataChanges: true);
   // Create a CollectionReference called users that references the firestore collection
   CollectionReference bmsData = FirebaseFirestore.instance.collection('VisibleTelemetry');
   CollectionReference batteryData = FirebaseFirestore.instance.collection('UnderTheHood');
@@ -63,6 +64,9 @@ class _AddBMSDataState extends State<AddBMSData> {
   Set<String>? _ctcSet;
   Set<String>? _ptcSet;
   String? _apv;
+  double lat = 0;
+  double long = 0;
+  int alt = 0;
 
   void _setCTC(val) {
     if (this.mounted)
@@ -121,19 +125,30 @@ class _AddBMSDataState extends State<AddBMSData> {
     setState((){delta = high - low;});
   }
 
-  void updateHighVolt(QuerySnapshot snapshot) {
-      snapshot.docs.forEach((doc) {
-        if (this.mounted)
-        setState(() {
-        recHi = doc['highVolt'];
+  void _setLat(val) {
+    if (this.mounted)
+      setState(() {
+        lat = val;
       });
-    });
+  }
+
+  void _setLong(val) {
+    if (this.mounted)
+      setState(() {
+        long = val;
+      });
+  }
+
+  void _setAlt(double val) {
+    if (this.mounted)
+      setState(() {
+        alt = (val * 3.28084).toInt();
+      });
   }
 
   void _setSpeed(val) {
     if (this.mounted)
       setState(() {_speed = val;});
-
   }
 
   void _setParams(val) {
@@ -164,13 +179,9 @@ class _AddBMSDataState extends State<AddBMSData> {
     widget.apwiStream.listen((event) {_setAPV(event);});
     widget.ptcStream.listen((event) {_setPTC(event);});
     widget.ctcStream.listen((event) {_setCTC(event);});
-    _bms.listen(
-    (snapshot) => {
-      print("update occurred"),
-      updateHighVolt(snapshot)
-    },
-    onError: (error) => print("Listen failed: $error"),
-    );
+    widget.latStream.listen((event) {_setLat(event);});
+    widget.longStream.listen((event) {_setLong(event);});
+    widget.altStream.listen((event) {_setAlt(event);});
   }
 
   @override
@@ -190,6 +201,9 @@ class _AddBMSDataState extends State<AddBMSData> {
         'ctcSet' : _ctcSet != null ? _ctcSet.toString() : 0,
         'ptcSet' : _ptcSet != null ? _ptcSet.toString() : 0,
         'apvSet' : _apv != null ? _apv : 0,
+        'lat' : lat,
+        'long' : long,
+        'alt' : alt,
         'time': DateTime.now(),
         // 42
       })

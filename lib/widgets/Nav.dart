@@ -1,10 +1,13 @@
-//import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart' as gl;
 
 class Nav extends StatefulWidget {
+
+  final Function(gl.Position) callback;
+  Nav({required this.callback});
 
   @override
   createState() => _NavState();
@@ -13,7 +16,6 @@ class Nav extends StatefulWidget {
 class _NavState extends State<Nav> {
   bool ready = false;
   Circle? _circle;
-  late Circle _userPos;
   late MapboxMap map;
   late StreamSubscription<gl.Position> positionStream;
   late MapboxMapController _mapController;
@@ -39,10 +41,10 @@ class _NavState extends State<Nav> {
   }
 
   void setLocation(gl.Position location) {
-    print(location.heading);
     if (this.mounted)
       setState(() {
         position = location;
+        widget.callback.call(position);
         setCam();
       });
   }

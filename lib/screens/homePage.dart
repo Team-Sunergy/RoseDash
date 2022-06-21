@@ -19,7 +19,7 @@ import '../widgets/AddBMSData.dart';
 import '../widgets/TroubleCodes.dart';
 
 // Location Streaming
-//import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart' as gl;
 
 class HomePage extends StatefulWidget {
   // This is for the IndexedStack
@@ -51,6 +51,9 @@ class HomePageState extends State<HomePage> {
   StreamController<double> _deltaController = StreamController<double>.broadcast();
   StreamController<Object> _underHoodController = StreamController<Object>.broadcast();
   StreamController<double> _speedController = StreamController<double>.broadcast();
+  StreamController<double> _latController = StreamController<double>.broadcast();
+  StreamController<double> _longController = StreamController<double>.broadcast();
+  StreamController<double> _altController = StreamController<double>.broadcast();
   List<BluetoothService> _services;
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
@@ -66,7 +69,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     // Calling superclass initState
     super.initState();
-    navInstance = new Nav();
+    navInstance = new Nav(callback: (event) => {routeLocationToDB(event)},);
     // Will be set to true on reconnect or 1st connect
     // Reconnect to previously found device
     widget.flutterBlue.connectedDevices
@@ -132,9 +135,16 @@ class HomePageState extends State<HomePage> {
       });
     }
   }
-routeSpeed(double val) {
+
+  routeLocationToDB(gl.Position position) {
+    _latController.add(position.latitude);
+    _longController.add(position.longitude);
+    _altController.add(position.altitude);
+  }
+
+  routeSpeed(double val) {
     _speedController.add(val);
-}
+  }
   void changeToTCPage() {
     if (this.mounted) {
       setState(() {
@@ -180,7 +190,10 @@ routeSpeed(double val) {
                         underHoodStream: _underHoodController.stream,
                         ctcStream: _ctcController.stream,
                         ptcStream: _ptcController.stream,
-                        apwiStream: _apwController.stream,)),
+                        apwiStream: _apwController.stream,
+                        latStream: _latController.stream,
+                        longStream: _longController.stream,
+                        altStream: _altController.stream)),
                       Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
 
                     ],
@@ -288,7 +301,7 @@ routeSpeed(double val) {
                         if (HomePage.rightIndex == 1)
                            ElevatedButton(onPressed: () {
                             setState(() {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav()),);//NavDirections()/*FullScreenNav()*/),);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav(nav: navInstance,)),);//NavDirections()/*FullScreenNav()*/),);
                             });
                           },
                             child: Icon(Icons.fullscreen, color: Color(
