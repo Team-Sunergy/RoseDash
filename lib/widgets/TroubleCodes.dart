@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:characters/characters.dart';
 
 class TroubleCodes extends StatefulWidget {
   @override
@@ -39,10 +38,10 @@ class _TroubleCodesState extends State<TroubleCodes> {
 
     void processCodes(QuerySnapshot snapshot) {
       snapshot.docs.forEach((doc) {
-        if (doc['ptcSet'].toString() != "{}") {
+        if (doc['ptcSet'].toString() != "{}" && doc['ptcSet'] != 0 ) {
           setTroubleCodes(doc['ptcSet'], 1);
         }
-        if (doc['ctcSet'].toString() != "{}") {
+        if (doc['ctcSet'].toString() != "{}" && doc['ctcSet'] != 0 ) {
           setTroubleCodes(doc['ctcSet'], 0);
         }
       });
