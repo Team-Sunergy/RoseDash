@@ -26,6 +26,7 @@ dependencies:
   mapbox_gl_platform_interface: ^0.16.0
   characters: ^1.2.0
   slide_digital_clock: ^1.0.2
+  rename: ^2.0.1
 
 
 
@@ -34,10 +35,10 @@ dev_dependencies:
     sdk: flutter
 
 
-flutter icons:
+flutter_icons:
   android: true
   ios: true
-  image_path: "android/app/src/main/res/launch_logo.png"
+  image_path: "android/app/src/main/res/launch_logo_pink.webp"
 
 flutter:
 
