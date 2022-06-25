@@ -5,7 +5,8 @@ import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 class FullScreenNav extends StatefulWidget {
   final Nav nav;
-  FullScreenNav({required this.nav});
+  final Stream<int> mphStream;
+  FullScreenNav({required this.nav, required this.mphStream});
   @override State<StatefulWidget> createState() => _FullScreenNavState();
 }
 
@@ -37,7 +38,7 @@ class _FullScreenNavState extends State<FullScreenNav> {
                 shape: CircleBorder(),
                 padding: EdgeInsets.all(11),),),
         ),
-        Positioned(bottom: 0, left: 15, child: Speedometer(timeOn: false))
+        Positioned(bottom: 0, left: 15, child: Speedometer(timeOn: false, mphStream: widget.mphStream,))
       ],
     );
   }

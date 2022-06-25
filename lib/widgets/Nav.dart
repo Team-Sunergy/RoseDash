@@ -76,6 +76,7 @@ class _NavState extends State<Nav> {
   }
 
   Future<void> setCam() async {
+    // TODO: Update only if recenter button is in its default state
     await _mapController.animateCamera(
     CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
     if (_circle != null) {

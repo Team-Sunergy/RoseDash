@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:characters/characters.dart';
@@ -54,6 +55,7 @@ class HomePageState extends State<HomePage> {
   StreamController<double> _latController = StreamController<double>.broadcast();
   StreamController<double> _longController = StreamController<double>.broadcast();
   StreamController<double> _altController = StreamController<double>.broadcast();
+  StreamController<int> _mphController = StreamController<int>.broadcast();
   List<BluetoothService> _services;
   BluetoothCharacteristic c;
   BluetoothDevice _connectedDevice;
@@ -136,6 +138,108 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+  int hexStringToInt(String hex) {
+    int res = 0;
+    hex = hex.split('').reversed.join();
+    hex = hex.toLowerCase();
+    for (int i = 0; i < hex.length; i++) {
+      // Dart Sucks
+      switch(hex[i]) {
+        case 'a':
+          res += 10 * pow(16, i);
+          break;
+        case 'b':
+          res += 11 * pow(16, i);
+          break;
+        case 'c':
+          res += 12 * pow(16, i);
+          break;
+        case 'd':
+          res += 13 * pow(16, i);
+          break;
+        case 'e':
+          res += 14 * pow(16, i);
+          break;
+        case 'f':
+          res += 15 * pow(16, i);
+          break;
+        case '1':
+          res += pow(16, i);
+          break;
+        case '2':
+          res += 2 * pow(16, i);
+          break;
+        case '3':
+          res += 3 * pow(16, i);
+          break;
+        case '4':
+          res += 4 * pow(16, i);
+          break;
+        case '5':
+          res += 5 * pow(16, i);
+          break;
+        case '6':
+          res += 6 * pow(16, i);
+          break;
+        case '7':
+          res += 7 * pow(16, i);
+          break;
+        case '8':
+          res += 8 * pow(16, i);
+          break;
+        case '9':
+          res += 9 * pow(16, i);
+          break;
+      }
+    }
+    return res;
+  }
+
+  int speedRead(String speed) {
+    int res = 0;
+    speed = speed.split('').reversed.join();
+    for (int i = 0; i < speed.length; i++) {
+      // Dart Sucks
+      switch (speed[i]) {
+        case '1':
+          res += pow(10, i);
+          break;
+        case '2':
+          res += 2 * pow(10, i);
+          break;
+        case '3':
+          res += 3 * pow(10, i);
+          break;
+        case '4':
+          res += 4 * pow(10, i);
+          break;
+        case '5':
+          res += 5 * pow(10, i);
+          break;
+        case '6':
+          res += 6 * pow(10, i);
+          break;
+        case '7':
+          res += 7 * pow(10, i);
+          break;
+        case '8':
+          res += 8 * pow(10, i);
+          break;
+        case '9':
+          res += 9 * pow(10, i);
+          break;
+        }
+      }
+      for (int i = 0; i < 20; i ++)
+      {
+        print("The Speed is ");
+        print(res);
+        print("The string passed in is");
+        print(speed);
+      }
+      return res;
+    }
+
   routeLocationToDB(gl.Position position) {
     _latController.add(position.latitude);
     _longController.add(position.longitude);
@@ -178,7 +282,7 @@ class HomePageState extends State<HomePage> {
                     index: HomePage.leftIndex,
                     children: [Container(margin: EdgeInsets.symmetric(
                         vertical: 0, horizontal: 0),
-                        child: Speedometer(timeOn: true)),
+                        child: Speedometer(timeOn: true, mphStream: _mphController.stream,)),
                       Center(child: AddBMSData(socStream: _socController.stream,
                         lowStream: _lowController.stream,
                         hiStream: _hiController.stream,
@@ -301,7 +405,7 @@ class HomePageState extends State<HomePage> {
                         if (HomePage.rightIndex == 1)
                            ElevatedButton(onPressed: () {
                             setState(() {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav(nav: navInstance,)),);//NavDirections()/*FullScreenNav()*/),);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav(nav: navInstance, mphStream: _mphController.stream,)),);//NavDirections()/*FullScreenNav()*/),);
                             });
                           },
                             child: Icon(Icons.fullscreen, color: Color(
@@ -368,14 +472,46 @@ class HomePageState extends State<HomePage> {
           reader = c.value.listen((event) {});
 
           reader.onData((data) async{
-            //print(utf8.decode(data));
+            print(utf8.decode(data));
             // This is where we receive our CAN Messages
-            String message = utf8.decode(data);
+            String message = ascii.decode(data);
             if (message.isNotEmpty) {
-              if (message[0] == 'C' || message[0] == 'P' ) {
+            if (message[0] == 'k') {
+              //print(message);
+              double current;
+              if (message[1] == 'N') {
+                current = hexStringToInt(Characters(message).skip(2).toString()) * -.1;
+              }
+              else {
+                current = hexStringToInt(Characters(message).skip(2).toString()) * .1;
+              }
+              _currentDrawController.add(current);
+            }
+            else if (message[0] == 'r') {
+              //print(message);
+              UnderHood uh = new UnderHood();
+              Iterable<Characters> components = Characters(message).skip(message.indexOf('!') + 1).split(Characters('!'));
+              for (int i = 0; i < components.length; i++) {
+                if (i == 0) {
+                  //print("cell id = " + int.parse('0x${components.elementAt(i).toString().toUpperCase()}').toString());
+                  uh.cellId = hexStringToInt(components.elementAt(i).toString());
+                } else if (i == 1){
+                  uh.instV = hexStringToInt(components.elementAt(i).toString()) / 10000;
+                } else if (i == 2) {
+                  uh.isShunting = components.elementAt(i).toString() == '1';
+                } else if (i == 3) {
+                  uh.intRes = hexStringToInt(components.elementAt(i).toString()) / 100;
+                } else if (i == 4) {
+                  uh.openV = hexStringToInt(components.elementAt(i).toString()) / 10000;
+                }
+              }
+              _underHoodController.add(uh);
+            }
+
+             else if (message[0] == 'C' || message[0] == 'P' ) {
 
                 Iterable<Characters> lenHelp = Characters(message).split(Characters('_'));
-                int newObd2Length = int.parse(lenHelp.elementAt(1).toString());
+                int newObd2Length = lenHelp.length >= 3 ? int.parse(lenHelp.elementAt(1).toString()) : 0;
                 if (newObd2Length != obd2Length && obd2Length != 0){
                   // Clear the Set and Broadcast it to the TC Widget
                   tcList.clear();
@@ -385,16 +521,21 @@ class HomePageState extends State<HomePage> {
                 // Initialize obd2Length with new unique length
                 obd2Length = newObd2Length;
                 if (obd2Length != 0) {
-                  Iterable<Characters> faults = lenHelp.elementAt(2).split(Characters('!'));
-                  faults.forEach((element) {
-                    String fault = "P" + element.toString();
-                    for (int i = 0; i < 50; i++) {
-                      print(fault);
-                    }
-                    if (fault.length == 5)
-                      tcList.add(fault);
-                  });
-                  message[0] == 'C' ? _ctcController.add(tcList) : _ptcController.add(tcList);
+                  if (lenHelp.length >= 3) {
+                    Iterable<Characters> faults = lenHelp.elementAt(2).split(
+                        Characters('!'));
+                    faults.forEach((element) {
+                      String fault = "P" + element.toString();
+                      for (int i = 0; i < 50; i++) {
+                        //print(fault);
+                      }
+                      if (fault.length == 5)
+                        tcList.add(fault);
+                    });
+                    message[0] == 'C'
+                        ? _ctcController.add(tcList)
+                        : _ptcController.add(tcList);
+                  }
                 } else
                 {
                   // Clear the Set and Broadcast it to the TC Widget
@@ -404,31 +545,16 @@ class HomePageState extends State<HomePage> {
                 }
               }
 
-              if (message[0] == 'r') {
-                print(message);
-                  UnderHood uh = new UnderHood();
-                  Iterable<Characters> components = Characters(message).skip(message.indexOf('!') + 1).split(Characters('!'));
-                  for (int i = 0; i < components.length; i++) {
-                    if (i == 0) {
-                      print("cell id = " + int.parse(components.elementAt(i).toString(), radix: 16).toString());
-                      uh.cellId = int.parse(components.elementAt(i).toString().toLowerCase(), radix: 16);
-                    } else if (i == 1){
-                      uh.instV = int.parse(components.elementAt(i).toString().toLowerCase(), radix: 16)/10000.toDouble();
-                    } else if (i == 2) {
-                      uh.isShunting = components.elementAt(i).toString() == '1';
-                    } else if (i == 3) {
-                      uh.intRes = int.parse(components.elementAt(i).toString().toLowerCase(), radix: 16)/100.toDouble();
-                    } else if (i == 4) {
-                      String hex = components.elementAt(i).toString().toLowerCase();
-                      uh.openV = int.parse("0x$hex")/10000.toDouble();
-                    }
-                  }
-                  _underHoodController.add(uh);
+
+
+              else if (message[0] == 's') {
+                //message =
+                //int speed = speedRead(Characters(message.trim()).replaceAll(Characters("ss"), Characters.empty).toString());
+                _mphController.add(int.parse(Characters(message).split(Characters('\r')).elementAt(0).toString()));
               }
 
-
               else if (message[0] == 'V') {
-                var auxPackVoltage = num.tryParse(message.substring(1, 4)).toDouble();
+                var auxPackVoltage = num.parse(message.substring(1, 4))?.toDouble();
                 if (auxPackVoltage < 2) {
                   //apwSet.add(auxPackVoltage.toString());
                   _apwController.add(auxPackVoltage.toString());
@@ -438,39 +564,24 @@ class HomePageState extends State<HomePage> {
                 }
               }
               else if (message[0] == 'G') {
-                _socController.add(int.parse(
-                    message.substring(1, 3),
-                    radix: 16) /
-                    2);
-                _hiController.add(int.parse(
-                    message.substring(4, 8),
-                    radix: 16) /
-                    10000);
-                _lowController.add(int.parse(
-                    message.substring(9, 13),
-                    radix: 16) /
-                    10000);
-                _packVoltSumController.add(int.parse(
-                    message.substring(14, 18),
-                    radix: 16) /
-                    10);
-                _hiTempController.add(int.parse(
-                    message.substring(19, 21),
-                    radix: 16));
+                _socController.add(hexStringToInt(message.substring(1, 3)) / 2);
+                _hiController.add(hexStringToInt(message.substring(4, 8)) / 10000);
+                _lowController.add(hexStringToInt(message.substring(9, 13)) / 10000);
+                _packVoltSumController.add(hexStringToInt(message.substring(14, 18)) / 10);
+                _hiTempController.add(hexStringToInt(message.substring(19, 21)));
                 // Arithmetic is performed in VoltMeter Widget
                 _deltaController.add(0);
-              } else if (message[0] == 'H') {
-                _currentDrawController.add((int.parse(
-                    message.substring(1, 3),
-                    radix: 16)) *
-                    0.1);
               }
 
+            // Poll for Absolute Pack Current Draw
+            //await obd2Req("upc#");
+
               // Poll for Current Trouble Codes
-              await obd2Req("ctc#");
+              //await obd2Req("ctc#");
 
               // Poll for Pending Trouble Codes
-              await obd2Req("ptc#");
+              //await obd2Req("ptc#");
+              message = "";
             }
           });
         }

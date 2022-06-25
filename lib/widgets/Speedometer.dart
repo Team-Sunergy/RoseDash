@@ -1,4 +1,4 @@
-// @dart=2.9
+
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
@@ -6,27 +6,25 @@ import 'package:geolocator/geolocator.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 class Speedometer extends StatefulWidget {
-  bool timeOn = true;
-
-  final Function(double) callback;
-  Speedometer({this.callback, this.timeOn});
+  final bool timeOn;
+  final Stream<int> mphStream;
+  Speedometer({required this.mphStream, required this.timeOn});
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
   int _targetSpeed = 0;
-  double speed = 0;
-  void setSpeed(Position pos) {
+  int speed = 0;
+  void setSpeed(int mph) {
     if (this.mounted)
     setState(() {
-      speed = pos.speed * 2.236936;
-      widget.callback?.call(speed);
+      speed = mph;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    Geolocator.getPositionStream(locationSettings: LocationSettings(accuracy: LocationAccuracy.best)).listen((speed) {setSpeed(speed);});
+    widget.mphStream.listen((event) {setSpeed(event);});
   }
   @override
   Widget build(BuildContext context) {
@@ -70,11 +68,11 @@ class _SpeedometerState extends State<Speedometer> {
         showTicks: false,
         pointers: <GaugePointer>[
           NeedlePointer(
-              value: speed,
+              value: speed / 1.0,
               onValueChanged: (double newValue) {
                 if (this.mounted)
                 setState(() {
-                  speed = newValue;
+                  speed = newValue as int;
                 });
               },
               needleColor: Color(0xffd9950b).withOpacity(1),
