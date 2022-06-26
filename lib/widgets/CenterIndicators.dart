@@ -102,14 +102,12 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
     return Container(
       child: Column(children: [
         Container(
-            //width: 150,
-            //color: Colors.red,
             child: SixteenSegmentDisplay(
           value: soc.toString() + "%",
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: Color(0xffedd711),
+              enabledColor: _socColor(),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         Container(height: 20, child: Text("State of Charge", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
@@ -179,6 +177,14 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
     if (highTemp < 45) { return Color(0xff39ff14); } // All good!
     else if (highTemp >= 45 && highTemp < 52) { return Color(0xffc2b11d); } // Watch for fault.
     else if (highTemp >= 52 && highTemp < 60) { return Color(0xfff72119); } // Fault incoming...
+    else { return Color(0xffc845ff); } // Fault state!
+  }
+
+  Color _socColor()
+  {
+    if (soc > 50) { return Color(0xff39ff14); } // All good!
+    else if (soc <= 50 && soc > 25) { return Color(0xffc2b11d); } // Watch for fault.
+    else if (soc <= 25 && soc < 15) { return Color(0xfff72119); } // Fault incoming...
     else { return Color(0xffc845ff); } // Fault state!
   }
 }

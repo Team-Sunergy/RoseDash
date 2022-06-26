@@ -33,7 +33,7 @@ class _SpeedometerState extends State<Speedometer> {
           _targetSpeed = element['targetSpeed'];
           // TODO: Audible alert for new target speed
         });
-      })
+      });
 
   }
 
@@ -58,7 +58,7 @@ class _SpeedometerState extends State<Speedometer> {
                 children: <Widget>[
                   // Added image widget as an annotation
                   Transform.rotate(
-                  angle: 0.2,
+                  angle: _speedAngle(speed),
                   child : Container(
                       width: 270.00,
                       height: 270.00,
@@ -248,4 +248,13 @@ class _SpeedometerState extends State<Speedometer> {
 
     ]);
   }
+
+
+}
+double _speedAngle(int speed)
+{
+  if (speed < 30) { return 0.2; }
+  else if (speed >= 30 && speed < 40) { return 0.25; }
+  else { return 0.3; }
+
 }
