@@ -12,7 +12,7 @@ class Speedometer extends StatefulWidget {
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
-  Stream _dB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+  Stream _dB = FirebaseFirestore.instance.collection('adminSettings')
       .orderBy('time', descending: true)
       .limit(1)
       .snapshots(includeMetadataChanges: true);
@@ -46,205 +46,226 @@ class _SpeedometerState extends State<Speedometer> {
   @override
   Widget build(BuildContext context) {
     return SfRadialGauge(axes: <RadialAxis>[
-      RadialAxis(
+        RadialAxis(
+            showAxisLine: false,
+            showLabels: false,
+            showTicks: false,
+            radiusFactor: 1,
+            annotations: <GaugeAnnotation>[
+              GaugeAnnotation(
+                widget: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    // Added image widget as an annotation
+                    Transform.rotate(
+                    angle: _speedAngle(speed),
+                    child : Container(
+                        width: 270.00,
+                        height: 270.00,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          image: DecorationImage(
+                            alignment: Alignment.bottomLeft,
+                            filterQuality: FilterQuality.high,
+                            colorFilter: ColorFilter.srgbToLinearGamma(),
+                            image:
+                            ExactAssetImage('images/Yosef_dental.png'),
+                            fit: BoxFit.fill,
+                            opacity: 0.4,
+                          ),
+                        )),
+                    )
+                  ],
+                ),
+              )
+            ]),
+        RadialAxis(
+          showAxisLine: false,
+          showLabels: false,
+          showTicks: false,
+          radiusFactor: 0.9,
+          minimum: 0,
+          maximum: 81,
+          pointers: <GaugePointer>[
+            NeedlePointer(
+                value: speed / 1.0,
+                onValueChanged: (double newValue) {
+                  if (this.mounted)
+                  setState(() {
+                    speed = newValue as int;
+                  });
+                },
+                needleColor: Color(0xffd9950b).withOpacity(1),
+                needleLength: 4,
+                needleStartWidth: 0.5,
+                needleEndWidth: 5,
+                tailStyle: TailStyle(
+                    length: 0.0455,
+                    width: 1.5,
+                    borderWidth: 1,
+                    borderColor: Color(0xff070b1a)),
+                knobStyle: KnobStyle(
+                    color: Colors.white,
+                    borderColor: Color(0xff070b1a),
+                    borderWidth: 0.006,
+                    knobRadius: 0.017),
+                enableAnimation: true),
+            NeedlePointer(
+                value: (_targetSpeed) / 1.0,
+                onValueChanged: (double newValue) {
+                  if (this.mounted)
+                    setState(() {
+                      _targetSpeed = newValue as int;
+                    });
+                },
+                needleColor: Color(0xff3eff44).withOpacity(0.5),
+                needleLength: 4,
+                needleStartWidth: 0.5,
+                needleEndWidth: 5,
+                knobStyle: KnobStyle(
+                    color: Colors.white,
+                    borderColor: Color(0xff070b1a),
+                    borderWidth: 0.006,
+                    knobRadius: 0.017),
+                enableAnimation: true)
+          ],
+        ),
+        RadialAxis(
+          centerX: 0.51,
+          useRangeColorForAxis: true,
           showAxisLine: false,
           showLabels: false,
           showTicks: false,
           radiusFactor: 1,
-          annotations: <GaugeAnnotation>[
-            GaugeAnnotation(
-              widget: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  // Added image widget as an annotation
-                  Transform.rotate(
-                  angle: _speedAngle(speed),
-                  child : Container(
-                      width: 270.00,
-                      height: 270.00,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.rectangle,
-                        image: DecorationImage(
-                          alignment: Alignment.bottomLeft,
-                          filterQuality: FilterQuality.high,
-                          colorFilter: ColorFilter.srgbToLinearGamma(),
-                          image:
-                          ExactAssetImage('images/Yosef_dental.png'),
-                          fit: BoxFit.fill,
-                          opacity: 0.4,
-                        ),
-                      )),
-                  )
-                ],
-              ),
-            )
-          ]),
-      RadialAxis(
-        showAxisLine: false,
-        showLabels: false,
-        showTicks: false,
-        pointers: <GaugePointer>[
-          NeedlePointer(
-              value: speed / 1.0,
-              onValueChanged: (double newValue) {
-                if (this.mounted)
-                setState(() {
-                  speed = newValue as int;
-                });
-              },
-              needleColor: Color(0xffd9950b).withOpacity(1),
-              needleLength: 4,
-              needleStartWidth: 0.5,
-              needleEndWidth: 5,
-              tailStyle: TailStyle(
-                  length: 0.0455,
-                  width: 1.5,
-                  borderWidth: 1,
-                  borderColor: Color(0xff070b1a)),
-              knobStyle: KnobStyle(
-                  color: Colors.white,
-                  borderColor: Color(0xff070b1a),
-                  borderWidth: 0.006,
-                  knobRadius: 0.017),
-              enableAnimation: false)
-        ],
-      ),
-      RadialAxis(
-        centerX: 0.51,
-        useRangeColorForAxis: true,
-        showAxisLine: false,
-        showLabels: false,
-        showTicks: false,
-        radiusFactor: 1,
-        ranges: <GaugeRange>[
-          GaugeRange(
-              startValue: 0,
-              endValue: 16,
-              startWidth: 0,
-              endWidth: 5,
-              color: Color(0xffc2b11d)),
-          GaugeRange(
-              startValue: 17,
-              endValue: 32,
-              startWidth: 5,
-              endWidth: 10,
-              color: Color(0xff03050a)),
-          GaugeRange(
-              startValue: 33,
-              endValue: 48,
-              startWidth: 10,
-              endWidth: 13,
-              color: Color(0xffedd711)),
-          GaugeRange(
-              startValue: 49,
-              endValue: 64,
-              startWidth: 13,
-              endWidth: 16,
-              color: Color(0xff03050a)),
-          GaugeRange(
-              startValue: 65,
-              endValue: 80,
-              startWidth: 16,
-              endWidth: 20,
-              color: Color(0xffc2b11d)),
-          GaugeRange(
-              startValue: 81,
-              endValue: 100,
-              startWidth: 20,
-              endWidth: 23,
-              color: Color(0xff03050a)),
-        ],
-      ),
-      RadialAxis(
-          showAxisLine: false,
-          showLabels: true,
-          showTicks: true,
-          radiusFactor: 0.9,
-          minimum: 0,
-          maximum: 81,
-          majorTickStyle: MajorTickStyle(
-              color: Color(0xffc2b11d), dashArray: <double>[5, 5]),
-          minorTickStyle: MinorTickStyle(color: Color(0xff635b0e)),
-          axisLabelStyle: GaugeTextStyle(color: Color(0xffc2b11d)),
-          axisLineStyle: AxisLineStyle(
-            dashArray: <double>[5, 5],
-          ),
-          //color: Color(0xFFFF7676),),
-          annotations: <GaugeAnnotation>[
-            GaugeAnnotation(
-              widget: Container(
-                child: SixteenSegmentDisplay(
-                    value: speed.toInt().toString() + ' mph',
-                    size: 2.5,
-                    backgroundColor: Colors.transparent,
-                    segmentStyle: RectSegmentStyle(
-                        enabledColor: Colors.yellow,
-                        disabledColor: Color(0xff635b0e).withOpacity(0.05))),
-              ),
-              angle: 85,
-              positionFactor: 0.5,
+          ranges: <GaugeRange>[
+            GaugeRange(
+                startValue: 0,
+                endValue: 16,
+                startWidth: 0,
+                endWidth: 5,
+                color: Color(0xffc2b11d)),
+            GaugeRange(
+                startValue: 17,
+                endValue: 32,
+                startWidth: 5,
+                endWidth: 10,
+                color: Color(0xff03050a)),
+            GaugeRange(
+                startValue: 33,
+                endValue: 48,
+                startWidth: 10,
+                endWidth: 13,
+                color: Color(0xffedd711)),
+            GaugeRange(
+                startValue: 49,
+                endValue: 64,
+                startWidth: 13,
+                endWidth: 16,
+                color: Color(0xff03050a)),
+            GaugeRange(
+                startValue: 65,
+                endValue: 80,
+                startWidth: 16,
+                endWidth: 20,
+                color: Color(0xffc2b11d)),
+            GaugeRange(
+                startValue: 81,
+                endValue: 100,
+                startWidth: 20,
+                endWidth: 23,
+                color: Color(0xff03050a)),
+          ],
+        ),
+        RadialAxis(
+            showAxisLine: false,
+            showLabels: true,
+            showTicks: true,
+            radiusFactor: 0.9,
+            minimum: 0,
+            maximum: 81,
+            majorTickStyle: MajorTickStyle(
+                color: Color(0xffc2b11d), dashArray: <double>[5, 5]),
+            minorTickStyle: MinorTickStyle(color: Color(0xff635b0e)),
+            axisLabelStyle: GaugeTextStyle(color: Color(0xffc2b11d)),
+            axisLineStyle: AxisLineStyle(
+              dashArray: <double>[5, 5],
             ),
-            GaugeAnnotation(
-              widget: Container(
-                height: 40,
-                child: Column(
-                  children: [
-                    SixteenSegmentDisplay(
-                        value: "Target: " + _targetSpeed.toString(),
-                        size: 1.25,
-                        backgroundColor: Colors.transparent,
-                        segmentStyle: RectSegmentStyle(
-                            enabledColor: Colors.yellow,
-                            disabledColor: Color(0xff635b0e).withOpacity(0.05))),
-                  ],
+            //color: Color(0xFFFF7676),),
+            annotations: <GaugeAnnotation>[
+              GaugeAnnotation(
+                widget: Container(
+                  child: SixteenSegmentDisplay(
+                      value: speed.toInt().toString() + ' mph',
+                      size: 2.5,
+                      backgroundColor: Colors.transparent,
+                      segmentStyle: RectSegmentStyle(
+                          enabledColor: Colors.yellow,
+                          disabledColor: Color(0xff635b0e).withOpacity(0.05))),
                 ),
+                angle: 85,
+                positionFactor: 0.5,
               ),
-              angle: 85,
-              positionFactor: 0.73,
-            ),
-            GaugeAnnotation(
-              widget: Container(
-                height: 40,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Container(width: 165,),
-                        widget.timeOn ? DigitalClock(
-                          digitAnimationStyle: Curves.bounceInOut,
-                          is24HourTimeFormat: false,
-                          showSecondsDigit: false,
-                          amPmDigitTextStyle: TextStyle(
-                            color: Color(0xffc2b11d).withOpacity(0.5),
-                            fontSize: 10,
-                          ),
-                          secondDigitDecoration: BoxDecoration(color: Colors.transparent),
-                          secondDigitTextStyle: TextStyle(
-                            color: Color(0xffedd711),
-                            fontSize: 15,
-                          ),
-                          hourMinuteDigitDecoration: BoxDecoration(color: Colors.transparent),
-                          hourMinuteDigitTextStyle: TextStyle(
-                            color: Color(0xffedd711),
-                            fontSize: 16,
-                          ),
-                          areaDecoration: BoxDecoration(
-                            color: Colors.transparent,
-                            border: Border.all(color: Colors.transparent),
-                          ),
-
-                        )
-                        : Container(),
-                      ],
-                    ),
-                  ],
+              GaugeAnnotation(
+                widget: Container(
+                  height: 40,
+                  child: Column(
+                    children: [
+                      SixteenSegmentDisplay(
+                          value: "Target: " + _targetSpeed.toString(),
+                          size: 1.25,
+                          backgroundColor: Colors.transparent,
+                          segmentStyle: RectSegmentStyle(
+                              enabledColor: Colors.yellow,
+                              disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+                    ],
+                  ),
                 ),
+                angle: 85,
+                positionFactor: 0.73,
               ),
-              angle: 85,
-              positionFactor: 0.85,
-            ),
+              GaugeAnnotation(
+                widget: Container(
+                  height: 40,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Container(width: 165,),
+                          widget.timeOn ? DigitalClock(
+                            digitAnimationStyle: Curves.bounceInOut,
+                            is24HourTimeFormat: false,
+                            showSecondsDigit: false,
+                            amPmDigitTextStyle: TextStyle(
+                              color: Color(0xffc2b11d).withOpacity(0.5),
+                              fontSize: 10,
+                            ),
+                            secondDigitDecoration: BoxDecoration(color: Colors.transparent),
+                            secondDigitTextStyle: TextStyle(
+                              color: Color(0xffedd711),
+                              fontSize: 15,
+                            ),
+                            hourMinuteDigitDecoration: BoxDecoration(color: Colors.transparent),
+                            hourMinuteDigitTextStyle: TextStyle(
+                              color: Color(0xffedd711),
+                              fontSize: 16,
+                            ),
+                            areaDecoration: BoxDecoration(
+                              color: Colors.transparent,
+                              border: Border.all(color: Colors.transparent),
+                            ),
 
-          ]),
+                          )
+                          : Container(),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                angle: 85,
+                positionFactor: 0.85,
+              ),
+
+            ]),
 
     ]);
   }
@@ -254,7 +275,6 @@ class _SpeedometerState extends State<Speedometer> {
 double _speedAngle(int speed)
 {
   if (speed < 30) { return 0.2; }
-  else if (speed >= 30 && speed < 40) { return 0.25; }
-  else { return 0.3; }
-
+  else if (speed >= 30 && speed < 40) { return 0.275; }
+  else { return 0.35; }
 }
