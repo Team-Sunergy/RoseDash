@@ -196,6 +196,7 @@ class HomePageState extends State<HomePage> {
   }
 
   int speedRead(String speed) {
+    speed = speed.substring(0, speed.indexOf("\r"));
     int res = 0;
     speed = speed.split('').reversed.join();
     for (int i = 0; i < speed.length; i++) {
@@ -550,7 +551,8 @@ class HomePageState extends State<HomePage> {
               else if (message[0] == 's') {
                 //message =
                 //int speed = speedRead(Characters(message.trim()).replaceAll(Characters("ss"), Characters.empty).toString());
-                _mphController.add(int.parse(Characters(message).split(Characters('\r')).elementAt(0).toString()));
+                int speed = speedRead(Characters(message).split(Characters('\r')).elementAt(0).skip(2).toString());
+                _mphController.add(speed);
               }
 
               else if (message[0] == 'V') {

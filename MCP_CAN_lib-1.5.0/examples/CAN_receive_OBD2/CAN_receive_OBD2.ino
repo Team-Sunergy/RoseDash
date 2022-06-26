@@ -96,9 +96,10 @@ void loop()
 
   value = analogRead( VOL_PIN );
   volt = value * 5.0 / 1023.0;
-
-  Serial.println("V" + String(volt));
-  Bluetooth.println("V" + String(volt));
+  for (int i = 0; i < 20; i++) {
+    Serial.println("V" + String(volt));
+    Bluetooth.println("V" + String(volt));
+  }
   
   bool extendedFrame = false;
   if(!digitalRead(CAN0_INT))                         // If CAN0_INT pin is low, read receive buffer

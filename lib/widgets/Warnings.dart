@@ -50,8 +50,8 @@ class _WarningsState extends State<Warnings> {
     widget.ctcStream.listen((ctcs) {
       setTroubleCodes(ctcs.isNotEmpty, 0);
     });
-    widget.ptcStream.listen((ctcs) {
-      setTroubleCodes(ctcs.isNotEmpty, 0);
+    widget.ptcStream.listen((ptcs) {
+      setTroubleCodes(ptcs.isNotEmpty, 0);
     });
     widget.apwiStream.listen((apwi) {
       setTroubleCodes(apwi != "", 1);
