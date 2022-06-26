@@ -154,7 +154,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: highTemp < 35 ? Color(0xffedd711) : Color(0xfff72119),
+              enabledColor: _tempColor(),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         Container(height: 20, child: Text("High Temp ºC", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
@@ -172,5 +172,13 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
         Container(height: 20, child: Text("Current Draw", style: TextStyle(color: Colors.white70.withOpacity(0.65)),))
       ]),
     );
+  }
+
+  Color _tempColor()
+  {
+    if (highTemp < 45) { return Color(0xff39ff14); } // All good!
+    else if (highTemp >= 45 && highTemp < 52) { return Color(0xffc2b11d); } // Watch for fault.
+    else if (highTemp >= 52 && highTemp < 60) { return Color(0xfff72119); } // Fault incoming...
+    else { return Color(0xffc845ff); } // Fault state!
   }
 }
