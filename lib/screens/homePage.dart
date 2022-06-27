@@ -9,7 +9,7 @@ import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 import '../widgets/VoltMeter.dart';
 import '../widgets/TroubleCodes.dart';
-
+import '../widgets/TargetSpeedForm.dart';
 
 class HomePage extends StatefulWidget {
   // This is for the IndexedStack
@@ -70,7 +70,7 @@ class HomePageState extends State<HomePage> {
                     children: [Container(margin: EdgeInsets.symmetric(
                         vertical: 0, horizontal: 0),
                         child: Speedometer(timeOn: true)),
-                      Center(),
+                      TargetSpeedForm(),
                       Center(child: TroubleCodes())
 
                     ],

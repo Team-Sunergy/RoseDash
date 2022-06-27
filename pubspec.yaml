@@ -27,6 +27,7 @@ dependencies:
   characters: ^1.2.0
   slide_digital_clock: ^1.0.2
   rename: ^2.0.1
+  numberpicker: ^2.1.1
 
 
 
