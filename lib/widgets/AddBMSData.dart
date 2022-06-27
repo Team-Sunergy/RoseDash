@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 // Import the firebase_core and cloud_firestore plugin
@@ -162,10 +164,53 @@ class _AddBMSDataState extends State<AddBMSData> {
       });
   }
 
+  Future<void> addBMSData() {
+    // Call the user's CollectionReference to add a new user
+    return bmsData
+        .add({
+      'soc': soc, // John Doe
+      'lowVolt': low, // Stokes and Sons
+      'highVolt': high,
+      'packVolt': packVoltSum,
+      'currentDraw': currentDraw,
+      'delta': delta,
+      'hiTemp': highTemp,
+      'speed' : _speed,
+      'ctcSet' : _ctcSet != null ? _ctcSet.toString() : 0,
+      'ptcSet' : _ptcSet != null ? _ptcSet.toString() : 0,
+      'apvSet' : _apv != null ? _apv : 0,
+      'lat' : lat,
+      'long' : long,
+      'alt' : alt,
+      'time': DateTime.now(),
+      // 42
+    })
+        .then((value) => print("BMS Data Added"))
+        .catchError((error) => print("Failed to add BMS data: $error"));
+  }
+
+  Future<void> addBatteryData() {
+    // Call the user's CollectionReference to add a new user
+    return batteryData
+        .add({
+      'Cell_ID': _cellID, // John Doe
+      'Instant_Voltage': _instantVoltage, // Stokes and Sons
+      'Shunting': _isShunting,
+      'Internal_Resistance': _internalResistance,
+      'Open_Voltage': _openVoltage,
+      'time': DateTime.now(),
+      // 42
+    })
+        .then((value) => print("Battery Data Added"))
+        .catchError((error) => print("Failed to add Battery data: $error"));
+  }
 
   @override
   void initState() {
     super.initState();
+    Timer.periodic(Duration(seconds: 5), (Timer t1) => addBMSData());
+    Timer.periodic(Duration(seconds: 5), (Timer t2) => addBatteryData());
+
     widget.socStream.listen((soc) {_setSOC(soc);});
     widget.lowStream.listen((low) {_setLow(low);});
     widget.hiStream.listen((hi) {_setHigh(hi);});
@@ -186,31 +231,6 @@ class _AddBMSDataState extends State<AddBMSData> {
 
   @override
   Widget build(BuildContext context) {
-    Future<void> addBMSData() {
-      // Call the user's CollectionReference to add a new user
-      return bmsData
-          .add({
-        'soc': soc, // John Doe
-        'lowVolt': low, // Stokes and Sons
-        'highVolt': high,
-        'packVolt': packVoltSum,
-        'currentDraw': currentDraw,
-        'delta': delta,
-        'hiTemp': highTemp,
-        'speed' : _speed,
-        'ctcSet' : _ctcSet != null ? _ctcSet.toString() : 0,
-        'ptcSet' : _ptcSet != null ? _ptcSet.toString() : 0,
-        'apvSet' : _apv != null ? _apv : 0,
-        'lat' : lat,
-        'long' : long,
-        'alt' : alt,
-        'time': DateTime.now(),
-        // 42
-      })
-          .then((value) => print("BMS Data Added"))
-          .catchError((error) => print("Failed to add BMS data: $error"));
-    }
-
     Future<void> addBatteryData() {
       // Call the user's CollectionReference to add a new user
       return batteryData
