@@ -2,31 +2,56 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Speedometer extends StatefulWidget {
   bool timeOn = true;
-
   final Function(double) callback;
   Speedometer({this.callback, this.timeOn});
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
+  Stream _dB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
+  Stream _dBTgt = FirebaseFirestore.instance.collection('adminSettings')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
   int _targetSpeed = 0;
   double speed = 0;
-  void setSpeed(Position pos) {
+
+  void setSpeed(QuerySnapshot snapshot) {
     if (this.mounted)
       setState(() {
-        speed = pos.speed * 2.236936;
+        snapshot.docs.forEach((element) {
+          speed = element['speed'];
+        });
         widget.callback?.call(speed);
+      });
+  }
+
+  void setTargetSpeed(QuerySnapshot snapshot) {
+    if (this.mounted)
+      snapshot.docs.forEach((element) {
+        setState(() {
+          _targetSpeed = element['targetSpeed'];
+          // TODO: Audible alert for new target speed
+        });
       });
   }
 
   @override
   void initState() {
     super.initState();
-    Geolocator.getPositionStream(locationSettings: LocationSettings(accuracy: LocationAccuracy.best)).listen((speed) {setSpeed(speed);});
+    _dB.listen((event) {
+      setSpeed(event);
+    });
+    _dBTgt.listen((event) {
+      setTargetSpeed(event);
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -68,6 +93,9 @@ class _SpeedometerState extends State<Speedometer> {
         showAxisLine: false,
         showLabels: false,
         showTicks: false,
+        radiusFactor: 0.9,
+        minimum: 0,
+        maximum: 81,
         pointers: <GaugePointer>[
           NeedlePointer(
               value: speed,
@@ -91,7 +119,25 @@ class _SpeedometerState extends State<Speedometer> {
                   borderColor: Color(0xff070b1a),
                   borderWidth: 0.006,
                   knobRadius: 0.017),
-              enableAnimation: false)
+              enableAnimation: false),
+          NeedlePointer(
+              value: (_targetSpeed) / 1.0,
+              onValueChanged: (double newValue) {
+                if (this.mounted)
+                  setState(() {
+                    _targetSpeed = newValue as int;
+                  });
+              },
+              needleColor: Color(0xff3eff44).withOpacity(0.5),
+              needleLength: 4,
+              needleStartWidth: 0.5,
+              needleEndWidth: 5,
+              knobStyle: KnobStyle(
+                  color: Colors.white,
+                  borderColor: Color(0xff070b1a),
+                  borderWidth: 0.006,
+                  knobRadius: 0.017),
+              enableAnimation: true),
         ],
       ),
       RadialAxis(

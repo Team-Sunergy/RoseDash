@@ -1,4 +1,6 @@
 //import 'package:cloud_firestore/cloud_firestore.dart';
+
+
 import 'package:flutter/material.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'dart:async';
@@ -6,7 +8,7 @@ import 'package:geolocator/geolocator.dart' as gl;
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Nav extends StatefulWidget {
-
+  static bool recenter = true;
   @override
   createState() => _NavState();
 }
@@ -58,6 +60,7 @@ class _NavState extends State<Nav> {
     if (this.mounted)
       setState(() {
         position = location;
+        if (Nav.recenter)
         setMyCam();
       });
   }
@@ -69,8 +72,19 @@ class _NavState extends State<Nav> {
       });
   }
 
+void setRecenter()
+{
+  if (this.mounted)
+    setState(() {
+      Nav.recenter = !Nav.recenter;
+    });
+}
   void createMap() {
     map = new MapboxMap(
+        onMapClick: (var p,LatLng l) => {setRecenter()},
+        //onCameraTrackingDismissed: () => {stopRecentering()},
+        //onMapLongClick: (var p,LatLng l) => {stopRecentering()},
+        //onCameraTrackingChanged: (MyLocationTrackingMode m) => {stopRecentering()},
         initialCameraPosition: CameraPosition(
           target: LatLng(position.latitude, position.longitude), zoom: 13,),
         // boone coordinates LatLng(36.204010,-81.669434)
@@ -96,11 +110,13 @@ class _NavState extends State<Nav> {
   }
 
   Future<void> setMyCam() async {
-    await _mapController.animateCamera(
-        CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
-    if (_circle != null) {
-      await _mapController.removeCircle(_circle!);
+    if (Nav.recenter == true) {
+      await _mapController.animateCamera(
+          CameraUpdate.newLatLng(LatLng(position.latitude, position.longitude)));
+      if (_circle != null) {
+        await _mapController.removeCircle(_circle!);
     }
+  }
 
     // Add a circle denoting current user location
     _circle = await _mapController.addCircle( CircleOptions(
