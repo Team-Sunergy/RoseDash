@@ -26,7 +26,7 @@ class AddBMSData extends StatefulWidget {
   final Stream<double> deltaStream;
   final Stream<int> hiTempStream;
   final Stream<Object> underHoodStream;
-  final Stream<double> speedStream;
+  final Stream<int> speedStream;
   final Stream<Set<String>> ctcStream;
   final Stream<Set<String>> ptcStream;
   final Stream<String> apwiStream;

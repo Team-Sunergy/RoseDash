@@ -51,7 +51,6 @@ class HomePageState extends State<HomePage> {
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
   StreamController<double> _deltaController = StreamController<double>.broadcast();
   StreamController<Object> _underHoodController = StreamController<Object>.broadcast();
-  StreamController<double> _speedController = StreamController<double>.broadcast();
   StreamController<double> _latController = StreamController<double>.broadcast();
   StreamController<double> _longController = StreamController<double>.broadcast();
   StreamController<double> _altController = StreamController<double>.broadcast();
@@ -247,9 +246,6 @@ class HomePageState extends State<HomePage> {
     _altController.add(position.altitude);
   }
 
-  routeSpeed(double val) {
-    _speedController.add(val);
-  }
   void changeToTCPage() {
     if (this.mounted) {
       setState(() {
@@ -291,7 +287,7 @@ class HomePageState extends State<HomePage> {
                         currentDrawStream: _currentDrawController.stream,
                         deltaStream: _deltaController.stream,
                         hiTempStream: _hiTempController.stream,
-                        speedStream: _speedController.stream,
+                        speedStream: _mphController.stream,
                         underHoodStream: _underHoodController.stream,
                         ctcStream: _ctcController.stream,
                         ptcStream: _ptcController.stream,
@@ -576,13 +572,13 @@ class HomePageState extends State<HomePage> {
               }
 
             // Poll for Absolute Pack Current Draw
-            //await obd2Req("upc#");
+            await obd2Req("upc#");
 
               // Poll for Current Trouble Codes
-              //await obd2Req("ctc#");
+              await obd2Req("ctc#");
 
               // Poll for Pending Trouble Codes
-              //await obd2Req("ptc#");
+              await obd2Req("ptc#");
               message = "";
             }
           });
