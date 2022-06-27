@@ -190,7 +190,6 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
     else { return Color(0xffc845ff); } // Fault state!
   }
 
-  // TODO: Finish color methods... Matt and Nicole can help with appropriate ranges
   Color _lowColor()
   {
     if (low > 50) { return Color(0xff39ff14); } // All good!

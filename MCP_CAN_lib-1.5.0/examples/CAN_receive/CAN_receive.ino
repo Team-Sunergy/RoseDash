@@ -65,7 +65,6 @@ void loop()
             Bluetooth.print(msgString);
             //Serial.print(msgString);
         }
-        Timer.periodic();
         //Serial.println();
         Bluetooth.println();
         notOwn = false;
