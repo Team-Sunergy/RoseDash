@@ -19,7 +19,7 @@ void setup()
   Serial.begin(115200);
     Bluetooth.begin(9600);
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
-  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK) {
+  if(CAN0.begin(MCP_ANY, CAN_250KBPS, MCP_8MHZ) == CAN_OK) {
     //Serial.println("MCP2515 Initialized Successfully!");
     //Bluetooth.println("MCP2515 Initialized Successfully!");
   }
