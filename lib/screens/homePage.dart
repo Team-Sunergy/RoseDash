@@ -12,6 +12,7 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 // Custom Widgets
 import '../widgets/CenterIndicators.dart';
+import '../widgets/TurnSignal.dart';
 import '../widgets/Warnings.dart';
 import '../screens/FullScreenNav.dart';
 import '../widgets/Nav.dart';
@@ -276,7 +277,10 @@ class HomePageState extends State<HomePage> {
                   height: 450,
                   width: 450,
                   child:
-                  IndexedStack(
+                  Column (
+                  children: [
+                    //TurnSignal(),
+                    IndexedStack(
                     index: HomePage.leftIndex,
                     children: [Container(margin: EdgeInsets.symmetric(
                         vertical: 0, horizontal: 0),
@@ -297,9 +301,10 @@ class HomePageState extends State<HomePage> {
                         longStream: _longController.stream,
                         altStream: _altController.stream)),
                       Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
-
                     ],
-                  )),
+                  ),]
+                  ),
+              ),
                   Row(
                       children: [
                         VerticalDivider(width: 15),
