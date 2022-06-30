@@ -273,13 +273,11 @@ class HomePageState extends State<HomePage> {
               VerticalDivider(width: 50),
               Column (
                 children: [
+                  Container(child: TurnSignal()),
               Container(
                   height: 450,
                   width: 450,
                   child:
-                  Column (
-                  children: [
-                    //TurnSignal(),
                     IndexedStack(
                     index: HomePage.leftIndex,
                     children: [Container(margin: EdgeInsets.symmetric(
@@ -302,8 +300,8 @@ class HomePageState extends State<HomePage> {
                         altStream: _altController.stream)),
                       Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
                     ],
-                  ),]
                   ),
+
               ),
                   Row(
                       children: [
