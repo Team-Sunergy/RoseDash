@@ -2,12 +2,14 @@
 import 'package:bt01_serial_test/screens/homePage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:just_audio/just_audio.dart';
 
 class Warnings extends StatefulWidget {
 
 
 
   final Function() callback;
+  final player = AudioPlayer();
   Warnings({this.callback});
 
   @override
@@ -67,6 +69,8 @@ class _WarningsState extends State<Warnings> {
   @override
   Widget build(BuildContext context) {
         if (tcSet && apwSet) {
+          widget.player.setUrl("https://student2.cs.appstate.edu/allenim/RoseDash/fault_01.wav");
+          widget.player.play();
           return Container(margin: EdgeInsets.symmetric(vertical: 10),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
