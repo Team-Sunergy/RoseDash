@@ -34,7 +34,7 @@ void setup()
     // make the hall pin an input:
   pinMode(hall_pin, INPUT);
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
-  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK) {
+  if(CAN0.begin(MCP_ANY, CAN_250KBPS, MCP_8MHZ) == CAN_OK) {
     //Serial.println("MCP2515 Initialized Successfully!");
     //Bluetooth.println("MCP2515 Initialized Successfully!");
   }
