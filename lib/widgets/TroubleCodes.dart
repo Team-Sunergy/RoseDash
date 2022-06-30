@@ -75,7 +75,7 @@ class _TroubleCodesState extends State<TroubleCodes> {
                     shrinkWrap: true,
                     itemCount: _ctcs?.length,
                     itemBuilder: (context, index) {
-                      return Text(_ctcs!.elementAt(index));
+                      return Text(_codeLookup(_ctcs!.elementAt(index)));
                     },
                   )
                 ],
@@ -97,7 +97,7 @@ class _TroubleCodesState extends State<TroubleCodes> {
                     shrinkWrap: true,
                     itemCount: _ptcs?.length,
                     itemBuilder: (context, index) {
-                      return Text(_codeLookup(_ptcs!.elementAt(index)));
+                      return Text(_codeLookup("Predicted: " + _ptcs!.elementAt(index)));
                       //return Text(_ptcs!.elementAt(index));
                     },
                   )
