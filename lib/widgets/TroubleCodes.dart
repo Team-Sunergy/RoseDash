@@ -1,8 +1,10 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 HashMap<String, String> faultCodes = new HashMap<String, String>();
+final Uri _url = Uri.parse('https://www.orionbms.com/troubleshooting/');
 
 class TroubleCodes extends StatefulWidget {
 
@@ -38,9 +40,9 @@ class _TroubleCodesState extends State<TroubleCodes> {
   {
     String returnValue = "Unknown Fault Code Error!";
     faultCodes.forEach((key, value) {
-      if (code == key)
-      {
-        value = returnValue;
+      if (code == key) {
+        returnValue = value;
+        if (code.characters.first == 'P') { returnValue = "Predicted: " + returnValue; }
       }
     });
     return returnValue;
@@ -75,7 +77,10 @@ class _TroubleCodesState extends State<TroubleCodes> {
                     shrinkWrap: true,
                     itemCount: _ctcs?.length,
                     itemBuilder: (context, index) {
-                      return Text(_codeLookup(_ctcs!.elementAt(index)));
+                      return TextButton(
+                        onPressed: (_launchUrl),
+                      child: Text(_codeLookup(_ctcs!.elementAt(index))
+                        ,));
                     },
                   )
                 ],
@@ -97,7 +102,7 @@ class _TroubleCodesState extends State<TroubleCodes> {
                     shrinkWrap: true,
                     itemCount: _ptcs?.length,
                     itemBuilder: (context, index) {
-                      return Text(_codeLookup("Predicted: " + _ptcs!.elementAt(index)));
+                      return Text(_codeLookup(_ptcs!.elementAt(index)));
                       //return Text(_ptcs!.elementAt(index));
                     },
                   )
@@ -140,6 +145,11 @@ _initHashMap() {
   faultCodes["P0A07"] = "Discharge Limit Enforcement Fault";
   faultCodes["P0A08"] = "Charger Safety Relay Fault";
   faultCodes["P0A9C"] = "Battery Thermistor Fault";
+}
+
+void _launchUrl() async {
+
+  if (!await launchUrl(_url)) throw 'Could not launch $_url';
 }
 
 
