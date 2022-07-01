@@ -74,7 +74,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     // Calling superclass initState
     super.initState();
-    navInstance = new Nav(callback: (event) => {routeLocationToDB(event)},);
+    navInstance = new Nav();
     // Will be set to true on reconnect or 1st connect
     // Reconnect to previously found device
     widget.flutterBlue.connectedDevices
@@ -269,7 +269,7 @@ class HomePageState extends State<HomePage> {
         backgroundColor: Color(0xff181818),
       //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
-          Container(height: 150, child: Row(children: [LeftTurnSignal(), Container(width: 1020), RightTurnSignal()])),
+          Container(height: 150, child: Row(children: [LeftTurnSignal(), Container(width: 1205, child: RightTurnSignal())])),
           Row(
             children: [
               VerticalDivider(width: 50),
@@ -408,7 +408,7 @@ class HomePageState extends State<HomePage> {
                         if (HomePage.rightIndex == 1)
                            ElevatedButton(onPressed: () {
                             setState(() {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav(nav: navInstance, mphStream: _mphController.stream,)),);//NavDirections()/*FullScreenNav()*/),);
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav(nav: navInstance)),);//NavDirections()/*FullScreenNav()*/),);
                             });
                           },
                             child: Icon(Icons.fullscreen, color: Color(
@@ -593,3 +593,4 @@ class HomePageState extends State<HomePage> {
     }
   }
 }
+
