@@ -268,7 +268,7 @@ class HomePageState extends State<HomePage> {
         backgroundColor: Color(0xff181818),
       //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
-          Container(height: 150, child: Row(children: [LeftTurnSignal(), Container(width: 1020), RightTurnSignal()])),
+          Container(height: 150, child: Row(children: [LeftTurnSignal(), Container(width: 1205, child: RightTurnSignal())])),
           Row(
             children: [
               VerticalDivider(width: 50),
@@ -592,3 +592,4 @@ class HomePageState extends State<HomePage> {
     }
   }
 }
+
