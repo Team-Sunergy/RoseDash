@@ -33,6 +33,7 @@ dependencies:
   characters: ^1.2.0
   slide_digital_clock: ^1.0.2
   url_launcher: ^6.1.4
+  fl_chart: ^0.55.0
 
 dev_dependencies:
   flutter_test:

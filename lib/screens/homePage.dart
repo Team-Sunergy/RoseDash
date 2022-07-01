@@ -21,6 +21,7 @@ import '../widgets/Speedometer.dart';
 import '../widgets/VoltMeter.dart';
 import '../widgets/AddBMSData.dart';
 import '../widgets/TroubleCodes.dart';
+import '../widgets/SOCGraph.dart';
 
 // Location Streaming
 import 'package:geolocator/geolocator.dart' as gl;
