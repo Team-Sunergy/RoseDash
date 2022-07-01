@@ -1,12 +1,10 @@
 import 'package:bt01_serial_test/widgets/Speedometer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 class FullScreenNav extends StatefulWidget {
   final Nav nav;
-  final Stream<int> mphStream;
-  FullScreenNav({required this.nav, required this.mphStream});
+  FullScreenNav({required this.nav});
   @override State<StatefulWidget> createState() => _FullScreenNavState();
 }
 
@@ -26,19 +24,35 @@ class _FullScreenNavState extends State<FullScreenNav> {
         Positioned(
           bottom: 0,
           right: 0,
-          child: ElevatedButton(onPressed: () {
-              setState(() {
-                Navigator.pop(context);
-              });
-            },
-              child: Icon(Icons.close_fullscreen_outlined, color: Color(
-                  0xffedd711), size: 40,),
-              style: ElevatedButton.styleFrom(primary: Color(
-                  0xff03050a),
-                shape: CircleBorder(),
-                padding: EdgeInsets.all(11),),),
+          child: Column(
+            children: [
+              ElevatedButton(onPressed: () {
+                setState(() {
+                  Nav.recenter = !Nav.recenter;
+                });
+              },
+                child: Icon(Icons.navigation, color: Nav.recenter ? Color(
+                    0xffedd711): Colors.white, size: 40,),
+                style: ElevatedButton.styleFrom(primary: Color(
+                    0xff03050a),
+                  shape: CircleBorder(),
+                  padding: EdgeInsets.all(11),),),
+              Container(height: 5),
+              ElevatedButton(onPressed: () {
+                setState(() {
+                  Nav.recenter = true;
+                  Navigator.pop(context);
+                });
+              },
+                child: Icon(Icons.close_fullscreen_outlined, color: Color(
+                    0xffedd711), size: 40,),
+                style: ElevatedButton.styleFrom(primary: Color(
+                    0xff03050a),
+                  shape: CircleBorder(),
+                  padding: EdgeInsets.all(11),),),
+            ],
+          ),
         ),
-        Positioned(bottom: 0, left: 15, child: Speedometer(timeOn: false, mphStream: widget.mphStream,))
       ],
     );
   }
