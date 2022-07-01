@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../widgets/SOCMeter.dart';
 
 class SOCGraph extends StatefulWidget {
-  const SOCGraph({Key? key}) : super(key: key);
+  final Stream<double> socStream;
+  final Stream<double> packVoltStream;
+
+  const SOCGraph({required this.socStream, required this.packVoltStream});
 
   @override
   _SOCGraphState createState() => _SOCGraphState();
@@ -11,11 +14,39 @@ class SOCGraph extends StatefulWidget {
 
 class _SOCGraphState extends State<SOCGraph> {
   List<Color> gradientColors = [
-    const Color(0xff23b6e6),
-    const Color(0xff02d39a),
+    const Color(0xffc2b11d),
+    const Color(0xffff9800),
+
   ];
 
+  late double soc, packVoltSum;
+
   bool showAvg = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.socStream.listen((soc) {
+      _setSOC(soc);
+    });
+    widget.packVoltStream.listen((pvs) {
+      _setPackVoltSum(pvs);
+    });
+  }
+
+  void _setSOC(val) {
+    if (this.mounted)
+      setState(() {
+        soc = val;
+      });
+  }
+
+  void _setPackVoltSum(val) {
+    if (this.mounted)
+      setState(() {
+        packVoltSum = val;
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +79,7 @@ class _SOCGraphState extends State<SOCGraph> {
               });
             },
             child: Text(
-              'avg',
+              'AVG',
               style: TextStyle(
                   fontSize: 12,
                   color:
@@ -68,14 +99,38 @@ class _SOCGraphState extends State<SOCGraph> {
     );
     Widget text;
     switch (value.toInt()) {
-      case 2:
-        text = const Text('MAR', style: style);
+      case 0:
+        text = const Text('0%', style: style);
         break;
-      case 5:
-        text = const Text('JUN', style: style);
+      case 10:
+        text = const Text('10%', style: style);
         break;
-      case 8:
-        text = const Text('SEP', style: style);
+      case 20:
+        text = const Text('20%', style: style);
+        break;
+      case 30:
+        text = const Text('30%', style: style);
+        break;
+      case 40:
+        text = const Text('40%', style: style);
+        break;
+      case 50:
+        text = const Text('50%', style: style);
+        break;
+      case 60:
+        text = const Text('60%', style: style);
+        break;
+      case 70:
+        text = const Text('70%', style: style);
+        break;
+      case 80:
+        text = const Text('80%', style: style);
+        break;
+      case 90:
+        text = const Text('90%', style: style);
+        break;
+      case 100:
+        text = const Text('100%', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -97,14 +152,26 @@ class _SOCGraphState extends State<SOCGraph> {
     );
     String text;
     switch (value.toInt()) {
-      case 1:
-        text = '10K';
+      case 90:
+        text = '90';
         break;
-      case 3:
-        text = '30k';
+      case 100:
+        text = '100';
         break;
-      case 5:
-        text = '50k';
+      case 110:
+        text = '110';
+        break;
+      case 120:
+        text = '120';
+        break;
+      case 130:
+        text = '130';
+        break;
+      case 140:
+        text = '140';
+        break;
+      case 150:
+        text = '150';
         break;
       default:
         return Container();

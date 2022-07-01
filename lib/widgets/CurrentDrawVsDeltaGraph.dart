@@ -67,15 +67,39 @@ class _CurrentDrawVsDeltaGraphState extends State<CurrentDrawVsDeltaGraph> {
       fontSize: 16,
     );
     Widget text;
-    switch (value.toInt()) {
+    switch (value.toInt() * 100) {
+      case 0:
+        text = const Text('0.000Δ', style: style);
+        break;
+      case 1:
+        text = const Text('0.010Δ', style: style);
+        break;
       case 2:
-        text = const Text('MAR', style: style);
+        text = const Text('0.020Δ', style: style);
+        break;
+      case 3:
+        text = const Text('0.030Δ', style: style);
+        break;
+      case 4:
+        text = const Text('0.040Δ', style: style);
         break;
       case 5:
-        text = const Text('JUN', style: style);
+        text = const Text('0.050Δ', style: style);
+        break;
+      case 6:
+        text = const Text('0.060Δ', style: style);
+        break;
+      case 7:
+        text = const Text('0.070Δ', style: style);
         break;
       case 8:
-        text = const Text('SEP', style: style);
+        text = const Text('0.080Δ', style: style);
+        break;
+      case 9:
+        text = const Text('0.090Δ', style: style);
+        break;
+      case 10:
+        text = const Text('0.100Δ', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -97,14 +121,47 @@ class _CurrentDrawVsDeltaGraphState extends State<CurrentDrawVsDeltaGraph> {
     );
     String text;
     switch (value.toInt()) {
-      case 1:
-        text = '10K';
+      case -15:
+        text = '-15';
         break;
-      case 3:
-        text = '30k';
+      case -5:
+        text = '-5';
         break;
       case 5:
-        text = '50k';
+        text = '5.0';
+        break;
+      case 15:
+        text = '15';
+        break;
+      case 25:
+        text = '25';
+        break;
+      case 35:
+        text = '35';
+        break;
+      case 45:
+        text = '45';
+        break;
+      case 55:
+        text = '55';
+        break;
+      case 65:
+        text = '65';
+        break;
+      case 75:
+        text = '75';
+        break;
+      case 85:
+        text = '85';
+        break;
+      case 95:
+        text = '95';
+        break;
+      case 105:
+        text = '105';
+        break;
+      case 115:
+        text = '115';
         break;
       default:
         return Container();
@@ -161,10 +218,6 @@ class _CurrentDrawVsDeltaGraphState extends State<CurrentDrawVsDeltaGraph> {
       borderData: FlBorderData(
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
       lineBarsData: [
         LineChartBarData(
           spots: const [
@@ -251,10 +304,6 @@ class _CurrentDrawVsDeltaGraphState extends State<CurrentDrawVsDeltaGraph> {
       borderData: FlBorderData(
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
       lineBarsData: [
         LineChartBarData(
           spots: const [

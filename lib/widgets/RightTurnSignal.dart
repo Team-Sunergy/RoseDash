@@ -27,16 +27,16 @@ class _SignalState extends State<RightTurnSignal> with SingleTickerProviderState
         color: Color(0xffedd711))))
     ));
 
-    /*if (on) {
-      return Align(alignment: Alignment.topRight,
-          child: (Container(child: Icon(
-              IconData(0xf03cf, fontFamily: 'MaterialIcons'), size: 75,
-              color: Color(0xffedd711)))));
-    }
-    else
-    {
-      return Container();
-    }*/
+    //if (on) {
+     // return Align(alignment: Alignment.topRight,
+     //     child: (Container(child: Icon(
+     //         IconData(0xf03cf, fontFamily: 'MaterialIcons'), size: 75,
+     //         color: Color(0xffedd711)))));
+    //}
+    //else
+    //{
+     // return Container();
+    //}
   }
 
   @override

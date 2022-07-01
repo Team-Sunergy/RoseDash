@@ -7,6 +7,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:characters/characters.dart';
+
 // BLE Library
 import 'package:flutter_blue/flutter_blue.dart';
 
@@ -30,11 +31,13 @@ class HomePage extends StatefulWidget {
   // This is for the IndexedStack
   static int leftIndex = 0;
   static int rightIndex = 0;
+
   @override
   State<StatefulWidget> createState() => HomePageState();
   FlutterBlue flutterBlue = FlutterBlue.instance;
   final Map<Guid, List<int>> readValues = <Guid, List<int>>{};
 }
+
 class UnderHood {
   int cellId;
   double instV;
@@ -44,20 +47,32 @@ class UnderHood {
 }
 
 class HomePageState extends State<HomePage> {
-  StreamController<Set<String>> _ctcController = StreamController<Set<String>>.broadcast();
-  StreamController<Set<String>> _ptcController = StreamController<Set<String>>.broadcast();
-  StreamController<String> _apwController = StreamController<String>.broadcast();
-  StreamController<double> _socController = StreamController<double>.broadcast();
-  StreamController<double> _lowController = StreamController<double>.broadcast();
+  StreamController<Set<String>> _ctcController =
+      StreamController<Set<String>>.broadcast();
+  StreamController<Set<String>> _ptcController =
+      StreamController<Set<String>>.broadcast();
+  StreamController<String> _apwController =
+      StreamController<String>.broadcast();
+  StreamController<double> _socController =
+      StreamController<double>.broadcast();
+  StreamController<double> _lowController =
+      StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
-  StreamController<double> _packVoltSumController = StreamController<double>.broadcast();
-  StreamController<double> _currentDrawController = StreamController<double>.broadcast();
+  StreamController<double> _packVoltSumController =
+      StreamController<double>.broadcast();
+  StreamController<double> _currentDrawController =
+      StreamController<double>.broadcast();
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
-  StreamController<double> _deltaController = StreamController<double>.broadcast();
-  StreamController<Object> _underHoodController = StreamController<Object>.broadcast();
-  StreamController<double> _latController = StreamController<double>.broadcast();
-  StreamController<double> _longController = StreamController<double>.broadcast();
-  StreamController<double> _altController = StreamController<double>.broadcast();
+  StreamController<double> _deltaController =
+      StreamController<double>.broadcast();
+  StreamController<Object> _underHoodController =
+      StreamController<Object>.broadcast();
+  StreamController<double> _latController =
+      StreamController<double>.broadcast();
+  StreamController<double> _longController =
+      StreamController<double>.broadcast();
+  StreamController<double> _altController =
+      StreamController<double>.broadcast();
   StreamController<int> _mphController = StreamController<int>.broadcast();
   List<BluetoothService> _services;
   BluetoothCharacteristic c;
@@ -68,7 +83,6 @@ class HomePageState extends State<HomePage> {
   int obd2Length = 0;
   bool connected = false;
   Nav navInstance;
-
 
   @override
   void initState() {
@@ -131,10 +145,10 @@ class HomePageState extends State<HomePage> {
               //obd2Req("nice\n");
             }
             if (this.mounted)
-            setState(() {
-              _connectedDevice = r.device;
-              connected = true;
-            });
+              setState(() {
+                _connectedDevice = r.device;
+                connected = true;
+              });
           }
         }
       });
@@ -147,7 +161,7 @@ class HomePageState extends State<HomePage> {
     hex = hex.toLowerCase();
     for (int i = 0; i < hex.length; i++) {
       // Dart Sucks
-      switch(hex[i]) {
+      switch (hex[i]) {
         case 'a':
           res += 10 * pow(16, i);
           break;
@@ -232,17 +246,16 @@ class HomePageState extends State<HomePage> {
         case '9':
           res += 9 * pow(10, i);
           break;
-        }
       }
-      for (int i = 0; i < 20; i ++)
-      {
-        print("The Speed is ");
-        print(res);
-        print("The string passed in is");
-        print(speed);
-      }
-      return res;
     }
+    for (int i = 0; i < 20; i++) {
+      print("The Speed is ");
+      print(res);
+      print("The string passed in is");
+      print(speed);
+    }
+    return res;
+  }
 
   routeLocationToDB(gl.Position position) {
     _latController.add(position.latitude);
@@ -267,181 +280,245 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Color(0xff181818),
-      //TODO: Leave BT Settings and possible side menu
+        //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
-          Container(height: 150, child: Row(children: [LeftTurnSignal(), Container(width: 1205, child: RightTurnSignal())])),
+          Container(
+              height: 150,
+              child: Row(children: [
+                //LeftTurnSignal(),
+                Container(width: 1205, /*child: RightTurnSignal()*/)]
+              )),
           Row(
             children: [
               VerticalDivider(width: 50),
-              Column (
+              Column(
                 children: [
                   //Container(child: TurnSignal()),
-              Container(
-                  height: 450,
-                  width: 450,
-                  child:
-                    IndexedStack(
-                    index: HomePage.leftIndex,
-                    children: [Container(margin: EdgeInsets.symmetric(
-                        vertical: 0, horizontal: 0),
-                        child: Speedometer(timeOn: true, mphStream: _mphController.stream,)),
-                      Center(child: AddBMSData(socStream: _socController.stream,
-                        lowStream: _lowController.stream,
-                        hiStream: _hiController.stream,
-                        packVoltStream: _packVoltSumController.stream,
-                        currentDrawStream: _currentDrawController.stream,
-                        deltaStream: _deltaController.stream,
-                        hiTempStream: _hiTempController.stream,
-                        speedStream: _mphController.stream,
-                        underHoodStream: _underHoodController.stream,
-                        ctcStream: _ctcController.stream,
-                        ptcStream: _ptcController.stream,
-                        apwiStream: _apwController.stream,
-                        latStream: _latController.stream,
-                        longStream: _longController.stream,
-                        altStream: _altController.stream)),
-                      Center(child: TroubleCodes(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream))
-                    ],
-                  ),
-
-              ),
-                  Row(
+                  Container(
+                    height: 450,
+                    width: 450,
+                    child: IndexedStack(
+                      index: HomePage.leftIndex,
                       children: [
-                        VerticalDivider(width: 15),
-                        if (HomePage.leftIndex > 0) ElevatedButton(onPressed: () {
+                        Container(
+                            margin: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 0),
+                            child: Speedometer(
+                              timeOn: true,
+                              mphStream: _mphController.stream,
+                            )),
+                        Center(
+                            child: AddBMSData(
+                                socStream: _socController.stream,
+                                lowStream: _lowController.stream,
+                                hiStream: _hiController.stream,
+                                packVoltStream: _packVoltSumController.stream,
+                                currentDrawStream:
+                                    _currentDrawController.stream,
+                                deltaStream: _deltaController.stream,
+                                hiTempStream: _hiTempController.stream,
+                                speedStream: _mphController.stream,
+                                underHoodStream: _underHoodController.stream,
+                                ctcStream: _ctcController.stream,
+                                ptcStream: _ptcController.stream,
+                                apwiStream: _apwController.stream,
+                                latStream: _latController.stream,
+                                longStream: _longController.stream,
+                                altStream: _altController.stream)),
+                        Center(
+                            child: TroubleCodes(
+                                ctcStream: _ctcController.stream,
+                                ptcStream: _ptcController.stream))
+                      ],
+                    ),
+                  ),
+                  Row(children: [
+                    VerticalDivider(width: 15),
+                    if (HomePage.leftIndex > 0)
+                      ElevatedButton(
+                        onPressed: () {
                           setState(() {
                             --HomePage.leftIndex;
                           });
                         },
-                          child: Icon(
-                            Icons.arrow_back_ios_new, color: Color(
-                              0xffedd711),),
-                          style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a).withOpacity(0),
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.all(18),),),
-                        if (HomePage.leftIndex == 0) VerticalDivider(width: 65),
-                        VerticalDivider(width: 150),
-                        if (HomePage.leftIndex < 2 ) ElevatedButton(onPressed: () {
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Color(0xffedd711),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xff03050a).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(18),
+                        ),
+                      ),
+                    if (HomePage.leftIndex == 0) VerticalDivider(width: 65),
+                    VerticalDivider(width: 150),
+                    if (HomePage.leftIndex < 2)
+                      ElevatedButton(
+                        onPressed: () {
                           setState(() {
                             ++HomePage.leftIndex;
                           });
                         },
-                          child: Icon(Icons.arrow_forward_ios, color: Color(
-                              0xffedd711),),
-                          style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a).withOpacity(0),
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.all(18),),),
-                        if (HomePage.leftIndex == 2) VerticalDivider(width: 65),
-                      ]
-                  ),
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xffedd711),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xff03050a).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(18),
+                        ),
+                      ),
+                    if (HomePage.leftIndex == 2) VerticalDivider(width: 65),
+                  ]),
                 ],
               ),
               VerticalDivider(width: 50),
-              Column( children: [
-                Container( height: 450, child:
-                CenterIndicators(socStream: _socController.stream,
-                                 hiStream: _hiController.stream,
-                                 lowStream: _lowController.stream,
-                                 packVoltStream: _packVoltSumController.stream,
-                                 hiTempStream: _hiTempController.stream,
-                                 currentDrawStream: _currentDrawController.stream,),), Container(
-                height: 100,
-                width: 146,
-                child:
-                Warnings(ctcStream: _ctcController.stream, ptcStream: _ptcController.stream, apwiStream: _apwController.stream, callback: () => setState(() => HomePage.leftIndex = 2),),)
+              Column(children: [
+                Container(
+                  height: 450,
+                  child: CenterIndicators(
+                    socStream: _socController.stream,
+                    hiStream: _hiController.stream,
+                    lowStream: _lowController.stream,
+                    packVoltStream: _packVoltSumController.stream,
+                    hiTempStream: _hiTempController.stream,
+                    currentDrawStream: _currentDrawController.stream,
+                  ),
+                ),
+                Container(
+                  height: 100,
+                  width: 146,
+                  child: Warnings(
+                    ctcStream: _ctcController.stream,
+                    ptcStream: _ptcController.stream,
+                    apwiStream: _apwController.stream,
+                    callback: () => setState(() => HomePage.leftIndex = 2),
+                  ),
+                )
               ]),
               VerticalDivider(width: 50),
               Column(
                 children: [
-                  Container(height: 10,),
+                  Container(
+                    height: 10,
+                  ),
                   Container(
                       height: 450,
                       width: 450,
-                      child:
-                      IndexedStack(
+                      child: IndexedStack(
                         index: HomePage.rightIndex,
                         children: [
-                          Container(margin: EdgeInsets.symmetric(
-                              vertical: 0, horizontal: 30),
-                              child: VoltMeter(socStream: _socController.stream,
-                                               lowStream: _lowController.stream,
-                                               hiStream: _hiController.stream,
-                                               packVoltStream: _packVoltSumController.stream,
-                                               deltaStream: _deltaController.stream,
-                                               hiTempStream: _hiTempController.stream,)),
-                          Center(child: ClipRRect(borderRadius: BorderRadius
-                              .horizontal(left: Radius.elliptical(150, 150),
-                              right: Radius.elliptical(150, 150)),
-                              child: Container(
-                                  height: 500, width: 500, child: navInstance))),
-                          Center(child: VoltMeter(socStream: _socController.stream,
-                                                  lowStream: _lowController.stream,
-                                                  hiStream: _hiController.stream,
-                                                  packVoltStream: _packVoltSumController.stream,
-                                                  deltaStream: _deltaController.stream,
-                                                  hiTempStream: _hiTempController.stream,))
+                          Container(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 30),
+                              child: VoltMeter(
+                                socStream: _socController.stream,
+                                lowStream: _lowController.stream,
+                                hiStream: _hiController.stream,
+                                packVoltStream: _packVoltSumController.stream,
+                                deltaStream: _deltaController.stream,
+                                hiTempStream: _hiTempController.stream,
+                              )),
+                          Center(
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.horizontal(
+                                      left: Radius.elliptical(150, 150),
+                                      right: Radius.elliptical(150, 150)),
+                                  child: Container(
+                                      height: 500,
+                                      width: 500,
+                                      child: navInstance))),
+                          Center(
+                              child: SOCGraph(
+                            socStream: _socController.stream,
+                            packVoltStream: _packVoltSumController.stream,
+                          )),
                         ],
                       )),
-                  Container(height: 10,),
-                  Row(
-                      children: [
-                        VerticalDivider(width: 15),
-                        if (HomePage.rightIndex > 0) ElevatedButton(onPressed: () {
+                  Container(
+                    height: 10,
+                  ),
+                  Row(children: [
+                    VerticalDivider(width: 15),
+                    if (HomePage.rightIndex > 0)
+                      ElevatedButton(
+                        onPressed: () {
                           setState(() {
                             --HomePage.rightIndex;
                           });
                         },
-                          child: Icon(
-                            Icons.arrow_back_ios_new, color: Color(
-                              0xffedd711),),
-                          style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a).withOpacity(0),
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.all(18),),),
-                        if (HomePage.rightIndex == 0) VerticalDivider(width: 65),
-                        if (HomePage.rightIndex != 1)
-                          VerticalDivider(width: 150),
-                        if (HomePage.rightIndex == 1)
-                          VerticalDivider(width: 44,),
-                        if (HomePage.rightIndex == 1)
-                           ElevatedButton(onPressed: () {
-                            setState(() {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => FullScreenNav(nav: navInstance)),);//NavDirections()/*FullScreenNav()*/),);
-                            });
-                          },
-                            child: Icon(Icons.fullscreen, color: Color(
-                                0xffedd711), size: 40,),
-                            style: ElevatedButton.styleFrom(primary: Color(
-                                0xff03050a).withOpacity(0),
-                              shape: CircleBorder(),
-                              padding: EdgeInsets.all(11),),),
-                        if (HomePage.rightIndex == 1)
-                          VerticalDivider(width: 44),
-                        if (HomePage.rightIndex < 2 ) ElevatedButton(onPressed: () {
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Color(0xffedd711),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xff03050a).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(18),
+                        ),
+                      ),
+                    if (HomePage.rightIndex == 0) VerticalDivider(width: 65),
+                    if (HomePage.rightIndex != 1) VerticalDivider(width: 150),
+                    if (HomePage.rightIndex == 1)
+                      VerticalDivider(
+                        width: 44,
+                      ),
+                    if (HomePage.rightIndex == 1)
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      FullScreenNav(nav: navInstance)),
+                            ); //NavDirections()/*FullScreenNav()*/),);
+                          });
+                        },
+                        child: Icon(
+                          Icons.fullscreen,
+                          color: Color(0xffedd711),
+                          size: 40,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xff03050a).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(11),
+                        ),
+                      ),
+                    if (HomePage.rightIndex == 1) VerticalDivider(width: 44),
+                    if (HomePage.rightIndex < 2)
+                      ElevatedButton(
+                        onPressed: () {
                           setState(() {
                             ++HomePage.rightIndex;
                           });
                         },
-                          child: Icon(Icons.arrow_forward_ios, color: Color(
-                              0xffedd711),),
-                          style: ElevatedButton.styleFrom(primary: Color(
-                              0xff03050a).withOpacity(0),
-                            shape: CircleBorder(),
-                            padding: EdgeInsets.all(18),),),
-                        if (HomePage.rightIndex == 2) VerticalDivider(width: 65),
-                      ]
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xffedd711),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xff03050a).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(18),
+                        ),
+                      ),
+                    if (HomePage.rightIndex == 2) VerticalDivider(width: 65),
+                  ]),
+                  Container(
+                    height: 10,
                   ),
-                  Container(height: 10,),
                 ],
               )
             ],
           ),
-        ])
-    );
+        ]));
   }
-  Future<Null> obd2Req(val) async{
+
+  Future<Null> obd2Req(val) async {
     // Writing Request to Arduino:
     int retry = 0;
     do {
@@ -451,7 +528,7 @@ class HomePageState extends State<HomePage> {
         await Future.delayed(Duration(milliseconds: 100));
         ++retry;
       }
-    } while(retry < 3);
+    } while (retry < 3);
   }
 
   void notify() async {
@@ -470,52 +547,63 @@ class HomePageState extends State<HomePage> {
               await Future.delayed(Duration(milliseconds: 100));
               ++retry;
             }
-          } while(retry < 3);
+          } while (retry < 3);
 
           reader = c.value.listen((event) {});
 
-          reader.onData((data) async{
+          reader.onData((data) async {
             print(utf8.decode(data));
             // This is where we receive our CAN Messages
             String message = ascii.decode(data);
             if (message.isNotEmpty) {
-            if (message[0] == 'k') {
-              //print(message);
-              double current;
-              if (message[1] == 'N') {
-                current = hexStringToInt(Characters(message).skip(2).toString()) * -.1;
-              }
-              else {
-                current = hexStringToInt(Characters(message).skip(2).toString()) * .1;
-              }
-              _currentDrawController.add(current);
-            }
-            else if (message[0] == 'r') {
-              //print(message);
-              UnderHood uh = new UnderHood();
-              Iterable<Characters> components = Characters(message).skip(message.indexOf('!') + 1).split(Characters('!'));
-              for (int i = 0; i < components.length; i++) {
-                if (i == 0) {
-                  //print("cell id = " + int.parse('0x${components.elementAt(i).toString().toUpperCase()}').toString());
-                  uh.cellId = hexStringToInt(components.elementAt(i).toString());
-                } else if (i == 1){
-                  uh.instV = hexStringToInt(components.elementAt(i).toString()) / 10000;
-                } else if (i == 2) {
-                  uh.isShunting = components.elementAt(i).toString() == '1';
-                } else if (i == 3) {
-                  uh.intRes = hexStringToInt(components.elementAt(i).toString()) / 100;
-                } else if (i == 4) {
-                  uh.openV = hexStringToInt(components.elementAt(i).toString()) / 10000;
+              if (message[0] == 'k') {
+                //print(message);
+                double current;
+                if (message[1] == 'N') {
+                  current =
+                      hexStringToInt(Characters(message).skip(2).toString()) *
+                          -.1;
+                } else {
+                  current =
+                      hexStringToInt(Characters(message).skip(2).toString()) *
+                          .1;
                 }
-              }
-              _underHoodController.add(uh);
-            }
-
-             else if (message[0] == 'C' || message[0] == 'P' ) {
-
-                Iterable<Characters> lenHelp = Characters(message).split(Characters('_'));
-                int newObd2Length = lenHelp.length >= 3 ? int.parse(lenHelp.elementAt(1).toString()) : 0;
-                if (newObd2Length != obd2Length && obd2Length != 0){
+                _currentDrawController.add(current);
+              } else if (message[0] == 'r') {
+                //print(message);
+                UnderHood uh = new UnderHood();
+                Iterable<Characters> components = Characters(message)
+                    .skip(message.indexOf('!') + 1)
+                    .split(Characters('!'));
+                for (int i = 0; i < components.length; i++) {
+                  if (i == 0) {
+                    //print("cell id = " + int.parse('0x${components.elementAt(i).toString().toUpperCase()}').toString());
+                    uh.cellId =
+                        hexStringToInt(components.elementAt(i).toString());
+                  } else if (i == 1) {
+                    uh.instV =
+                        hexStringToInt(components.elementAt(i).toString()) /
+                            10000;
+                  } else if (i == 2) {
+                    uh.isShunting = components.elementAt(i).toString() == '1';
+                  } else if (i == 3) {
+                    uh.intRes =
+                        hexStringToInt(components.elementAt(i).toString()) /
+                            100;
+                  } else if (i == 4) {
+                    uh.openV =
+                        hexStringToInt(components.elementAt(i).toString()) /
+                            10000;
+                  }
+                }
+                _underHoodController.add(uh);
+              } else if (message[0] == 'C' || message[0] == 'P') {
+                Iterable<Characters> lenHelp =
+                    Characters(message).split(Characters('_'));
+                int newObd2Length = lenHelp.length >= 3
+                    ? int.parse(lenHelp.elementAt(1).toString())
+                    : 0;
+                if (newObd2Length != obd2Length && obd2Length != 0) {
                   // Clear the Set and Broadcast it to the TC Widget
                   tcList.clear();
                   _ctcController.add(tcList);
@@ -525,40 +613,37 @@ class HomePageState extends State<HomePage> {
                 obd2Length = newObd2Length;
                 if (obd2Length != 0) {
                   if (lenHelp.length >= 3) {
-                    Iterable<Characters> faults = lenHelp.elementAt(2).split(
-                        Characters('!'));
+                    Iterable<Characters> faults =
+                        lenHelp.elementAt(2).split(Characters('!'));
                     faults.forEach((element) {
                       String fault = "P" + element.toString();
                       for (int i = 0; i < 50; i++) {
                         //print(fault);
                       }
-                      if (fault.length == 5)
-                        tcList.add(fault);
+                      if (fault.length == 5) tcList.add(fault);
                     });
                     message[0] == 'C'
                         ? _ctcController.add(tcList)
                         : _ptcController.add(tcList);
                   }
-                } else
-                {
+                } else {
                   // Clear the Set and Broadcast it to the TC Widget
                   tcList.clear();
                   _ctcController.add(tcList);
                   _ptcController.add(tcList);
                 }
-              }
-
-
-
-              else if (message[0] == 's') {
+              } else if (message[0] == 's') {
                 //message =
                 //int speed = speedRead(Characters(message.trim()).replaceAll(Characters("ss"), Characters.empty).toString());
-                int speed = speedRead(Characters(message).split(Characters('\r')).elementAt(0).skip(2).toString());
+                int speed = speedRead(Characters(message)
+                    .split(Characters('\r'))
+                    .elementAt(0)
+                    .skip(2)
+                    .toString());
                 _mphController.add(speed);
-              }
-
-              else if (message[0] == 'V') {
-                var auxPackVoltage = num.parse(message.substring(1, 4))?.toDouble();
+              } else if (message[0] == 'V') {
+                var auxPackVoltage =
+                    num.parse(message.substring(1, 4))?.toDouble();
                 if (auxPackVoltage < 2) {
                   //apwSet.add(auxPackVoltage.toString());
                   _apwController.add(auxPackVoltage.toString());
@@ -566,19 +651,22 @@ class HomePageState extends State<HomePage> {
                   //apwSet.clear();
                   _apwController.add("");
                 }
-              }
-              else if (message[0] == 'G') {
+              } else if (message[0] == 'G') {
                 _socController.add(hexStringToInt(message.substring(1, 3)) / 2);
-                _hiController.add(hexStringToInt(message.substring(4, 8)) / 10000);
-                _lowController.add(hexStringToInt(message.substring(9, 13)) / 10000);
-                _packVoltSumController.add(hexStringToInt(message.substring(14, 18)) / 10);
-                _hiTempController.add(hexStringToInt(message.substring(19, 21)));
+                _hiController
+                    .add(hexStringToInt(message.substring(4, 8)) / 10000);
+                _lowController
+                    .add(hexStringToInt(message.substring(9, 13)) / 10000);
+                _packVoltSumController
+                    .add(hexStringToInt(message.substring(14, 18)) / 10);
+                _hiTempController
+                    .add(hexStringToInt(message.substring(19, 21)));
                 // Arithmetic is performed in VoltMeter Widget
                 _deltaController.add(0);
               }
 
-            // Poll for Absolute Pack Current Draw
-            await obd2Req("upc#");
+              // Poll for Absolute Pack Current Draw
+              await obd2Req("upc#");
 
               // Poll for Current Trouble Codes
               await obd2Req("ctc#");
@@ -593,4 +681,3 @@ class HomePageState extends State<HomePage> {
     }
   }
 }
-
