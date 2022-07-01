@@ -12,7 +12,8 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 // Custom Widgets
 import '../widgets/CenterIndicators.dart';
-import '../widgets/TurnSignal.dart';
+import '../widgets/LeftTurnSignal.dart';
+import '../widgets/RightTurnSignal.dart';
 import '../widgets/Warnings.dart';
 import '../screens/FullScreenNav.dart';
 import '../widgets/Nav.dart';
@@ -267,13 +268,13 @@ class HomePageState extends State<HomePage> {
         backgroundColor: Color(0xff181818),
       //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
-          Container(height: 150,),
+          Container(height: 150, child: Row(children: [LeftTurnSignal(), Container(width: 1020), RightTurnSignal()])),
           Row(
             children: [
               VerticalDivider(width: 50),
               Column (
                 children: [
-                  Container(child: TurnSignal()),
+                  //Container(child: TurnSignal()),
               Container(
                   height: 450,
                   width: 450,
