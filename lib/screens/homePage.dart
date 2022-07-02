@@ -564,9 +564,7 @@ class HomePageState extends State<HomePage> {
                       hexStringToInt(Characters(message).skip(2).toString()) *
                           -.1;
                 } else {
-                  current =
-                      hexStringToInt(Characters(message).skip(2).toString()) *
-                          .1;
+                  current = hexStringToInt(Characters(message).skip(2).toString()) * 1.0;
                 }
                 _currentDrawController.add(current);
               } else if (message[0] == 'r') {
