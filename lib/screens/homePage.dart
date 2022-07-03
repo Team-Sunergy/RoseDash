@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -564,6 +565,8 @@ class HomePageState extends State<HomePage> {
                       hexStringToInt(Characters(message).skip(2).toString()) *
                           -.1;
                 } else {
+                  print("current string:" + Characters(message).skip(2).toString());
+                  sleep(Duration(seconds:15));
                   current = hexStringToInt(Characters(message).skip(2).toString()) * 1.0;
                 }
                 _currentDrawController.add(current);

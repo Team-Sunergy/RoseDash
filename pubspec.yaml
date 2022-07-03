@@ -14,7 +14,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
 
-  syncfusion_flutter_gauges: ^20.1.52
+  syncfusion_flutter_gauges: '20.1.52'
   flutter_launcher_icons: ^0.9.2
   digital_lcd: ^1.0.2
   segment_display: ^0.5.0

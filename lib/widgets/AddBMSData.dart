@@ -57,7 +57,7 @@ class _AddBMSDataState extends State<AddBMSData> {
   double currentDraw = 10.0;
   int highTemp = 31;
   double delta = 0.0;
-  double _speed = 0.0;
+  int _speed = 0;
   int _cellID = 0;
   double _instantVoltage = 0;
   bool _isShunting = false;
