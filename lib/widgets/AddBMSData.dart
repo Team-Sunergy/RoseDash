@@ -49,7 +49,7 @@ class _AddBMSDataState extends State<AddBMSData> {
   // Create a CollectionReference called users that references the firestore collection
   CollectionReference bmsData = FirebaseFirestore.instance.collection('VisibleTelemetry');
   CollectionReference batteryData = FirebaseFirestore.instance.collection('UnderTheHood');
-  double soc = 82.8;
+  double soc = 828;
   double low = 32.2;
   double high = 34.2;
   double recHi = 0.0;
@@ -94,7 +94,6 @@ class _AddBMSDataState extends State<AddBMSData> {
   void _setSOC(val) {
     if (this.mounted)
     setState(() {soc = val;});
-
   }
 
   void _setLow(val) {
@@ -164,8 +163,12 @@ class _AddBMSDataState extends State<AddBMSData> {
       });
   }
 
-  Future<void> addBMSData() {
+  Future<void>? addBMSData() {
     // Call the user's CollectionReference to add a new user
+    if (soc == 828)
+      return null;
+    else
+    {
     return bmsData
         .add({
       'soc': soc, // John Doe
@@ -175,34 +178,40 @@ class _AddBMSDataState extends State<AddBMSData> {
       'currentDraw': currentDraw,
       'delta': delta,
       'hiTemp': highTemp,
-      'speed' : _speed,
-      'ctcSet' : _ctcSet != null ? _ctcSet.toString() : 0,
-      'ptcSet' : _ptcSet != null ? _ptcSet.toString() : 0,
-      'apvSet' : _apv != null ? _apv : 0,
-      'lat' : lat,
-      'long' : long,
-      'alt' : alt,
+      'speed': _speed,
+      'ctcSet': _ctcSet != null ? _ctcSet.toString() : 0,
+      'ptcSet': _ptcSet != null ? _ptcSet.toString() : 0,
+      'apvSet': _apv != null ? _apv : 0,
+      'lat': lat,
+      'long': long,
+      'alt': alt,
       'time': DateTime.now(),
+
       // 42
     })
         .then((value) => print("BMS Data Added"))
         .catchError((error) => print("Failed to add BMS data: $error"));
+    }
   }
 
-  Future<void> addBatteryData() {
+  Future<void>? addBatteryData() {
     // Call the user's CollectionReference to add a new user
-    return batteryData
-        .add({
-      'Cell_ID': _cellID, // John Doe
-      'Instant_Voltage': _instantVoltage, // Stokes and Sons
-      'Shunting': _isShunting,
-      'Internal_Resistance': _internalResistance,
-      'Open_Voltage': _openVoltage,
-      'time': DateTime.now(),
-      // 42
-    })
-        .then((value) => print("Battery Data Added"))
-        .catchError((error) => print("Failed to add Battery data: $error"));
+    if (soc == 828)
+      return null;
+    else {
+      return batteryData
+          .add({
+        'Cell_ID': _cellID, // John Doe
+        'Instant_Voltage': _instantVoltage, // Stokes and Sons
+        'Shunting': _isShunting,
+        'Internal_Resistance': _internalResistance,
+        'Open_Voltage': _openVoltage,
+        'time': DateTime.now(),
+        // 42
+      })
+          .then((value) => print("Battery Data Added"))
+          .catchError((error) => print("Failed to add Battery data: $error"));
+    }
   }
 
   @override

@@ -43,11 +43,15 @@ class MyApp extends StatelessWidget {
         }
         // Once complete, show your application
         if (snapshot.connectionState == ConnectionState.done) {
+
+
           return MaterialApp(
             title: "SVT: Alpha Dashboard",
             theme: ThemeData.dark(),
             darkTheme: ThemeData.dark(),
             home: HomePage(),
+
+
             debugShowCheckedModeBanner: false,
           );
         }
