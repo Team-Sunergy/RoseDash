@@ -179,28 +179,26 @@ class _AddBMSDataState extends State<AddBMSData> {
       print("NOT CONNECTED, CORRECT OUTPUT!!!");
       return null;
     }
-    else
-    {
-    return bmsData
-        .add({
-      'soc': soc, // John Doe
-      'lowVolt': low, // Stokes and Sons
-      'highVolt': high,
-      'packVolt': packVoltSum,
-      'currentDraw': currentDraw,
-      'delta': delta,
-      'hiTemp': highTemp,
-      'speed': _speed,
-      'ctcSet': _ctcSet != null ? _ctcSet.toString() : 0,
-      'ptcSet': _ptcSet != null ? _ptcSet.toString() : 0,
-      'apvSet': _apv != null ? _apv : 0,
-      'lat': lat,
-      'long': long,
-      'alt': alt,
-      'time': DateTime.now(),
-
-      // 42
-    })
+    else {
+      return bmsData
+          .add({
+        'soc': soc,
+        'lowVolt': low,
+        'highVolt': high,
+        'packVolt': packVoltSum,
+        'currentDraw': currentDraw,
+        'delta': delta,
+        'hiTemp': highTemp,
+        'speed': _speed,
+        'ctcSet': _ctcSet != null ? _ctcSet.toString() : 0,
+        'ptcSet': _ptcSet != null ? _ptcSet.toString() : 0,
+        'apvSet': _apv != null ? _apv : 0,
+        'lat': lat,
+        'long': long,
+        'alt': alt,
+        'time': DateTime.now(),
+        // 42
+        })
         .then((value) => print("BMS Data Added"))
         .catchError((error) => print("Failed to add BMS data: $error"));
     }

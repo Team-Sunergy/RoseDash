@@ -243,6 +243,9 @@ class HomePageState extends State<HomePage> {
         case '9':
           res += 9 * pow(16, i);
           break;
+        case '0':
+          res += 0;
+          break;
       }
     }
     return res;

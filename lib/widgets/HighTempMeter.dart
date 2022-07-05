@@ -39,7 +39,7 @@ class _HighTempMeterState extends State<HighTempMeter> {
             value: _highTemp.toDouble(),
             edgeStyle: LinearEdgeStyle.endCurve,
             thickness: 8,
-            color: _highTemp < 35 ? Color(0xffedd711) : Color(0xfff72119),
+            color: _highTemp >= 52 ? Color(0xfff72119) :  Color(0xffedd711),
             borderColor: Color(0xff070b1a),
             borderWidth: 1.25,
           )

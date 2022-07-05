@@ -38,11 +38,11 @@ class _TroubleCodesState extends State<TroubleCodes> {
 
   String _codeLookup(String code)
   {
-    String returnValue = "Unknown Fault Code Error!";
+    String returnValue = "Error: Unknown Fault Code!";
     faultCodes.forEach((key, value) {
       if (code == key) {
         returnValue = value;
-        if (code.characters.first == 'P') { returnValue = "Predicted: " + returnValue; }
+        if (code.characters.first == 'P') { returnValue = returnValue; }
       }
     });
     return returnValue;
