@@ -191,9 +191,9 @@ class HomePageState extends State<HomePage> {
     }
   }*/
 
-  int hexStringToInt(String hex) {
+  int hexStringToInt(String hex, bool isNotCD) {
     int res = 0;
-    hex = hex.split('').reversed.join();
+    if (isNotCD) hex = hex.split('').reversed.join();
     hex = hex.toLowerCase();
     for (int i = 0; i < hex.length; i++) {
       // Dart Sucks
@@ -608,11 +608,11 @@ class HomePageState extends State<HomePage> {
                 double current;
                 if (message[1] == 'N') {
                   current =
-                      hexStringToInt(Characters(message).skip(2).toString()) * -0.001;
+                      hexStringToInt(Characters(message).skip(2).toString(), false) * -0.001;
                 } else {
                   print("current string:" + Characters(message).skip(2).toString());
                   sleep(Duration(seconds:15));
-                  current = hexStringToInt(Characters(message).skip(2).toString()) * 0.1;
+                  current = hexStringToInt(Characters(message).skip(2).toString(), false) * 0.1;
                 }
                 _currentDrawController.add(current);
               } else if (message[0] == 'r') {
@@ -625,20 +625,20 @@ class HomePageState extends State<HomePage> {
                   if (i == 0) {
                     //print("cell id = " + int.parse('0x${components.elementAt(i).toString().toUpperCase()}').toString());
                     uh.cellId =
-                        hexStringToInt(components.elementAt(i).toString());
+                        hexStringToInt(components.elementAt(i).toString(), true);
                   } else if (i == 1) {
                     uh.instV =
-                        hexStringToInt(components.elementAt(i).toString()) /
+                        hexStringToInt(components.elementAt(i).toString(), true) /
                             10000;
                   } else if (i == 2) {
                     uh.isShunting = components.elementAt(i).toString() == '1';
                   } else if (i == 3) {
                     uh.intRes =
-                        hexStringToInt(components.elementAt(i).toString()) /
+                        hexStringToInt(components.elementAt(i).toString(), true) /
                             100;
                   } else if (i == 4) {
                     uh.openV =
-                        hexStringToInt(components.elementAt(i).toString()) /
+                        hexStringToInt(components.elementAt(i).toString(), true) /
                             10000;
                   }
                 }
@@ -698,15 +698,15 @@ class HomePageState extends State<HomePage> {
                   _apwController.add("");
                 }
               } else if (message[0] == 'G') {
-                _socController.add(hexStringToInt(message.substring(1, 3)) / 2);
+                _socController.add(hexStringToInt(message.substring(1, 3), true) / 2);
                 _hiController
-                    .add(hexStringToInt(message.substring(4, 8)) / 10000);
+                    .add(hexStringToInt(message.substring(4, 8), true) / 10000);
                 _lowController
-                    .add(hexStringToInt(message.substring(9, 13)) / 10000);
+                    .add(hexStringToInt(message.substring(9, 13), true) / 10000);
                 _packVoltSumController
-                    .add(hexStringToInt(message.substring(14, 18)) / 10);
+                    .add(hexStringToInt(message.substring(14, 18), true) / 10);
                 _hiTempController
-                    .add(hexStringToInt(message.substring(19, 21)));
+                    .add(hexStringToInt(message.substring(19, 21), true));
                 // Arithmetic is performed in VoltMeter Widget
                 _deltaController.add(0);
               }
