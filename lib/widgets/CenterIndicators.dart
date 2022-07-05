@@ -27,12 +27,12 @@ class CenterIndicators extends StatefulWidget {
 
 class _CenterIndicatorsState extends State<CenterIndicators> {
 
-  double soc = 82.8;
-  double low = 32.2;
-  double high = 34.2;
-  double packVoltSum = 0.0;
-  double currentDraw = 10.0;
-  int highTemp = 31;
+  double soc = 0;
+  double low = 0;
+  double high = 0;
+  double packVoltSum = 0;
+  double currentDraw = 0;
+  int highTemp = 0;
 
   void _setSOC(val) {
     if (this.mounted)

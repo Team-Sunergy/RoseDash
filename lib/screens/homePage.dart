@@ -13,6 +13,7 @@ import 'package:characters/characters.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 
 // Custom Widgets
+import '../widgets/BluetoothIcon.dart';
 import '../widgets/CenterIndicators.dart';
 import '../widgets/LeftTurnSignal.dart';
 import '../widgets/RightTurnSignal.dart';
@@ -24,9 +25,13 @@ import '../widgets/VoltMeter.dart';
 import '../widgets/AddBMSData.dart';
 import '../widgets/TroubleCodes.dart';
 import '../widgets/SOCGraph.dart';
+import '../widgets/BluetoothIcon.dart';
 
 // Location Streaming
 import 'package:geolocator/geolocator.dart' as gl;
+
+bool connected = false;
+BluetoothDevice device;
 
 class HomePage extends StatefulWidget {
   // This is for the IndexedStack
@@ -74,6 +79,8 @@ class HomePageState extends State<HomePage> {
       StreamController<double>.broadcast();
   StreamController<double> _altController =
       StreamController<double>.broadcast();
+  StreamController<bool> _connectedController =
+    StreamController<bool>.broadcast();
   StreamController<int> _mphController = StreamController<int>.broadcast();
   List<BluetoothService> _services;
   BluetoothCharacteristic c;
@@ -82,9 +89,8 @@ class HomePageState extends State<HomePage> {
   Set<String> tcList = new Set<String>();
   String apwSet = "";
   int obd2Length = 0;
-  bool connected = false;
   Nav navInstance;
-
+  BluetoothDeviceState deviceState;
   @override
   void initState() {
     // Calling superclass initState
@@ -97,7 +103,7 @@ class HomePageState extends State<HomePage> {
         .listen((List<BluetoothDevice> devices) async {
       connected = true;
       for (BluetoothDevice device in devices) {
-        if (device.id.toString() == "F0:5E:CD:E2:58:5B") {
+        if (device.name.toString() == "otter") {
           try {
             await device.connect();
           } catch (e) {
@@ -122,10 +128,10 @@ class HomePageState extends State<HomePage> {
       widget.flutterBlue.startScan();
       // Listen to scan results
       widget.flutterBlue.scanResults.listen((List<ScanResult> result) async {
-        BluetoothDevice device;
+        //BluetoothDevice device;
         for (ScanResult r in result) {
           // Auto-Connect to HM-19
-          if (r.device.id.toString() == "F0:5E:CD:E2:92:A1") {
+          if (r.device.name.toString() == "otter") {
             try {
               await r.device.connect();
             } catch (e) {
@@ -150,11 +156,40 @@ class HomePageState extends State<HomePage> {
                 _connectedDevice = r.device;
                 connected = true;
               });
+            _connectedDevice.state.listen((s) {
+              if (this.mounted) {
+                deviceState = s;
+              }
+              Timer.periodic(Duration(seconds: 5), (Timer t1) => connected = _checkBTConnection());
+            });
           }
         }
       });
     }
   }
+
+  bool _checkBTConnection() {
+    bool connect = deviceState == BluetoothDeviceState.connected;
+    print("\n\n\n BT Device State is: " + connect.toString() + "\n\n\n\n\n\n");
+    _connectedController.add(connect);
+    return connect;
+  }
+
+  /*Align _btIcon()
+  {
+    if (connected)
+    {
+      return Align(alignment: Alignment.topLeft,
+          child: (Container(child: Icon(
+              IconData(0xf5c1, fontFamily: 'MaterialIcons'), size: 75,
+              color: Color(0xffffffff))))
+      );
+    }
+    else
+    {
+      return Align();
+    }
+  }*/
 
   int hexStringToInt(String hex) {
     int res = 0;
@@ -281,13 +316,12 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Color(0xff181818),
-        //TODO: Leave BT Settings and possible side menu
         body: Column(children: [
           Container(
               height: 150,
               child: Row(children: [
                 //LeftTurnSignal(),
-                Container(width: 1205, /*child: RightTurnSignal()*/)]
+                Container(width: 1205, child: BluetoothIcon(connectStream: _connectedController.stream,))]
               )),
           Row(
             children: [
@@ -309,6 +343,7 @@ class HomePageState extends State<HomePage> {
                               mphStream: _mphController.stream,
                             )),
                         Center(
+
                             child: AddBMSData(
                                 socStream: _socController.stream,
                                 lowStream: _lowController.stream,
@@ -325,7 +360,8 @@ class HomePageState extends State<HomePage> {
                                 apwiStream: _apwController.stream,
                                 latStream: _latController.stream,
                                 longStream: _longController.stream,
-                                altStream: _altController.stream)),
+                                altStream: _altController.stream,
+                                connectStream: _connectedController.stream)),
                         Center(
                             child: TroubleCodes(
                                 ctcStream: _ctcController.stream,
@@ -431,11 +467,18 @@ class HomePageState extends State<HomePage> {
                                       height: 500,
                                       width: 500,
                                       child: navInstance))),
-                          Center(
+                          Container(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 0),
+                              child: Speedometer(
+                                timeOn: true,
+                                mphStream: _mphController.stream,
+                              )),
+                          /*Center(
                               child: SOCGraph(
                             socStream: _socController.stream,
                             packVoltStream: _packVoltSumController.stream,
-                          )),
+                          )),*/
                         ],
                       )),
                   Container(
@@ -562,12 +605,11 @@ class HomePageState extends State<HomePage> {
                 double current;
                 if (message[1] == 'N') {
                   current =
-                      hexStringToInt(Characters(message).skip(2).toString()) *
-                          -.1;
+                      hexStringToInt(Characters(message).skip(2).toString()) * -0.001;
                 } else {
                   print("current string:" + Characters(message).skip(2).toString());
                   sleep(Duration(seconds:15));
-                  current = hexStringToInt(Characters(message).skip(2).toString()) * 1.0;
+                  current = hexStringToInt(Characters(message).skip(2).toString()) * 0.1;
                 }
                 _currentDrawController.add(current);
               } else if (message[0] == 'r') {

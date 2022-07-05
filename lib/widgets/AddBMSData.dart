@@ -33,6 +33,8 @@ class AddBMSData extends StatefulWidget {
   final Stream<double> latStream;
   final Stream<double> longStream;
   final Stream<double> altStream;
+  final Stream<bool> connectStream;
+
   AddBMSData({required this.socStream, required this.lowStream,
               required this.hiStream, required this.packVoltStream,
               required this.currentDrawStream, required this.hiTempStream,
@@ -40,7 +42,7 @@ class AddBMSData extends StatefulWidget {
               required this.underHoodStream, required this.ctcStream,
               required this.ptcStream, required this.apwiStream,
               required this.latStream, required this.longStream,
-              required this.altStream});
+              required this.altStream, required this.connectStream});
 
  @override createState() => _AddBMSDataState();
 }
@@ -49,14 +51,14 @@ class _AddBMSDataState extends State<AddBMSData> {
   // Create a CollectionReference called users that references the firestore collection
   CollectionReference bmsData = FirebaseFirestore.instance.collection('VisibleTelemetry');
   CollectionReference batteryData = FirebaseFirestore.instance.collection('UnderTheHood');
-  double soc = 828;
-  double low = 32.2;
-  double high = 34.2;
-  double recHi = 0.0;
-  double packVoltSum = 0.0;
-  double currentDraw = 10.0;
-  int highTemp = 31;
-  double delta = 0.0;
+  double soc = 0;
+  double low = 0;
+  double high = 0;
+  double recHi = 0;
+  double packVoltSum = 0;
+  double currentDraw = 0;
+  int highTemp = 0;
+  double delta = 0;
   int _speed = 0;
   int _cellID = 0;
   double _instantVoltage = 0;
@@ -69,6 +71,14 @@ class _AddBMSDataState extends State<AddBMSData> {
   double lat = 0;
   double long = 0;
   int alt = 0;
+  bool connected = false;
+
+  void _setConnected(val) {
+    if (this.mounted)
+      setState(() {
+        connected = val;
+    });
+  }
 
   void _setCTC(val) {
     if (this.mounted)
@@ -165,8 +175,10 @@ class _AddBMSDataState extends State<AddBMSData> {
 
   Future<void>? addBMSData() {
     // Call the user's CollectionReference to add a new user
-    if (soc == 828)
+    if (!connected) {
+      print("NOT CONNECTED, CORRECT OUTPUT!!!");
       return null;
+    }
     else
     {
     return bmsData
@@ -196,8 +208,10 @@ class _AddBMSDataState extends State<AddBMSData> {
 
   Future<void>? addBatteryData() {
     // Call the user's CollectionReference to add a new user
-    if (soc == 828)
+    if (!connected) {
+      print("NOT CONNECTED, CORRECT OUTPUT!!!");
       return null;
+    }
     else {
       return batteryData
           .add({
@@ -236,6 +250,7 @@ class _AddBMSDataState extends State<AddBMSData> {
     widget.latStream.listen((event) {_setLat(event);});
     widget.longStream.listen((event) {_setLong(event);});
     widget.altStream.listen((event) {_setAlt(event);});
+    widget.connectStream.listen((event) {_setConnected(event);});
   }
 
   @override
