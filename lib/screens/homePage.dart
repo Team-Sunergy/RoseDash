@@ -170,7 +170,7 @@ class HomePageState extends State<HomePage> {
 
   bool _checkBTConnection() {
     bool connect = deviceState == BluetoothDeviceState.connected;
-    print("\n\n\n BT Device State is: " + connect.toString() + "\n\n\n\n\n\n");
+    //print("\n\n\n BT Device State is: " + connect.toString() + "\n\n\n\n\n\n");
     _connectedController.add(connect);
     return connect;
   }
@@ -191,61 +191,64 @@ class HomePageState extends State<HomePage> {
     }
   }*/
 
-  int hexStringToInt(String hex, bool isNotCD) {
+  int hexStringToInt(String hex) {
     int res = 0;
-    if (isNotCD) hex = hex.split('').reversed.join();
-    hex = hex.toLowerCase();
-    for (int i = 0; i < hex.length; i++) {
-      // Dart Sucks
-      switch (hex[i]) {
-        case 'a':
-          res += 10 * pow(16, i);
-          break;
-        case 'b':
-          res += 11 * pow(16, i);
-          break;
-        case 'c':
-          res += 12 * pow(16, i);
-          break;
-        case 'd':
-          res += 13 * pow(16, i);
-          break;
-        case 'e':
-          res += 14 * pow(16, i);
-          break;
-        case 'f':
-          res += 15 * pow(16, i);
-          break;
-        case '1':
-          res += pow(16, i);
-          break;
-        case '2':
-          res += 2 * pow(16, i);
-          break;
-        case '3':
-          res += 3 * pow(16, i);
-          break;
-        case '4':
-          res += 4 * pow(16, i);
-          break;
-        case '5':
-          res += 5 * pow(16, i);
-          break;
-        case '6':
-          res += 6 * pow(16, i);
-          break;
-        case '7':
-          res += 7 * pow(16, i);
-          break;
-        case '8':
-          res += 8 * pow(16, i);
-          break;
-        case '9':
-          res += 9 * pow(16, i);
-          break;
-        case '0':
-          res += 0;
-          break;
+    if (hex.length >= 4 || hex.length == 2) {
+      hex = Characters(hex).take(4).toString();
+      hex = hex
+          .split('')
+          .reversed
+          .join();
+      hex = hex.toLowerCase();
+      for (int i = 0; i < hex.length; i++) {
+        // Dart Sucks
+        switch (hex[i]) {
+          case 'a':
+            res += 10 * pow(16, i);
+            break;
+          case 'b':
+            res += 11 * pow(16, i);
+            break;
+          case 'c':
+            res += 12 * pow(16, i);
+            break;
+          case 'd':
+            res += 13 * pow(16, i);
+            break;
+          case 'e':
+            res += 14 * pow(16, i);
+            break;
+          case 'f':
+            res += 15 * pow(16, i);
+            break;
+          case '1':
+            res += pow(16, i);
+            break;
+          case '2':
+            res += 2 * pow(16, i);
+            break;
+          case '3':
+            res += 3 * pow(16, i);
+            break;
+          case '4':
+            res += 4 * pow(16, i);
+            break;
+          case '5':
+            res += 5 * pow(16, i);
+            break;
+          case '6':
+            res += 6 * pow(16, i);
+            break;
+          case '7':
+            res += 7 * pow(16, i);
+            break;
+          case '8':
+            res += 8 * pow(16, i);
+            break;
+          case '9':
+            res += 9 * pow(16, i);
+            break;
+        }
       }
     }
     return res;
@@ -287,12 +290,6 @@ class HomePageState extends State<HomePage> {
           break;
       }
     }
-    for (int i = 0; i < 20; i++) {
-      print("The Speed is ");
-      print(res);
-      print("The string passed in is");
-      print(speed);
-    }
     return res;
   }
 
@@ -318,7 +315,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xff181818),
+        backgroundColor: Color(0xffa6a5a4),
         body: Column(children: [
           Container(
               height: 150,
@@ -607,12 +604,11 @@ class HomePageState extends State<HomePage> {
                 //print(message);
                 double current;
                 if (message[1] == 'N') {
-                  current =
-                      hexStringToInt(Characters(message).skip(2).toString(), false) * -0.001;
+                  current = hexStringToInt(Characters(message).skip(2).toString()) * -.1;
                 } else {
                   print("current string:" + Characters(message).skip(2).toString());
                   sleep(Duration(seconds:15));
-                  current = hexStringToInt(Characters(message).skip(2).toString(), false) * 0.1;
+                  current = hexStringToInt(Characters(message).skip(2).toString()) * 0.1;
                 }
                 _currentDrawController.add(current);
               } else if (message[0] == 'r') {
@@ -625,20 +621,20 @@ class HomePageState extends State<HomePage> {
                   if (i == 0) {
                     //print("cell id = " + int.parse('0x${components.elementAt(i).toString().toUpperCase()}').toString());
                     uh.cellId =
-                        hexStringToInt(components.elementAt(i).toString(), true);
+                        hexStringToInt(components.elementAt(i).toString());
                   } else if (i == 1) {
                     uh.instV =
-                        hexStringToInt(components.elementAt(i).toString(), true) /
+                        hexStringToInt(components.elementAt(i).toString()) /
                             10000;
                   } else if (i == 2) {
                     uh.isShunting = components.elementAt(i).toString() == '1';
                   } else if (i == 3) {
                     uh.intRes =
-                        hexStringToInt(components.elementAt(i).toString(), true) /
+                        hexStringToInt(components.elementAt(i).toString()) /
                             100;
                   } else if (i == 4) {
                     uh.openV =
-                        hexStringToInt(components.elementAt(i).toString(), true) /
+                        hexStringToInt(components.elementAt(i).toString()) /
                             10000;
                   }
                 }
@@ -698,15 +694,21 @@ class HomePageState extends State<HomePage> {
                   _apwController.add("");
                 }
               } else if (message[0] == 'G') {
-                _socController.add(hexStringToInt(message.substring(1, 3), true) / 2);
+                for(int i = 0; i < 50; i++) {
+                  print(message);
+                }
+                for(int i = 0; i < 100; i++) {
+                  print("soc is " + message.substring(1, 3));
+                }
+                _socController.add(hexStringToInt(message.substring(1, 3)) / 2);
                 _hiController
-                    .add(hexStringToInt(message.substring(4, 8), true) / 10000);
+                    .add(hexStringToInt(message.substring(4, 8)) / 10000);
                 _lowController
-                    .add(hexStringToInt(message.substring(9, 13), true) / 10000);
+                    .add(hexStringToInt(message.substring(9, 13)) / 10000);
                 _packVoltSumController
-                    .add(hexStringToInt(message.substring(14, 18), true) / 10);
+                    .add(hexStringToInt(message.substring(14, 18)) / 10);
                 _hiTempController
-                    .add(hexStringToInt(message.substring(19, 21), true));
+                    .add(hexStringToInt(message.substring(19, 21)));
                 // Arithmetic is performed in VoltMeter Widget
                 _deltaController.add(0);
               }

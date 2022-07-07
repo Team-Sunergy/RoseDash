@@ -47,8 +47,8 @@ class MyApp extends StatelessWidget {
 
           return MaterialApp(
             title: "SVT: Alpha Dashboard",
-            theme: ThemeData.dark(),
-            darkTheme: ThemeData.dark(),
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.light(),
             home: HomePage(),
 
 

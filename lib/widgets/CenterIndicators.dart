@@ -161,7 +161,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
         Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
-          value: currentDraw.toString(),
+          value: sprintf("%0.1f", [currentDraw]),
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
@@ -208,7 +208,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
 
   Color _packCurrentColor()
   {
-    if (currentDraw > -1) { return Color(0xff39ff14); } // All good!
+    if (currentDraw < 0) { return Color(0xff39ff14); } // All good!
     else if (currentDraw <= 50 && currentDraw > 25) { return Color(0xffc2b11d); } // Watch for fault.
     else if (currentDraw <= 25 && currentDraw < 15) { return Color(0xfff72119); } // Fault incoming...
     else { return Color(0xffc845ff); } // Fault state!
