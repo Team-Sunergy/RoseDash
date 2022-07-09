@@ -148,7 +148,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
         Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
-          value: currentDraw.toString(),
+          value: sprintf("%0.1f", [currentDraw]),
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
