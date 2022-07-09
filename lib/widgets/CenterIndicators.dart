@@ -112,7 +112,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: _socColor(),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("State of Charge", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 20, child: Text("State of Charge", style: TextStyle(color: Color(0xffc2b11d)/*Colors.white70.withOpacity(0.65)*/),)),
         Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
@@ -123,7 +123,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: _highColor(),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("High Cell Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 20, child: Text("High Cell Voltage", style: TextStyle(color: Color(0xffc2b11d)/*Colors.white70.withOpacity(0.65)*/),)),
         Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
@@ -134,7 +134,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: _lowColor(),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("Low Cell Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 20, child: Text("Low Cell Voltage", style: TextStyle(color: Color(0xffc2b11d)/*Colors.white70.withOpacity(0.65)*/),)),
         Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
@@ -146,7 +146,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: _packVoltColor(),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("Pack Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 20, child: Text("Pack Voltage", style: TextStyle(color: Color(0xffc2b11d)/*Colors.white70.withOpacity(0.65)*/),)),
         Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
@@ -157,7 +157,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               enabledColor: _tempColor(),
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
-        Container(height: 20, child: Text("High Temp ºC", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
+        Container(height: 20, child: Text("High Temp ºC", style: TextStyle(color: Color(0xffc2b11d)/*Colors.white70.withOpacity(0.65)*/),)),
         Container(height: 12,),
         Container(
             child: SixteenSegmentDisplay(
@@ -169,7 +169,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         //Signed Value from PID of BMS
-        Container(height: 20, child: Text("Current Draw", style: TextStyle(color: Colors.white70.withOpacity(0.65)),))
+        Container(height: 20, child: Text("Current Draw", style: TextStyle(color: Color(0xffc2b11d)/*Colors.white70.withOpacity(0.65)*/),))
       ]),
     );
   }
