@@ -1,4 +1,3 @@
-import 'package:bt01_serial_test/widgets/Speedometer.dart';
 import 'package:flutter/material.dart';
 import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
