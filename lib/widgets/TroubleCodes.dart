@@ -1,5 +1,5 @@
 import 'dart:collection';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -18,6 +18,7 @@ class _TroubleCodesState extends State<TroubleCodes> {
       .orderBy('time', descending: true)
       .limit(1)
       .snapshots(includeMetadataChanges: true);
+
   void setTroubleCodes(String tcs, int id) {
     if (this.mounted) {
       Iterable<Characters> components = Characters(tcs).replaceAll(Characters("{"), Characters.empty).replaceAll(Characters(" "), Characters.empty).replaceAll(Characters("}"), Characters.empty).split(Characters(","));
@@ -66,6 +67,8 @@ class _TroubleCodesState extends State<TroubleCodes> {
 
   @override
   void initState() {
+    super.initState();
+    _initHashMap();
     super.initState();
     _dB.listen((event) {
       processCodes(event);
