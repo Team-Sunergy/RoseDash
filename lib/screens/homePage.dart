@@ -721,6 +721,8 @@ class HomePageState extends State<HomePage> {
 
               // Poll for Pending Trouble Codes
               await obd2Req("ptc#");
+
+              await obd2Req("vtr#");
               message = "";
             }
           });

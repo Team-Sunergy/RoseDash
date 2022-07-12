@@ -9,11 +9,13 @@ SoftwareSerial Bluetooth(4, 5); // RX, TX
 int hall_pin = 7;
 // set number of hall trips for RPM reading (higher improves accuracy)
 float hall_thresh = 5.0;
-
+bool debug = true;
 long unsigned int rxId;
 unsigned char len = 0;
 unsigned char rxBuf[8];
-char msgString[128];                        // Array to store serial string
+char msgString[128];
+String vtr; // Array to store serial string
+char vtrCache[128];
 int speedpin = 8;
 const int VOL_PIN = A0;
 #define CAN0_INT 2                              // Set INT to pin 2
@@ -35,25 +37,27 @@ void setup()
   pinMode(hall_pin, INPUT);
   // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
   if(CAN0.begin(MCP_ANY, CAN_250KBPS, MCP_8MHZ) == CAN_OK) {
-    //Serial.println("MCP2515 Initialized Successfully!");
+    //if (debug) Serial.println("MCP2515 Initialized Successfully!");
     //Bluetooth.println("MCP2515 Initialized Successfully!");
   }
   else {
-    //Serial.println("Error Initializing MCP2515...");
+    //if (debug) Serial.println("Error Initializing MCP2515...");
     //Bluetooth.println("Error Initializing MCP2515...");
   }
   
   CAN0.setMode(MCP_NORMAL);                     // Set operation mode to normal so the MCP2515 sends acks to received data.
   pinMode(VOL_PIN, INPUT);
   pinMode(CAN0_INT, INPUT);                            // Configuring pin for /INT input
-  //Serial.println("MCP2515 Library Receive Example...");
+  //if (debug) Serial.println("MCP2515 Library Receive Example...");
   //Bluetooth.println("MCP2515 Library Receive Example...");
 }
 
 void loop()
 {
   request req;
-
+  vtr = "";
+  memset(vtrCache, 0, sizeof vtrCache);
+  memset(msgString, 0, sizeof msgString);
  // preallocate values for tach
   float hall_count = 1.0;
   float start = micros();
@@ -83,8 +87,8 @@ void loop()
   String speedmsg = "ss";
   speedmsg += mph;
   for (int i = 0; i < 40; i++) {
-    Serial.println(speedmsg);
-    //Serial.println(speedmsg);
+    if (debug) Serial.println(speedmsg);
+    //if (debug) Serial.println(speedmsg);
     Bluetooth.println(speedmsg);
   }
          // delay in between reads for stability
@@ -97,7 +101,7 @@ void loop()
   /*value = analogRead( VOL_PIN );
   volt = value * 5.0 / 1023.0;
   for (int i = 0; i < 20; i++) {
-    Serial.println("V" + String(volt));
+    if (debug) Serial.println("V" + String(volt));
     Bluetooth.println("V" + String(volt));
   }*/
   
@@ -111,12 +115,12 @@ void loop()
     /*else if (rxId == 0x7EB || rxId == 0x7E3 || rxId == 0x8 || rxId == 0x286 || rxId == 0x287 || rxId == 0x288)*/
       ///sprintf(msgString, "Standard ID: 0x%.3lX       DLC: %1d  Data:", rxId, len);
 
-    //Serial.print(msgString);
+    //if (debug) Serial.print(msgString);
     //Bluetooth.print(msgString);*/
     
     if((rxId & 0x40000000) == 0x40000000){    // Determine if message is a remote request frame.
       //sprintf(msgString, " REMOTE REQUEST FRAME");
-      //Serial.print(msgString);
+      //if (debug) Serial.print(msgString);
     }
     if(rxId == 0x8){
         int count = 0;
@@ -155,7 +159,7 @@ void loop()
                 batMsg += msgString;
           }
           if (valid) {
-            Serial.println(batMsg);
+            if (debug) Serial.println(batMsg);
             Bluetooth.println(batMsg);
           }
           count++;
@@ -164,22 +168,23 @@ void loop()
     else if(rxId == 0x289 /*|| rxId == 0x287*/ || rxId == 0x288) {
         int count = 0;
         do {
-          String telMes = "";
         for(byte i = 0; i<len; i++){
              // Delineates between 286 msg and 287
-            if (i == 0 && rxId == 0x289) sprintf(msgString, "G%.2X", rxBuf[i]);
-            else if ((i == 2 || i == 4 || i == 6) && rxId == 0x289) sprintf(msgString, "%.2X", rxBuf[i]);
-            else if (i != 0  && rxId == 0x289) sprintf(msgString, "-%.2X", rxBuf[i]);
+            if (i == 0 && rxId == 0x289) sprintf(vtrCache, "G%.2X", rxBuf[i]);
+            else if ((i == 2 || i == 4 || i == 6) && rxId == 0x289) sprintf(vtrCache, "%.2X", rxBuf[i]);
+            else if (i != 0  && rxId == 0x289) sprintf(vtrCache, "-%.2X", rxBuf[i]);
             //else if (rxId == 0x287 && i == 0) sprintf(msgString, "k%.2X", rxBuf[i]);
             //else if (rxId == 0x287) sprintf(msgString, "%.2X", rxBuf[i]);
             else if (rxId == 0x288 && i == 0) sprintf(msgString, "I%.2X", rxBuf[i]);
             else if (rxId == 0x288 && (i == 1 || i == 2)) sprintf(msgString, "%.2X", rxBuf[i]);
             else if (rxId == 0x288 && i > 2) sprintf(msgString, "");
             else sprintf(msgString, "%.2X", rxBuf[i]);
-            telMes += msgString;
+            if (debug) Serial.print(msgString);
+            if (rxId != 0x289) Bluetooth.print(msgString);
+            else if (count == 1) vtr += vtrCache;
         } 
-        Serial.println(telMes);
-        Bluetooth.println(telMes);
+        if (debug) Serial.println();
+        Bluetooth.println();
         count++;
         } while ((rxId == 0x289 || rxId == 0x287) && count < 10);
     }     
@@ -191,7 +196,7 @@ void loop()
     int i = 0;
     while(Bluetooth.peek() > 0) {
       if (Bluetooth.peek() >= 'a' && Bluetooth.peek() <= 'z') {
-        //Serial.print((char)Bluetooth.read());
+        //if (debug) Serial.print((char)Bluetooth.read());
         str[i++] = Bluetooth.read();
       } else {
         if(Bluetooth.read() == '#') {
@@ -208,22 +213,27 @@ void loop()
         faultrequest.concat(str[at++]); 
         if (faultrequest.equals("upc")){
           req = UPC;
-          //Serial.println(faultrequest);
+          //if (debug) Serial.println(faultrequest);
           break;
         }
         else if (faultrequest.equals("ptc")){
           req = PTC;
-          //Serial.println(faultrequest);
+          //if (debug) Serial.println(faultrequest);
           break;
         }
         else if (faultrequest.equals("ctc")){
           req = CTC;
-          //Serial.println(faultrequest);
+          //if (debug) Serial.println(faultrequest);
           break;
+        }
+        else if (faultrequest.equals("vtr")){
+          Bluetooth.println(vtr);
+          if (debug) Serial.println(vtr);
+          break; 
         }
       }
       faultrequest = "";
-      //Serial.println(faultrequest);
+      //if (debug) Serial.println(faultrequest);
       // OBD2 length, MOD, PID
       INT32U id = 0x750;
       INT8U canLen = 8;
@@ -285,7 +295,7 @@ void loop()
               sprintf(msgString, "kP%.2X%.2X", rxBuf[4], rxBuf[5]);
             }
             for (int i = 0; i < 30; i++) {
-              Serial.println(msgString);
+              if (debug) Serial.println(msgString);
               Bluetooth.println(msgString);
             }
       } 
@@ -294,7 +304,7 @@ void loop()
         if (rxBuf[0] == 16) {
           obd2Length = rxBuf[1] - 2;
           sprintf(msgString, "C_%d_%.2X%.2X!%.2X%.2X!", obd2Length, rxBuf[4], rxBuf[5], rxBuf[6], rxBuf[7]);
-          Serial.print(msgString);
+          if (debug) Serial.print(msgString);
           Bluetooth.print(msgString);
           obd2Length -= 4;
           // ISO-15765 Flow Control Response
@@ -309,7 +319,7 @@ void loop()
                 int j = 0;
                 while (obd2Length != 0 && count != 0) {
                   sprintf(msgString, "%.2X", rxBuf[j++]);
-                  Serial.print(msgString);
+                  if (debug) Serial.print(msgString);
                   Bluetooth.print(msgString);
                   obd2Length--;
                   count--;  
@@ -320,20 +330,20 @@ void loop()
           obd2Length = rxBuf[0];
 
             sprintf(msgString, "C_%d_", rxBuf[2]);
-            Serial.print(msgString);
+            if (debug) Serial.print(msgString);
             Bluetooth.print(msgString);
             obd2Length /= 2;
             int offset = 3; 
             while (obd2Length > 0) {
               sprintf(msgString, "%.2X%.2X!", rxBuf[offset], rxBuf[offset + 1]);
-              Serial.print(msgString);
+              if (debug) Serial.print(msgString);
               Bluetooth.print(msgString);
               obd2Length -= 2;
               offset += 2;
 
           }
         }
-        Serial.println();
+        if (debug) Serial.println();
         Bluetooth.println();
         }
       } else if (rxBuf[1] == 71 || rxBuf[2] == 71) {
@@ -369,32 +379,33 @@ void loop()
           obd2Length = rxBuf[0];
 
             sprintf(msgString, "P_%d_", rxBuf[2]);
-            Serial.print(msgString);
+            if (debug) Serial.print(msgString);
             Bluetooth.print(msgString);
             obd2Length /= 2;
             int offset = 3; 
             while (obd2Length > 0) {
               sprintf(msgString, "%.2X%.2X!", rxBuf[offset], rxBuf[offset + 1]);
-              Serial.print(msgString);
+              if (debug) Serial.print(msgString);
               Bluetooth.print(msgString);
               obd2Length -= 2;
               offset += 2;
             }
 
         }
-        Serial.println();
+        if (debug) Serial.println();
         Bluetooth.println();
         }
       }
-      //Serial.println();
+      //if (debug) Serial.println();
       //Bluetooth.println();
-                //Serial.println("Message Sent Successfully!");
+                //if (debug) Serial.println("Message Sent Successfully!");
               } else {
-                //Serial.println("Error Sending Message...");
+                //if (debug) Serial.println("Error Sending Message...");
               }
 
      }
     }
+    Bluetooth.flush();
   }
 
 /*********************************************************************************************************
