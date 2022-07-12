@@ -87,9 +87,9 @@ void loop()
   String speedmsg = "ss";
   speedmsg += mph;
   for (int i = 0; i < 40; i++) {
-    if (debug) Serial.println(speedmsg);
     //if (debug) Serial.println(speedmsg);
-    Bluetooth.println(speedmsg);
+    //if (debug) Serial.println(speedmsg);
+    //Bluetooth.println(speedmsg);
   }
          // delay in between reads for stability
 
@@ -182,9 +182,11 @@ void loop()
             if (debug) Serial.print(msgString);
             if (rxId != 0x289) Bluetooth.print(msgString);
             else if (count == 1) vtr += vtrCache;
-        } 
-        if (debug) Serial.println();
-        Bluetooth.println();
+        }
+        if (rxId != 0x289) { 
+          if (debug) Serial.println();
+          Bluetooth.println();
+        }
         count++;
         } while ((rxId == 0x289 || rxId == 0x287) && count < 10);
     }     
@@ -227,8 +229,11 @@ void loop()
           break;
         }
         else if (faultrequest.equals("vtr")){
-          Bluetooth.println(vtr);
-          if (debug) Serial.println(vtr);
+          if (vtr != "")
+          for (int i = 0; i < 30; i++) {
+            Bluetooth.println(vtr);
+            if (debug) Serial.println(vtr);
+          }
           break; 
         }
       }

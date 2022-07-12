@@ -713,6 +713,8 @@ class HomePageState extends State<HomePage> {
                 _deltaController.add(0);
               }
 
+              await obd2Req("vtr#");
+
               // Poll for Absolute Pack Current Draw
               await obd2Req("upc#");
 
@@ -722,7 +724,7 @@ class HomePageState extends State<HomePage> {
               // Poll for Pending Trouble Codes
               await obd2Req("ptc#");
 
-              await obd2Req("vtr#");
+
               message = "";
             }
           });
