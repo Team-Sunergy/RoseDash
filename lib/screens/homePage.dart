@@ -96,7 +96,7 @@ class HomePageState extends State<HomePage> {
   void initState() {
     // Calling superclass initState
     super.initState();
-    navInstance = new Nav();
+    navInstance = new Nav(callback: (event) => {routeLocationToDB(event)},);
     // Will be set to true on reconnect or 1st connect
     // Reconnect to previously found device
     widget.flutterBlue.connectedDevices
