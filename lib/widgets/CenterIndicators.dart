@@ -194,10 +194,10 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
 
   Color _packCurrentColor()
   {
-    if (currentDraw > 50) { return Color(0xff39ff14); } // All good!
-    else if (currentDraw <= 50 && currentDraw > 25) { return Color(0xffc2b11d); } // Watch for fault.
-    else if (currentDraw <= 25 && currentDraw < 15) { return Color(0xfff72119); } // Fault incoming...
-    else { return Color(0xffc845ff); } // Fault state!
+    if (currentDraw > 50) { return Color(0xffc845ff); } // All good!
+    else if (currentDraw <= 50 && currentDraw > 25) { return Color(0xfff72119); } // Watch for fault.
+    else if (currentDraw <= 25 && currentDraw > 15) { return Color(0xffc2b11d); } // Fault incoming...
+    else { return Color(0xff39ff14); } // Fault state!
   }
 
   Color _packVoltColor()
