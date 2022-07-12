@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sprintf/sprintf.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,7 +36,6 @@ class _SpeedometerState extends State<Speedometer> {
     if (this.mounted)
       snapshot.docs.forEach((element) {
         setState(() {
-
           _targetSpeed = element['targetSpeed'];
           // TODO: Audible alert for new target speed
         });
@@ -53,7 +53,10 @@ class _SpeedometerState extends State<Speedometer> {
 
   @override
   Widget build(BuildContext context) {
-    return SfRadialGauge(axes: <RadialAxis>[
+    return Column(children: [Expanded(flex: 1, child: SixteenSegmentDisplay(value: speed.toInt().toString() + " MPH ", size: 4.5, segmentStyle: RectSegmentStyle(
+        enabledColor: Colors.white,
+        disabledColor: Color(0xffc2b11d).withOpacity(0.05)))), Container(height: 10),
+    Expanded(flex: 8, child: SfRadialGauge(axes: <RadialAxis>[
         RadialAxis(
             showAxisLine: false,
             showLabels: false,
@@ -157,7 +160,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 32,
                 startWidth: 5,
                 endWidth: 10,
-                color: Color(0xff03050a)),
+                color: Color(0xffffffff)),
             GaugeRange(
                 startValue: 33,
                 endValue: 48,
@@ -169,7 +172,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 64,
                 startWidth: 13,
                 endWidth: 16,
-                color: Color(0xff03050a)),
+                color: Color(0xffffffff)),
             GaugeRange(
                 startValue: 65,
                 endValue: 80,
@@ -181,7 +184,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 100,
                 startWidth: 20,
                 endWidth: 23,
-                color: Color(0xff03050a)),
+                color: Color(0xffffffff)),
           ],
         ),
         RadialAxis(
@@ -275,7 +278,7 @@ class _SpeedometerState extends State<Speedometer> {
 
             ]),
 
-    ]);
+    ]))]);
   }
 }
 

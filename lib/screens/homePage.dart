@@ -11,6 +11,7 @@ import 'package:characters/characters.dart';
 
 // BLE Library
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:segment_display/segment_display.dart';
 
 // Custom Widgets
 import '../widgets/BluetoothIcon.dart';
@@ -343,7 +344,6 @@ class HomePageState extends State<HomePage> {
                               mphStream: _mphController.stream,
                             )),
                         Center(
-
                             child: AddBMSData(
                                 socStream: _socController.stream,
                                 lowStream: _lowController.stream,
@@ -383,7 +383,7 @@ class HomePageState extends State<HomePage> {
                           color: Color(0xffedd711),
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff03050a).withOpacity(0),
+                          primary: Color(0xffffffff).withOpacity(0),
                           shape: CircleBorder(),
                           padding: EdgeInsets.all(18),
                         ),
@@ -498,7 +498,7 @@ class HomePageState extends State<HomePage> {
                           color: Color(0xffedd711),
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff03050a).withOpacity(0),
+                          primary: Color(0xffffffff).withOpacity(0),
                           shape: CircleBorder(),
                           padding: EdgeInsets.all(18),
                         ),
@@ -527,7 +527,7 @@ class HomePageState extends State<HomePage> {
                           size: 40,
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff03050a).withOpacity(0),
+                          primary: Color(0xffffffff).withOpacity(0),
                           shape: CircleBorder(),
                           padding: EdgeInsets.all(11),
                         ),
@@ -545,7 +545,7 @@ class HomePageState extends State<HomePage> {
                           color: Color(0xffedd711),
                         ),
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xff03050a).withOpacity(0),
+                          primary: Color(0xffffffff).withOpacity(0),
                           shape: CircleBorder(),
                           padding: EdgeInsets.all(18),
                         ),
