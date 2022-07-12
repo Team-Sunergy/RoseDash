@@ -176,6 +176,10 @@ class HomePageState extends State<HomePage> {
     return connect;
   }
 
+  void setSpeed(int speed) {
+    _mphController.add(speed);
+  }
+
   /*Align _btIcon()
   {
     if (connected)
@@ -342,6 +346,7 @@ class HomePageState extends State<HomePage> {
                             child: Speedometer(
                               timeOn: true,
                               mphStream: _mphController.stream,
+                              callback: (speed) => {setSpeed(speed.toInt())},
                             )),
                         Center(
                             child: AddBMSData(
@@ -473,6 +478,7 @@ class HomePageState extends State<HomePage> {
                               child: Speedometer(
                                 timeOn: true,
                                 mphStream: _mphController.stream,
+                                callback: (speed) => {setSpeed(speed.toInt())},
                               )),
                           /*Center(
                               child: SOCGraph(

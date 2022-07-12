@@ -10,7 +10,6 @@ import 'dart:async';
 class Speedometer extends StatefulWidget {
   final bool timeOn;
   final Stream<int> mphStream;
-
   final Function(double) callback;
   Speedometer({required this.callback, required this.timeOn, required this.mphStream});
   //Speedometer({required this.mphStream, required this.timeOn});
@@ -28,7 +27,7 @@ class _SpeedometerState extends State<Speedometer> {
     if (this.mounted)
     setState(() {
       speed = pos.speed * 2.236936;
-      widget.callback?.call(speed);
+      widget.callback.call(speed);
     });
   }
 
@@ -46,7 +45,7 @@ class _SpeedometerState extends State<Speedometer> {
   void initState() {
     super.initState();
     Geolocator.getPositionStream(locationSettings: LocationSettings(accuracy: LocationAccuracy.best)).listen((speed) {setSpeed(speed);});
-    widget.callback?.call(speed);
+    widget.callback.call(speed);
     //widget.mphStream.listen((event) {setSpeed(event);});
     _dB.listen((event) {setTargetSpeed(event);});
   }
