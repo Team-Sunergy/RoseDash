@@ -96,7 +96,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: _socColor(),
+              enabledColor: Colors.white,
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         Container(height: 20, child: Text("State of Charge", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
@@ -107,7 +107,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: _highColor(),
+              enabledColor: Colors.white,
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         Container(height: 20, child: Text("High Cell Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
@@ -118,7 +118,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: _lowColor(),
+              enabledColor: Colors.white,
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         Container(height: 20, child: Text("Low Cell Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
@@ -130,7 +130,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: _packVoltColor(),
+              enabledColor: Colors.white,
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         Container(height: 20, child: Text("Pack Voltage", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
@@ -141,7 +141,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: _tempColor(),
+              enabledColor: Colors.white,
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         Container(height: 20, child: Text("High Temp ºC", style: TextStyle(color: Colors.white70.withOpacity(0.65)),)),
@@ -152,7 +152,7 @@ class _CenterIndicatorsState extends State<CenterIndicators> {
           size: 4.0,
           backgroundColor: Colors.transparent,
           segmentStyle: RectSegmentStyle(
-              enabledColor: _packCurrentColor(),
+              enabledColor: Colors.white,
               disabledColor: Color(0xffc2b11d).withOpacity(0.05)),
         )),
         //Signed Value from PID of BMS

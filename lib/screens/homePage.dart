@@ -29,7 +29,6 @@ class UnderHood {
 class HomePageState extends State<HomePage> {
   Nav navInstance;
 
-
   @override
   void initState() {
     // Calling superclass initState

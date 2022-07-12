@@ -1,15 +1,12 @@
 import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 HashMap<String, String> faultCodes = new HashMap<String, String>();
 final Uri _url = Uri.parse('https://www.orionbms.com/troubleshooting/');
 
 class TroubleCodes extends StatefulWidget {
-
-
-
   @override
   createState () => _TroubleCodesState();
 }
@@ -95,10 +92,8 @@ class _TroubleCodesState extends State<TroubleCodes> {
                   shrinkWrap: true,
                   itemCount: _ctcs?.length,
                   itemBuilder: (context, index) {
-                    return TextButton(
-                        onPressed: (_launchUrl),
-                        child: Text(_codeLookup(_ctcs!.elementAt(index))
-                          ,));
+                    return Text(_codeLookup(_ctcs!.elementAt(index)));
+                    //return Text(_ctcs!.elementAt(index));
                   },
                 )
               ],
@@ -164,10 +159,3 @@ _initHashMap() {
   faultCodes["P0A08"] = "Charger Safety Relay Fault";
   faultCodes["P0A9C"] = "Battery Thermistor Fault";
 }
-
-void _launchUrl() async {
-
-  if (!await launchUrl(_url)) throw 'Could not launch $_url';
-}
-
-
