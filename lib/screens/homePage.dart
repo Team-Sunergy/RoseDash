@@ -29,7 +29,6 @@ class UnderHood {
 class HomePageState extends State<HomePage> {
   Nav navInstance;
 
-
   @override
   void initState() {
     // Calling superclass initState
@@ -53,7 +52,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white70,
+      backgroundColor: Colors.black,
         body: Column(children: [
           Container(height: 150,),
           Row(

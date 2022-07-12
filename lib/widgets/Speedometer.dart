@@ -159,7 +159,7 @@ class _SpeedometerState extends State<Speedometer> {
               endValue: 32,
               startWidth: 5,
               endWidth: 10,
-              color: Color(0xff03050a)),
+              color: Color(0xfff8f8f8)),
           GaugeRange(
               startValue: 33,
               endValue: 48,
@@ -171,19 +171,19 @@ class _SpeedometerState extends State<Speedometer> {
               endValue: 64,
               startWidth: 13,
               endWidth: 16,
-              color: Color(0xff03050a)),
+              color: Color(0xffffffff)),
           GaugeRange(
               startValue: 65,
               endValue: 80,
               startWidth: 16,
               endWidth: 20,
-              color: Color(0xffc2b11d)),
+              color: Color(0xffedd711)),
           GaugeRange(
               startValue: 81,
               endValue: 100,
               startWidth: 20,
               endWidth: 23,
-              color: Color(0xff03050a)),
+              color: Color(0xfffdfdfd)),
         ],
       ),
       RadialAxis(

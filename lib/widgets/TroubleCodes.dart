@@ -1,18 +1,12 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 HashMap<String, String> faultCodes = new HashMap<String, String>();
 final Uri _url = Uri.parse('https://www.orionbms.com/troubleshooting/');
 
 class TroubleCodes extends StatefulWidget {
-
-  final Stream<Set<String>> ctcStream;
-  final Stream<Set<String>> ptcStream;
-
-  TroubleCodes({required this.ctcStream, required this.ptcStream});
-
   @override
   createState () => _TroubleCodesState();
 }
@@ -20,17 +14,28 @@ class TroubleCodes extends StatefulWidget {
 class _TroubleCodesState extends State<TroubleCodes> {
   Set<String>? _ctcs;
   Set<String>? _ptcs;
-
-  void setTroubleCodes(Set<String> tcs, int id) {
+  Stream _dB = FirebaseFirestore.instance.collection('VisibleTelemetry')
+      .orderBy('time', descending: true)
+      .limit(1)
+      .snapshots(includeMetadataChanges: true);
+  void setTroubleCodes(String tcs, int id) {
     if (this.mounted) {
+      Iterable<Characters> components = Characters(tcs).replaceAll(Characters("{"), Characters.empty).replaceAll(Characters(" "), Characters.empty).replaceAll(Characters("}"), Characters.empty).split(Characters(","));
+      Set<String> s = new Set<String>();
       setState(() {
         switch (id) {
         // Delineate between obd2 message types
           case 0:
-            _ctcs = tcs;
+            for (Characters c in components) {
+              s.add(c.toString());
+            }
+            _ctcs = s;
             break;
           case 1:
-            _ptcs = tcs;
+            for (Characters c in components) {
+              s.add(c.toString());
+            }
+            _ptcs = s;
             break;
         }});
     }
@@ -48,15 +53,22 @@ class _TroubleCodesState extends State<TroubleCodes> {
     return returnValue;
   }
 
+  void processCodes(QuerySnapshot snapshot) {
+    snapshot.docs.forEach((doc) {
+      if (doc['ptcSet'].toString() != "{}" && doc['ptcSet'] != 0 ) {
+        setTroubleCodes(doc['ptcSet'], 1);
+      }
+      if (doc['ctcSet'].toString() != "{}" && doc['ctcSet'] != 0 ) {
+        setTroubleCodes(doc['ctcSet'], 0);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    _initHashMap();
-    widget.ctcStream.listen((ctcs) {
-      setTroubleCodes(ctcs, 0);
-    });
-    widget.ctcStream.listen((ptcs) {
-      setTroubleCodes(ptcs, 1);
+    _dB.listen((event) {
+      processCodes(event);
     });
   }
 
@@ -77,10 +89,8 @@ class _TroubleCodesState extends State<TroubleCodes> {
                   shrinkWrap: true,
                   itemCount: _ctcs?.length,
                   itemBuilder: (context, index) {
-                    return TextButton(
-                        onPressed: (_launchUrl),
-                        child: Text(_codeLookup(_ctcs!.elementAt(index))
-                          ,));
+                    return Text(_codeLookup(_ctcs!.elementAt(index)));
+                    //return Text(_ctcs!.elementAt(index));
                   },
                 )
               ],
@@ -146,10 +156,3 @@ _initHashMap() {
   faultCodes["P0A08"] = "Charger Safety Relay Fault";
   faultCodes["P0A9C"] = "Battery Thermistor Fault";
 }
-
-void _launchUrl() async {
-
-  if (!await launchUrl(_url)) throw 'Could not launch $_url';
-}
-
-
