@@ -1,14 +1,18 @@
-
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:segment_display/segment_display.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:async';
 
 class Speedometer extends StatefulWidget {
   final bool timeOn;
   final Stream<int> mphStream;
-  Speedometer({required this.mphStream, required this.timeOn});
+
+  final Function(double) callback;
+  Speedometer({required this.callback, required this.timeOn, required this.mphStream});
+  //Speedometer({required this.mphStream, required this.timeOn});
   @override _SpeedometerState createState() => _SpeedometerState();
 }
 class _SpeedometerState extends State<Speedometer> {
@@ -17,12 +21,13 @@ class _SpeedometerState extends State<Speedometer> {
       .limit(1)
       .snapshots(includeMetadataChanges: true);
   int _targetSpeed = 0;
-  int speed = 0;
+  double speed = 0;
 
-  void setSpeed(int mph) {
+  void setSpeed(Position pos) {
     if (this.mounted)
     setState(() {
-      speed = mph;
+      speed = pos.speed * 2.236936;
+      widget.callback?.call(speed);
     });
   }
 
@@ -30,19 +35,22 @@ class _SpeedometerState extends State<Speedometer> {
     if (this.mounted)
       snapshot.docs.forEach((element) {
         setState(() {
+
           _targetSpeed = element['targetSpeed'];
           // TODO: Audible alert for new target speed
         });
       });
-
   }
 
   @override
   void initState() {
     super.initState();
-    widget.mphStream.listen((event) {setSpeed(event);});
+    Geolocator.getPositionStream(locationSettings: LocationSettings(accuracy: LocationAccuracy.best)).listen((speed) {setSpeed(speed);});
+    widget.callback?.call(speed);
+    //widget.mphStream.listen((event) {setSpeed(event);});
     _dB.listen((event) {setTargetSpeed(event);});
   }
+
   @override
   Widget build(BuildContext context) {
     return SfRadialGauge(axes: <RadialAxis>[
@@ -88,11 +96,11 @@ class _SpeedometerState extends State<Speedometer> {
           maximum: 81,
           pointers: <GaugePointer>[
             NeedlePointer(
-                value: speed / 1.0,
+                value: speed,
                 onValueChanged: (double newValue) {
                   if (this.mounted)
                   setState(() {
-                    speed = newValue as int;
+                    speed = newValue;
                   });
                 },
                 needleColor: Color(0xffd9950b).withOpacity(1),
@@ -269,10 +277,10 @@ class _SpeedometerState extends State<Speedometer> {
 
     ]);
   }
-
-
 }
-double _speedAngle(int speed)
+
+// Angle of speedo Yosef
+double _speedAngle(double speed)
 {
   if (speed < 30) { return 0.2; }
   else if (speed >= 30 && speed < 40) { return 0.275; }
