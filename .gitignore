@@ -44,3 +44,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+#/ios
+#/web
+#/MCP_CAN_lib-1.5.0
