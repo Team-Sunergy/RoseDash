@@ -8,3 +8,4 @@
 </p>
 
 ---
+This provides a starting ground for Solar Vehicle telemetry interfaces using any modern android device. The idea can be extended to the web and ios if desired, it will require more setup and possibly different libraries but since it relies on flutter, deployment is theoretically possible.
