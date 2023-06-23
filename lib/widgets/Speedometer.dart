@@ -22,6 +22,16 @@ class _SpeedometerState extends State<Speedometer> {
       .snapshots(includeMetadataChanges: true);
   int _targetSpeed = 0;
   double speed = 0;
+  var speedometerImage = 'images/ROSE_logo.png';
+
+  void setImage(speed, image){
+    if (speed < 20) {
+      image = 'images/ROSE_logo.png';
+    }
+    else if (speed < 20) {
+      image = 'image/Yosef_dental.png';
+    }
+  }
 
   void setSpeed(Position pos) {
     if (this.mounted)
@@ -52,7 +62,7 @@ class _SpeedometerState extends State<Speedometer> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [Expanded(flex: 1, child: SixteenSegmentDisplay(value: speed.toInt().toString() + " MPH ", size: 4.5, segmentStyle: RectSegmentStyle(
+    return Column(children: [Expanded(flex: 1, child: SixteenSegmentDisplay(value: "\n" + speed.toInt().toString() + " MPH ", size: 4.5, segmentStyle: RectSegmentStyle(
         enabledColor: Colors.white,
         disabledColor: Color(0xffc2b11d).withOpacity(0.05)))), Container(height: 10),
     Expanded(flex: 8, child: SfRadialGauge(axes: <RadialAxis>[
@@ -70,30 +80,32 @@ class _SpeedometerState extends State<Speedometer> {
                     Transform.rotate(
                     angle: _speedAngle(speed),
                     child : Container(
-                        width: 270.00,
-                        height: 270.00,
+                        width: 290.00,
+                        height: 290.00,
                         decoration: const BoxDecoration(
                           shape: BoxShape.rectangle,
                           image: DecorationImage(
-                            alignment: Alignment.bottomLeft,
+                            alignment: Alignment.centerRight,
                             filterQuality: FilterQuality.high,
                             colorFilter: ColorFilter.srgbToLinearGamma(),
                             image:
-                            ExactAssetImage('images/Yosef_dental.png'),
-                            fit: BoxFit.fill,
+                              ExactAssetImage('images/ROSE_logo.png'),
+                            fit: BoxFit.cover,
                             opacity: 0.4,
                           ),
-                        )),
+                        )
+                    ),
                     )
                   ],
                 ),
               )
-            ]),
+            ]
+        ),
         RadialAxis(
           showAxisLine: false,
           showLabels: false,
           showTicks: false,
-          radiusFactor: 0.9,
+          radiusFactor: 0.85,
           minimum: 0,
           maximum: 81,
           pointers: <GaugePointer>[
@@ -141,7 +153,7 @@ class _SpeedometerState extends State<Speedometer> {
           ],
         ),
         RadialAxis(
-          centerX: 0.51,
+          centerX: 0.5,
           useRangeColorForAxis: true,
           showAxisLine: false,
           showLabels: false,
@@ -187,10 +199,11 @@ class _SpeedometerState extends State<Speedometer> {
           ],
         ),
         RadialAxis(
+            centerX: 0.49,
             showAxisLine: false,
             showLabels: true,
             showTicks: true,
-            radiusFactor: 0.9,
+            radiusFactor: 0.87,
             minimum: 0,
             maximum: 81,
             majorTickStyle: MajorTickStyle(
@@ -213,7 +226,7 @@ class _SpeedometerState extends State<Speedometer> {
                           disabledColor: Color(0xff635b0e).withOpacity(0.05))),
                 ),
                 angle: 85,
-                positionFactor: 0.5,
+                positionFactor: 0.6,
               ),
               GaugeAnnotation(
                 widget: Container(
@@ -221,7 +234,7 @@ class _SpeedometerState extends State<Speedometer> {
                   child: Column(
                     children: [
                       SixteenSegmentDisplay(
-                          value: "Target: " + _targetSpeed.toString(),
+                          value: "Target: " + _targetSpeed.toString() + "\n",
                           size: 1.25,
                           backgroundColor: Colors.transparent,
                           segmentStyle: RectSegmentStyle(
@@ -231,7 +244,7 @@ class _SpeedometerState extends State<Speedometer> {
                   ),
                 ),
                 angle: 85,
-                positionFactor: 0.73,
+                positionFactor: 0.87,
               ),
               GaugeAnnotation(
                 widget: Container(
@@ -272,7 +285,7 @@ class _SpeedometerState extends State<Speedometer> {
                   ),
                 ),
                 angle: 85,
-                positionFactor: 0.85,
+                positionFactor: 0.97,
               ),
 
             ]),
