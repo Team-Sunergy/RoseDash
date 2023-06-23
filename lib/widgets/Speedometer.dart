@@ -79,7 +79,7 @@ class _SpeedometerState extends State<Speedometer> {
                             filterQuality: FilterQuality.high,
                             colorFilter: ColorFilter.srgbToLinearGamma(),
                             image:
-                            ExactAssetImage('images/Yosef_dental.png'),
+                            ExactAssetImage('images/when-a-guy-smiles-at-you.jpg'),
                             fit: BoxFit.fill,
                             opacity: 0.4,
                           ),

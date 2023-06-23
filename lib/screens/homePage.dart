@@ -2,7 +2,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi';
+//import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
@@ -320,13 +320,14 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.black,
-        body: Column(children: [
+        backgroundColor: Colors.black, //BLAEZ COMMENT: THIS CHANGES THE BACKGROUND COLOR
+        body: Column(children: [ //BLAEZ COMMENT: THIS SQUARE BRACKET GOES TO THE VERY END
           Container(
               height: 150,
               child: Row(children: [
                 //LeftTurnSignal(),
                 Container(width: 1205, child: BluetoothIcon(connectStream: _connectedController.stream,))]
+                  //BLAEZ COMMENT: I BET THIS JUST SAYS IF BLUETOOTH IS CONNECTED
               )),
           Row(
             children: [
@@ -338,13 +339,13 @@ class HomePageState extends State<HomePage> {
                     height: 450,
                     width: 450,
                     child: IndexedStack(
-                      index: HomePage.leftIndex,
+                      index: HomePage.leftIndex, //BLAEZ COMMENT: I BET THIS IS THE LEFT INDEX (LEFT SIDE)
                       children: [
                         Container(
                             margin: EdgeInsets.symmetric(
                                 vertical: 0, horizontal: 0),
                             child: Speedometer(
-                              timeOn: true,
+                              timeOn: true, //BLAEZ COMMENT: THIS IS THE time for the speedometer
                               mphStream: _mphController.stream,
                               callback: (speed) => {setSpeed(speed.toInt())},
                             )),
@@ -395,7 +396,7 @@ class HomePageState extends State<HomePage> {
                       ),
                     if (HomePage.leftIndex == 0) VerticalDivider(width: 65),
                     VerticalDivider(width: 150),
-                    if (HomePage.leftIndex < 2)
+                    if (HomePage.leftIndex < 3) //changed to 3
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
@@ -484,7 +485,7 @@ class HomePageState extends State<HomePage> {
                               child: SOCGraph(
                             socStream: _socController.stream,
                             packVoltStream: _packVoltSumController.stream,
-                          )),*/
+                          )),  */
                         ],
                       )),
                   Container(
