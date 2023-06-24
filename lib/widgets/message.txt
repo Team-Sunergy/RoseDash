@@ -54,33 +54,33 @@ class UnderHood {
 
 class HomePageState extends State<HomePage> {
   StreamController<Set<String>> _ctcController =
-  StreamController<Set<String>>.broadcast();
+      StreamController<Set<String>>.broadcast();
   StreamController<Set<String>> _ptcController =
-  StreamController<Set<String>>.broadcast();
+      StreamController<Set<String>>.broadcast();
   StreamController<String> _apwController =
-  StreamController<String>.broadcast();
+      StreamController<String>.broadcast();
   StreamController<double> _socController =
-  StreamController<double>.broadcast();
+      StreamController<double>.broadcast();
   StreamController<double> _lowController =
-  StreamController<double>.broadcast();
+      StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
   StreamController<double> _packVoltSumController =
-  StreamController<double>.broadcast();
+      StreamController<double>.broadcast();
   StreamController<double> _currentDrawController =
-  StreamController<double>.broadcast();
+      StreamController<double>.broadcast();
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
   StreamController<double> _deltaController =
-  StreamController<double>.broadcast();
+      StreamController<double>.broadcast();
   StreamController<Object> _underHoodController =
-  StreamController<Object>.broadcast();
+      StreamController<Object>.broadcast();
   StreamController<double> _latController =
-  StreamController<double>.broadcast();
+      StreamController<double>.broadcast();
   StreamController<double> _longController =
-  StreamController<double>.broadcast();
+      StreamController<double>.broadcast();
   StreamController<double> _altController =
-  StreamController<double>.broadcast();
+      StreamController<double>.broadcast();
   StreamController<bool> _connectedController =
-  StreamController<bool>.broadcast();
+    StreamController<bool>.broadcast();
   StreamController<int> _mphController = StreamController<int>.broadcast();
   List<BluetoothService>? _services;
   BluetoothCharacteristic? c;
@@ -354,7 +354,7 @@ class HomePageState extends State<HomePage> {
                                 hiStream: _hiController.stream,
                                 packVoltStream: _packVoltSumController.stream,
                                 currentDrawStream:
-                                _currentDrawController.stream,
+                                    _currentDrawController.stream,
                                 deltaStream: _deltaController.stream,
                                 hiTempStream: _hiTempController.stream,
                                 speedStream: _mphController.stream,
@@ -646,7 +646,7 @@ class HomePageState extends State<HomePage> {
                 _underHoodController.add(uh);
               } else if (message[0] == 'C' || message[0] == 'P') {
                 Iterable<Characters> lenHelp =
-                Characters(message).split(Characters('_'));
+                    Characters(message).split(Characters('_'));
                 int newObd2Length = lenHelp.length >= 3
                     ? int.parse(lenHelp.elementAt(1).toString())
                     : 0;
@@ -661,7 +661,7 @@ class HomePageState extends State<HomePage> {
                 if (obd2Length != 0) {
                   if (lenHelp.length >= 3) {
                     Iterable<Characters> faults =
-                    lenHelp.elementAt(2).split(Characters('!'));
+                        lenHelp.elementAt(2).split(Characters('!'));
                     faults.forEach((element) {
                       String fault = "P" + element.toString();
                       for (int i = 0; i < 50; i++) {
@@ -690,7 +690,7 @@ class HomePageState extends State<HomePage> {
                 _mphController.add(speed);
               } else if (message[0] == 'V') {
                 var auxPackVoltage =
-                num.parse(message.substring(1, 4))?.toDouble();
+                    num.parse(message.substring(1, 4))?.toDouble();
                 if (auxPackVoltage! < 2) {
                   //apwSet.add(auxPackVoltage.toString());
                   _apwController.add(auxPackVoltage.toString());
