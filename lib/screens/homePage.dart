@@ -2,12 +2,16 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:typed_data';
+
 //import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:characters/characters.dart';
+import 'package:usb_serial/transaction.dart';
+import 'package:usb_serial/usb_serial.dart';
 
 // BLE Library
 import 'package:flutter_blue/flutter_blue.dart';
@@ -31,8 +35,11 @@ import '../widgets/BluetoothIcon.dart';
 // Location Streaming
 import 'package:geolocator/geolocator.dart' as gl;
 
+
 bool connected = false;
 BluetoothDevice device;
+
+
 
 class HomePage extends StatefulWidget {
   // This is for the IndexedStack
@@ -40,8 +47,8 @@ class HomePage extends StatefulWidget {
   static int rightIndex = 0;
 
   @override
-  State<StatefulWidget> createState() => HomePageState();
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+  State<StatefulWidget> createState() => _HomePageState();
+  FlutterBlue flutterBlue = FlutterBlue.instance; //BLUETOOTH
   final Map<Guid, List<int>> readValues = <Guid, List<int>>{};
 }
 
@@ -53,7 +60,7 @@ class UnderHood {
   double openV;
 }
 
-class HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> {
   StreamController<Set<String>> _ctcController =
       StreamController<Set<String>>.broadcast();
   StreamController<Set<String>> _ptcController =
@@ -83,15 +90,18 @@ class HomePageState extends State<HomePage> {
   StreamController<bool> _connectedController =
     StreamController<bool>.broadcast();
   StreamController<int> _mphController = StreamController<int>.broadcast();
-  List<BluetoothService> _services;
-  BluetoothCharacteristic c;
-  BluetoothDevice _connectedDevice;
-  StreamSubscription<Object> reader;
+  List<BluetoothService> _services; //bluetooh
+  BluetoothCharacteristic c; //bluetooth
+  BluetoothDevice _connectedDevice; //bluetooth device
+  StreamSubscription<Object> reader; //this is most likely the same thing as _subscription in main_test
   Set<String> tcList = new Set<String>();
   String apwSet = "";
   int obd2Length = 0;
   Nav navInstance;
-  BluetoothDeviceState deviceState;
+  BluetoothDeviceState deviceState; //bluetooth
+  UsbDevice? _device;
+
+
   @override
   void initState() {
     // Calling superclass initState
@@ -99,20 +109,20 @@ class HomePageState extends State<HomePage> {
     navInstance = new Nav(callback: (event) => {routeLocationToDB(event)},);
     // Will be set to true on reconnect or 1st connect
     // Reconnect to previously found device
-    widget.flutterBlue.connectedDevices
+    widget.flutterBlue.connectedDevices //flutter blue
         .asStream()
         .listen((List<BluetoothDevice> devices) async {
       connected = true;
-      for (BluetoothDevice device in devices) {
-        if (device.name.toString() == "otter") {
+      for (BluetoothDevice device in devices) { //for bluetooth device in devices
+        if (device.name.toString() == "otter") { //if device name is otter
           try {
-            await device.connect();
+            await device.connect(); //await for device to connect
           } catch (e) {
-            if (e.code != 'already_connected') {
+            if (e.code != 'already_connected') { //catch if its already connected
               rethrow;
             }
           } finally {
-            _services = await device.discoverServices();
+            _services = await device.discoverServices(); //setting services to name
             // Begin CAN communications
             //print("before notify");
             notify();
@@ -168,6 +178,7 @@ class HomePageState extends State<HomePage> {
       });
     }
   }
+
 
   bool _checkBTConnection() {
     bool connect = deviceState == BluetoothDeviceState.connected;
