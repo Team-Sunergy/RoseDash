@@ -41,7 +41,7 @@ class HomePage extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => HomePageState();
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+  //FlutterBlue flutterBlue = FlutterBlue.instance; BLU
   final Map<Guid, List<int>> readValues = <Guid, List<int>>{};
 }
 
@@ -52,7 +52,7 @@ class UnderHood {
   double intRes;
   double openV;
 }
-
+-
 class HomePageState extends State<HomePage> {
   StreamController<Set<String>> _ctcController =
       StreamController<Set<String>>.broadcast();
