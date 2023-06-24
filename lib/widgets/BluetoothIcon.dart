@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 
-class BluetoothIcon extends StatefulWidget {
+class SerialIcon extends StatefulWidget {
 
-  final Stream<bool> connectStream;
+  late final Stream<bool> connectStream;
 
-  BluetoothIcon({required this.connectStream});
+  SerialIcon({required this.connectStream});
 
   @override
-  State<StatefulWidget> createState() => _BTState();
+  State<StatefulWidget> createState() => _SRState();
 }
 
-
-class _BTState extends State<BluetoothIcon> {
+class _SRState extends State<SerialIcon> {
 
   bool _connected = false;
 
@@ -23,7 +22,7 @@ class _BTState extends State<BluetoothIcon> {
     }
   }
 
-  Align _btIcon() {
+  Align _SerialIcon() {
     if (_connected) {
       return Align(alignment: Alignment.topLeft,
           child: (Container(child: Icon(
@@ -35,10 +34,9 @@ class _BTState extends State<BluetoothIcon> {
       return Align(alignment: Alignment.topLeft,
           child: Row(children: [Container(child: Icon(
               IconData(0xe7e3, fontFamily: 'MaterialIcons'), size: 60,
-              color: Color(0xfff72119))), Text("Warning: Data may not be up to date. Please power cycle the arduino."), ]));
+              color: Color(0xfff72119))), Text(), ]));
     }
   }
-
   @override
   void initState() {
     super.initState();
