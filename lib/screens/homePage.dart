@@ -1,38 +1,37 @@
-// @dart=2.9
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:characters/characters.dart';
-
 // BLE Library
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:segment_display/segment_display.dart';
 
 // Custom Widgets
+import '../widgets/AddBMSData.dart';
 import '../widgets/BluetoothIcon.dart';
 import '../widgets/CenterIndicators.dart';
-import '../widgets/LeftTurnSignal.dart';
-import '../widgets/RightTurnSignal.dart';
+import '../widgets/TroubleCodes.dart';
 import '../widgets/Warnings.dart';
 import '../screens/FullScreenNav.dart';
 import '../widgets/Nav.dart';
 import '../widgets/Speedometer.dart';
 import '../widgets/VoltMeter.dart';
-import '../widgets/AddBMSData.dart';
-import '../widgets/TroubleCodes.dart';
-import '../widgets/SOCGraph.dart';
-import '../widgets/BluetoothIcon.dart';
+import 'package:usb_serial/usb_serial.dart';
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
+import 'package:usb_serial/transaction.dart';
+import 'package:usb_serial/usb_serial.dart';
 
 // Location Streaming
 import 'package:geolocator/geolocator.dart' as gl;
 
 bool connected = false;
-BluetoothDevice device;
+BluetoothDevice? device;
+UsbDevice? test;
+
 
 class HomePage extends StatefulWidget {
   // This is for the IndexedStack
@@ -46,52 +45,52 @@ class HomePage extends StatefulWidget {
 }
 
 class UnderHood {
-  int cellId;
-  double instV;
-  bool isShunting;
-  double intRes;
-  double openV;
+  int? cellId;
+  double? instV;
+  bool isShunting = false;
+  double? intRes;
+  double? openV;
 }
 
 class HomePageState extends State<HomePage> {
   StreamController<Set<String>> _ctcController =
-      StreamController<Set<String>>.broadcast();
+  StreamController<Set<String>>.broadcast();
   StreamController<Set<String>> _ptcController =
-      StreamController<Set<String>>.broadcast();
+  StreamController<Set<String>>.broadcast();
   StreamController<String> _apwController =
-      StreamController<String>.broadcast();
+  StreamController<String>.broadcast();
   StreamController<double> _socController =
-      StreamController<double>.broadcast();
+  StreamController<double>.broadcast();
   StreamController<double> _lowController =
-      StreamController<double>.broadcast();
+  StreamController<double>.broadcast();
   StreamController<double> _hiController = StreamController<double>.broadcast();
   StreamController<double> _packVoltSumController =
-      StreamController<double>.broadcast();
+  StreamController<double>.broadcast();
   StreamController<double> _currentDrawController =
-      StreamController<double>.broadcast();
+  StreamController<double>.broadcast();
   StreamController<int> _hiTempController = StreamController<int>.broadcast();
   StreamController<double> _deltaController =
-      StreamController<double>.broadcast();
+  StreamController<double>.broadcast();
   StreamController<Object> _underHoodController =
-      StreamController<Object>.broadcast();
+  StreamController<Object>.broadcast();
   StreamController<double> _latController =
-      StreamController<double>.broadcast();
+  StreamController<double>.broadcast();
   StreamController<double> _longController =
-      StreamController<double>.broadcast();
+  StreamController<double>.broadcast();
   StreamController<double> _altController =
-      StreamController<double>.broadcast();
+  StreamController<double>.broadcast();
   StreamController<bool> _connectedController =
-    StreamController<bool>.broadcast();
+  StreamController<bool>.broadcast();
   StreamController<int> _mphController = StreamController<int>.broadcast();
-  List<BluetoothService> _services;
-  BluetoothCharacteristic c;
-  BluetoothDevice _connectedDevice;
-  StreamSubscription<Object> reader;
+  List<BluetoothService>? _services;
+  BluetoothCharacteristic? c;
+  BluetoothDevice? _connectedDevice;
+  StreamSubscription<Object>? reader;
   Set<String> tcList = new Set<String>();
   String apwSet = "";
   int obd2Length = 0;
-  Nav navInstance;
-  BluetoothDeviceState deviceState;
+  Nav? navInstance;
+  BluetoothDeviceState? deviceState;
   @override
   void initState() {
     // Calling superclass initState
@@ -108,9 +107,9 @@ class HomePageState extends State<HomePage> {
           try {
             await device.connect();
           } catch (e) {
-            if (e.code != 'already_connected') {
+            /*if (e.code != 'already_connected') {
               rethrow;
-            }
+            }*/
           } finally {
             _services = await device.discoverServices();
             // Begin CAN communications
@@ -136,9 +135,9 @@ class HomePageState extends State<HomePage> {
             try {
               await r.device.connect();
             } catch (e) {
-              if (e.code != 'already_connected') {
+              /*if (e.code != 'already_connected') {
                 rethrow;
-              }
+              }*/
             } finally {
               // Supply ble services
               try {
@@ -157,7 +156,7 @@ class HomePageState extends State<HomePage> {
                 _connectedDevice = r.device;
                 connected = true;
               });
-            _connectedDevice.state.listen((s) {
+            _connectedDevice?.state.listen((s) {
               if (this.mounted) {
                 deviceState = s;
               }
@@ -209,49 +208,49 @@ class HomePageState extends State<HomePage> {
         // Dart Sucks
         switch (hex[i]) {
           case 'a':
-            res += 10 * pow(16, i);
+            res += (10 * pow(16, i)) as int;
             break;
           case 'b':
-            res += 11 * pow(16, i);
+            res += (11 * pow(16, i)) as int;
             break;
           case 'c':
-            res += 12 * pow(16, i);
+            res += (12 * pow(16, i)) as int;
             break;
           case 'd':
-            res += 13 * pow(16, i);
+            res += (13 * pow(16, i)) as int;
             break;
           case 'e':
-            res += 14 * pow(16, i);
+            res += (14 * pow(16, i)) as int;
             break;
           case 'f':
-            res += 15 * pow(16, i);
+            res += (15 * pow(16, i)) as int;
             break;
           case '1':
-            res += pow(16, i);
+            res += pow(16, i) as int;
             break;
           case '2':
-            res += 2 * pow(16, i);
+            res += 2 * pow(16, i) as int;
             break;
           case '3':
-            res += 3 * pow(16, i);
+            res += 3 * pow(16, i) as int;
             break;
           case '4':
-            res += 4 * pow(16, i);
+            res += 4 * pow(16, i) as int;
             break;
           case '5':
-            res += 5 * pow(16, i);
+            res += 5 * pow(16, i) as int;
             break;
           case '6':
-            res += 6 * pow(16, i);
+            res += 6 * pow(16, i) as int;
             break;
           case '7':
-            res += 7 * pow(16, i);
+            res += 7 * pow(16, i) as int;
             break;
           case '8':
-            res += 8 * pow(16, i);
+            res += 8 * pow(16, i) as int;
             break;
           case '9':
-            res += 9 * pow(16, i);
+            res += 9 * pow(16, i) as int;
             break;
         }
       }
@@ -267,31 +266,31 @@ class HomePageState extends State<HomePage> {
       // Dart Sucks
       switch (speed[i]) {
         case '1':
-          res += pow(10, i);
+          res += pow(10, i) as int;
           break;
         case '2':
-          res += 2 * pow(10, i);
+          res += 2 * pow(10, i) as int;
           break;
         case '3':
-          res += 3 * pow(10, i);
+          res += 3 * pow(10, i) as int;
           break;
         case '4':
-          res += 4 * pow(10, i);
+          res += 4 * pow(10, i) as int;
           break;
         case '5':
-          res += 5 * pow(10, i);
+          res += 5 * pow(10, i) as int;
           break;
         case '6':
-          res += 6 * pow(10, i);
+          res += 6 * pow(10, i) as int;
           break;
         case '7':
-          res += 7 * pow(10, i);
+          res += 7 * pow(10, i) as int;
           break;
         case '8':
-          res += 8 * pow(10, i);
+          res += 8 * pow(10, i) as int;
           break;
         case '9':
-          res += 9 * pow(10, i);
+          res += 9 * pow(10, i) as int;
           break;
       }
     }
@@ -355,7 +354,7 @@ class HomePageState extends State<HomePage> {
                                 hiStream: _hiController.stream,
                                 packVoltStream: _packVoltSumController.stream,
                                 currentDrawStream:
-                                    _currentDrawController.stream,
+                                _currentDrawController.stream,
                                 deltaStream: _deltaController.stream,
                                 hiTempStream: _hiTempController.stream,
                                 speedStream: _mphController.stream,
@@ -523,7 +522,7 @@ class HomePageState extends State<HomePage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      FullScreenNav(nav: navInstance)),
+                                      FullScreenNav(nav: navInstance as Nav)),
                             ); //NavDirections()/*FullScreenNav()*/),);
                           });
                         },
@@ -573,7 +572,7 @@ class HomePageState extends State<HomePage> {
     int retry = 0;
     do {
       try {
-        return await c.write(utf8.encode(val));
+        return await c?.write(utf8.encode(val));
       } catch (e) {
         await Future.delayed(Duration(milliseconds: 100));
         ++retry;
@@ -582,7 +581,7 @@ class HomePageState extends State<HomePage> {
   }
 
   void notify() async {
-    for (BluetoothService service in _services) {
+    for (BluetoothService service in _services!) {
       for (BluetoothCharacteristic characteristic in service.characteristics) {
         //print(characteristic.uuid.toString());
         if (characteristic.uuid.toString() ==
@@ -591,7 +590,7 @@ class HomePageState extends State<HomePage> {
           int retry = 0;
           do {
             try {
-              await c.setNotifyValue(true);
+              await c?.setNotifyValue(true);
               retry = 3;
             } on PlatformException {
               await Future.delayed(Duration(milliseconds: 100));
@@ -599,10 +598,10 @@ class HomePageState extends State<HomePage> {
             }
           } while (retry < 3);
 
-          reader = c.value.listen((event) {});
+          reader = c?.value.listen((event) {});
 
-          reader.onData((data) async {
-            print(utf8.decode(data));
+          reader?.onData((data) async {
+            print(utf8.decode(data as List<int>));
             // This is where we receive our CAN Messages
             String message = ascii.decode(data);
             if (message.isNotEmpty) {
@@ -647,7 +646,7 @@ class HomePageState extends State<HomePage> {
                 _underHoodController.add(uh);
               } else if (message[0] == 'C' || message[0] == 'P') {
                 Iterable<Characters> lenHelp =
-                    Characters(message).split(Characters('_'));
+                Characters(message).split(Characters('_'));
                 int newObd2Length = lenHelp.length >= 3
                     ? int.parse(lenHelp.elementAt(1).toString())
                     : 0;
@@ -662,7 +661,7 @@ class HomePageState extends State<HomePage> {
                 if (obd2Length != 0) {
                   if (lenHelp.length >= 3) {
                     Iterable<Characters> faults =
-                        lenHelp.elementAt(2).split(Characters('!'));
+                    lenHelp.elementAt(2).split(Characters('!'));
                     faults.forEach((element) {
                       String fault = "P" + element.toString();
                       for (int i = 0; i < 50; i++) {
@@ -691,8 +690,8 @@ class HomePageState extends State<HomePage> {
                 _mphController.add(speed);
               } else if (message[0] == 'V') {
                 var auxPackVoltage =
-                    num.parse(message.substring(1, 4))?.toDouble();
-                if (auxPackVoltage < 2) {
+                num.parse(message.substring(1, 4))?.toDouble();
+                if (auxPackVoltage! < 2) {
                   //apwSet.add(auxPackVoltage.toString());
                   _apwController.add(auxPackVoltage.toString());
                 } else {
