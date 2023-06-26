@@ -54,7 +54,8 @@ flutter:
     - images/SunergyYosef-yellow.png
     - images/outline_battery_4_bar_black_24dp.png
     - images/outline_battery_6_bar_black_24dp.png
-  #   - images/a_dot_ham.jpeg
+    - images/rose_logo.png
+   #   - images/a_dot_ham.jpeg
 
   # fonts:
   #   - family: Schyler
