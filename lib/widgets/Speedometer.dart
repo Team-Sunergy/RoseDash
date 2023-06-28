@@ -127,7 +127,7 @@ class _SpeedometerState extends State<Speedometer> {
                     borderWidth: 1,
                     borderColor: Color(0xff070b1a)),
                 knobStyle: KnobStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     borderColor: Color(0xff070b1a),
                     borderWidth: 0.006,
                     knobRadius: 0.017),
@@ -145,7 +145,7 @@ class _SpeedometerState extends State<Speedometer> {
                 needleStartWidth: 0.5,
                 needleEndWidth: 5,
                 knobStyle: KnobStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     borderColor: Color(0xff070b1a),
                     borderWidth: 0.006,
                     knobRadius: 0.017),
