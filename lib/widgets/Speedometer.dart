@@ -248,19 +248,22 @@ class _SpeedometerState extends State<Speedometer> {
               // ),
               GaugeAnnotation(
                 widget: Container(
-                  height: 100,
+                  height: 200,
                   child: Column(
                     children: [
                       Row(
                         children: [
-                          Container(width: 165,),
-                          widget.timeOn ? DigitalClock(
+                          Container(width: 110,),
+                          Material(
+                            color: Colors.black,
+                            child: widget.timeOn ? DigitalClock(
                             digitAnimationStyle: Curves.bounceInOut,
                             is24HourTimeFormat: false,
                             showSecondsDigit: false,
                             amPmDigitTextStyle: TextStyle(
                               color: Color(0xffc2b11d).withOpacity(0.5),
-                              fontSize: 10,
+                              fontSize: 15,
+                              fontFamily: "Schyler-Regular"
                             ),
                             secondDigitDecoration: BoxDecoration(color: Colors.transparent),
                             secondDigitTextStyle: TextStyle(
@@ -270,7 +273,7 @@ class _SpeedometerState extends State<Speedometer> {
                             hourMinuteDigitDecoration: BoxDecoration(color: Colors.transparent),
                             hourMinuteDigitTextStyle: TextStyle(
                               color: Color(0xffedd711),
-                              fontSize: 16,
+                              fontSize: 30, //USED TO BE 16
                             ),
                             areaDecoration: BoxDecoration(
                               color: Colors.transparent,
@@ -279,13 +282,14 @@ class _SpeedometerState extends State<Speedometer> {
 
                           )
                               : Container(),
+                          )
                         ],
                       ),
                     ],
                   ),
                 ),
                 angle: 85,
-                positionFactor: 0.97,
+                positionFactor: 1.1, //USED TO BE .97
               ),
 
             ]),
