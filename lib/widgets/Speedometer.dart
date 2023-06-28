@@ -159,7 +159,7 @@ class _SpeedometerState extends State<Speedometer> {
                       _targetSpeed = newValue as int;
                     });
                 },
-                needleColor: Color(0xff41b82c).withOpacity(1.0),
+                needleColor: Color(0xffffffff).withOpacity(1.0),
                 needleLength: 4,
                 needleStartWidth: 0.5,
                 needleEndWidth: 5,
@@ -220,7 +220,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 16,
                 startWidth: 0,
                 endWidth: 5,
-                color: Color(0xffc2b11d)),
+                color: Color(0xfffcba03)),
             GaugeRange(
                 startValue: 17,
                 endValue: 32,
@@ -232,7 +232,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 48,
                 startWidth: 10,
                 endWidth: 13,
-                color: Color(0xffedd711)),
+                color: Color(0xfffcba03)),
             GaugeRange(
                 startValue: 49,
                 endValue: 64,
@@ -244,7 +244,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 80,
                 startWidth: 16,
                 endWidth: 20,
-                color: Color(0xffc2b11d)),
+                color: Color(0xfffcba03)),
             GaugeRange(
                 startValue: 81,
                 endValue: 100,
