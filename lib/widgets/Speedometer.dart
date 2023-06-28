@@ -62,7 +62,8 @@ class _SpeedometerState extends State<Speedometer> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: [Expanded(flex: 1, child: SixteenSegmentDisplay(value: "\n" + speed.toInt().toString() + " MPH ", size: 4.5, segmentStyle: RectSegmentStyle(
+    return Container(color: Colors.white, //adding this colors
+      child: Column(children: [Expanded(flex: 1, child: SixteenSegmentDisplay(value: "\n" + speed.toInt().toString() + " MPH ", size: 4.5, segmentStyle: RectSegmentStyle(
         enabledColor: Colors.white,
         disabledColor: Color(0xffc2b11d).withOpacity(0.05)))), Container(height: 10),
       Expanded(flex: 8, child: SfRadialGauge(axes: <RadialAxis>[
@@ -127,7 +128,7 @@ class _SpeedometerState extends State<Speedometer> {
                     borderWidth: 1,
                     borderColor: Color(0xff070b1a)),
                 knobStyle: KnobStyle(
-                    color: Colors.black,
+                    color: Colors.lime,
                     borderColor: Color(0xff070b1a),
                     borderWidth: 0.006,
                     knobRadius: 0.017),
@@ -255,7 +256,7 @@ class _SpeedometerState extends State<Speedometer> {
                         children: [
                           Container(width: 110,),
                           Material(
-                            color: Colors.black,
+                            color: Colors.white,
                             child: widget.timeOn ? DigitalClock(
                             digitAnimationStyle: Curves.bounceInOut,
                             is24HourTimeFormat: false,
@@ -294,7 +295,7 @@ class _SpeedometerState extends State<Speedometer> {
 
             ]),
 
-      ]))]);
+      ]))]));
   }
 }
 
