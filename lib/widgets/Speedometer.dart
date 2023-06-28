@@ -63,8 +63,8 @@ class _SpeedometerState extends State<Speedometer> {
   @override
   Widget build(BuildContext context) {
     return Container(color: Colors.white, //adding this colors
-      child: Column(children: [Expanded(flex: 1, child: SixteenSegmentDisplay(value: "\n" + speed.toInt().toString() + " MPH ", size: 4.5, segmentStyle: RectSegmentStyle(
-        enabledColor: Colors.white,
+      child: Column(children: [Expanded(flex: 1, child: SixteenSegmentDisplay(backgroundColor: Colors.white ,value: "\n" + speed.toInt().toString() + " MPH ", size: 4.5, segmentStyle: RectSegmentStyle(
+        enabledColor: Colors.black,
         disabledColor: Color(0xffc2b11d).withOpacity(0.05)))), Container(height: 10),
       Expanded(flex: 8, child: SfRadialGauge(axes: <RadialAxis>[
         RadialAxis(
@@ -81,8 +81,8 @@ class _SpeedometerState extends State<Speedometer> {
                     Transform.rotate(
                       angle: _speedAngle(speed),
                       child : Container(
-                          width: 615.00,
-                          height: 615.00,
+                          width: 600.00,
+                          height: 600.00,
                           decoration: const BoxDecoration(
                             shape: BoxShape.rectangle,
                             image: DecorationImage(
@@ -92,7 +92,7 @@ class _SpeedometerState extends State<Speedometer> {
                               image:
                               ExactAssetImage('images/rose_logo.png'),
                               fit: BoxFit.cover,
-                              opacity: 0.4,
+                              opacity: 0.7,
                             ),
                           )
                       ),
@@ -118,7 +118,25 @@ class _SpeedometerState extends State<Speedometer> {
                       speed = newValue;
                     });
                 },
-                needleColor: Color(0xffd9950b).withOpacity(1),
+                needleColor: Color(0xff000000).withOpacity(1.0),
+                needleLength: 9,
+                needleStartWidth: 3,
+                needleEndWidth: 8,
+                knobStyle: KnobStyle(
+                    color: Colors.black,
+                    borderColor: Color(0xff070b1a),
+                    borderWidth: 0.006,
+                    knobRadius: 0.021),
+                enableAnimation: true),
+            NeedlePointer(
+                value: speed,
+                onValueChanged: (double newValue) {
+                  if (this.mounted)
+                    setState(() {
+                      speed = newValue;
+                    });
+                },
+                needleColor: Color(0xfff73a2d).withOpacity(1),
                 needleLength: 4,
                 needleStartWidth: 0.5,
                 needleEndWidth: 5,
@@ -128,7 +146,7 @@ class _SpeedometerState extends State<Speedometer> {
                     borderWidth: 1,
                     borderColor: Color(0xff070b1a)),
                 knobStyle: KnobStyle(
-                    color: Colors.lime,
+                    color: Colors.black,
                     borderColor: Color(0xff070b1a),
                     borderWidth: 0.006,
                     knobRadius: 0.017),
@@ -141,7 +159,43 @@ class _SpeedometerState extends State<Speedometer> {
                       _targetSpeed = newValue as int;
                     });
                 },
-                needleColor: Color(0xff3eff44).withOpacity(0.5),
+                needleColor: Color(0xff41b82c).withOpacity(1.0),
+                needleLength: 4,
+                needleStartWidth: 0.5,
+                needleEndWidth: 5,
+                knobStyle: KnobStyle(
+                    color: Colors.black,
+                    borderColor: Color(0xff070b1a),
+                    borderWidth: 0.006,
+                    knobRadius: 0.017),
+                enableAnimation: true),
+            NeedlePointer(
+                value: (_targetSpeed) / 1.0,
+                onValueChanged: (double newValue) {
+                  if (this.mounted)
+                    setState(() {
+                      _targetSpeed = newValue as int;
+                    });
+                },
+                needleColor: Color(0xff000000).withOpacity(1.0),
+                needleLength: 9,
+                needleStartWidth: 3,
+                needleEndWidth: 8,
+                knobStyle: KnobStyle(
+                    color: Colors.black,
+                    borderColor: Color(0xff070b1a),
+                    borderWidth: 0.006,
+                    knobRadius: 0.021),
+                enableAnimation: true),
+            NeedlePointer(
+                value: (_targetSpeed) / 1.0,
+                onValueChanged: (double newValue) {
+                  if (this.mounted)
+                    setState(() {
+                      _targetSpeed = newValue as int;
+                    });
+                },
+                needleColor: Color(0xffffffff).withOpacity(1.0),
                 needleLength: 4,
                 needleStartWidth: 0.5,
                 needleEndWidth: 5,
@@ -172,7 +226,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 32,
                 startWidth: 5,
                 endWidth: 10,
-                color: Color(0xffffffff)),
+                color: Color(0xff000000)),
             GaugeRange(
                 startValue: 33,
                 endValue: 48,
@@ -184,7 +238,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 64,
                 startWidth: 13,
                 endWidth: 16,
-                color: Color(0xffffffff)),
+                color: Color(0xff000000)),
             GaugeRange(
                 startValue: 65,
                 endValue: 80,
@@ -196,7 +250,7 @@ class _SpeedometerState extends State<Speedometer> {
                 endValue: 100,
                 startWidth: 20,
                 endWidth: 23,
-                color: Color(0xffffffff)),
+                color: Color(0xff000000)),
           ],
         ),
         RadialAxis(
@@ -208,24 +262,39 @@ class _SpeedometerState extends State<Speedometer> {
             minimum: 0,
             maximum: 81,
             majorTickStyle: MajorTickStyle(
-                color: Color(0xffc2b11d), dashArray: <double>[5, 5]),
-            minorTickStyle: MinorTickStyle(color: Color(0xff635b0e)),
-            axisLabelStyle: GaugeTextStyle(color: Color(0xffc2b11d)),
+                color: Color(0xff000000), dashArray: <double>[5, 5]),
+            minorTickStyle: MinorTickStyle(color: Color(0xff000000)),
+            axisLabelStyle: GaugeTextStyle(color: Color(0xff000000)),
             axisLineStyle: AxisLineStyle(
               dashArray: <double>[5, 5],
             ),
             //color: Color(0xFFFF7676),),
             annotations: <GaugeAnnotation>[
+              // GaugeAnnotation(
+              //   widget: Container(
+              //     child: SixteenSegmentDisplay(
+              //         value: speed.toInt().toString() + ' mph',
+              //         size: 4.4,
+              //         backgroundColor: Colors.transparent,
+              //         segmentStyle: RectSegmentStyle(
+              //             enabledColor: Colors.red,
+              //             disabledColor: Color(0xff635b0e).withOpacity(0.05))),
+              //   ),
+              //
+              //   angle: 85,
+              //   positionFactor: 0.6,
+              // ),
               GaugeAnnotation(
                 widget: Container(
                   child: SixteenSegmentDisplay(
                       value: speed.toInt().toString() + ' mph',
-                      size: 2.5,
+                      size: 4.0,
                       backgroundColor: Colors.transparent,
                       segmentStyle: RectSegmentStyle(
-                          enabledColor: Colors.yellow,
+                          enabledColor: Colors.white,
                           disabledColor: Color(0xff635b0e).withOpacity(0.05))),
                 ),
+
                 angle: 85,
                 positionFactor: 0.6,
               ),
@@ -254,7 +323,7 @@ class _SpeedometerState extends State<Speedometer> {
                     children: [
                       Row(
                         children: [
-                          Container(width: 110,),
+                          Container(width: 50),
                           Material(
                             color: Colors.white,
                             child: widget.timeOn ? DigitalClock(
@@ -262,19 +331,19 @@ class _SpeedometerState extends State<Speedometer> {
                             is24HourTimeFormat: false,
                             showSecondsDigit: false,
                             amPmDigitTextStyle: TextStyle(
-                              color: Color(0xffc2b11d).withOpacity(0.5),
+                              color: Color(0xff000000).withOpacity(0.5),
                               fontSize: 15,
                               fontFamily: "Schyler-Regular"
                             ),
                             secondDigitDecoration: BoxDecoration(color: Colors.transparent),
                             secondDigitTextStyle: TextStyle(
-                              color: Color(0xffedd711),
-                              fontSize: 15,
+                              color: Color(0xff000000),
+                              fontSize: 25,
                             ),
                             hourMinuteDigitDecoration: BoxDecoration(color: Colors.transparent),
                             hourMinuteDigitTextStyle: TextStyle(
-                              color: Color(0xffedd711),
-                              fontSize: 30, //USED TO BE 16
+                              color: Color(0xff000000),
+                              fontSize: 50, //USED TO BE 16
                             ),
                             areaDecoration: BoxDecoration(
                               color: Colors.transparent,
