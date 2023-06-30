@@ -14,6 +14,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:characters/characters.dart';
 // Custom Widgets
+
 import '../widgets/BluetoothIcon.dart';
 import '../widgets/CenterIndicators.dart';
 import '../widgets/LeftTurnSignal.dart';
@@ -87,7 +88,7 @@ class HomePageState extends State<HomePage> {
 
   //UNSURE //TODO: THIS
   int obd2Length = 0;
-
+  late Nav navInstance;
 
   // THE CODE BELOW IS STUFF IDK
   StreamController<Set<String>> _ctcController =
@@ -274,13 +275,34 @@ class HomePageState extends State<HomePage> {
     return res;
   }
 
+
+  @override
+  /// normal initState, but with new initiated fields
+  /// for our HomePageState Class
+  void initState() {
+    // Calling superclass initState
+    super.initState();
+    UsbSerial.usbEventStream!.listen((UsbEvent event) { //listens for usb event
+      _getPorts(); //and also gets ports
+    });
+  }
+
+
+
+  //we want to cycle through each of the usbs (there should only
+  //be one) and check
+
+
 //UNSURE
   Future<void> obd2Req(val) async {
     // Writing Request to Arduino:
     int retry = 0;
+
+    //making the bytes that will be written
+    List<int> bytes = utf8.encode(val);
     do {
       try {
-        return await _port.write(utf8.encode(val));
+        return await _port.write(bytes as Uint8List);
       } catch (e) {
         await Future.delayed(Duration(milliseconds: 100));
         ++retry;
@@ -427,8 +449,8 @@ class HomePageState extends State<HomePage> {
           _mphController.add(speed);
         } else if (message[0] == 'V') {
           var auxPackVoltage =
-          num.parse(message.substring(1, 4))?.toDouble();
-          if (auxPackVoltage! < 2) { //TODO: FIX ADDED NULL CHECK
+          num.parse(message.substring(1, 4)).toDouble();
+          if (auxPackVoltage < 2) {
             //apwSet.add(auxPackVoltage.toString());
             _apwController.add(auxPackVoltage.toString());
           } else {
@@ -472,26 +494,267 @@ class HomePageState extends State<HomePage> {
     });
 
       }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.black,
+        body: Column(children: [
+          Container(
+              height: 150,
+              child: Row(children: [
+                //LeftTurnSignal(),
+                Container(width: 1205, child: BluetoothIcon(connectStream: _connectedController.stream,))]
+              )),
+          Row(
+            children: [
+              VerticalDivider(width: 50),
+              Column(
+                children: [
+                  //Container(child: TurnSignal()),
+                  Container(
+                    height: 450,
+                    width: 450,
+                    child: IndexedStack(
+                      index: HomePage.leftIndex,
+                      children: [
+                        Container(
+                            margin: EdgeInsets.symmetric(
+                                vertical: 0, horizontal: 0),
+                            child: Speedometer(
+                              timeOn: true,
+                              mphStream: _mphController.stream,
+                              callback: (speed) => {setSpeed(speed.toInt())},
+                            )),
+                        Center(
+                            child: AddBMSData(
+                                socStream: _socController.stream,
+                                lowStream: _lowController.stream,
+                                hiStream: _hiController.stream,
+                                packVoltStream: _packVoltSumController.stream,
+                                currentDrawStream:
+                                _currentDrawController.stream,
+                                deltaStream: _deltaController.stream,
+                                hiTempStream: _hiTempController.stream,
+                                speedStream: _mphController.stream,
+                                underHoodStream: _underHoodController.stream,
+                                ctcStream: _ctcController.stream,
+                                ptcStream: _ptcController.stream,
+                                apwiStream: _apwController.stream,
+                                latStream: _latController.stream,
+                                longStream: _longController.stream,
+                                altStream: _altController.stream,
+                                connectStream: _connectedController.stream)),
+                        Center(
+                            child: TroubleCodes(
+                                ctcStream: _ctcController.stream,
+                                ptcStream: _ptcController.stream))
+                      ],
+                    ),
+                  ),
+                  Row(children: [
+                    VerticalDivider(width: 15),
+                    if (HomePage.leftIndex > 0)
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            --HomePage.leftIndex;
+                          });
+                        },
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Color(0xffedd711),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xffffffff).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(18),
+                        ),
+                      ),
+                    if (HomePage.leftIndex == 0) VerticalDivider(width: 65),
+                    VerticalDivider(width: 150),
+                    if (HomePage.leftIndex < 2)
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            ++HomePage.leftIndex;
+                          });
+                        },
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xffedd711),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xff03050a).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(18),
+                        ),
+                      ),
+                    if (HomePage.leftIndex == 2) VerticalDivider(width: 65),
+                  ]),
+                ],
+              ),
+              VerticalDivider(width: 50),
+              Column(children: [
+                Container(
+                  height: 450,
+                  child: CenterIndicators(
+                    socStream: _socController.stream,
+                    hiStream: _hiController.stream,
+                    lowStream: _lowController.stream,
+                    packVoltStream: _packVoltSumController.stream,
+                    hiTempStream: _hiTempController.stream,
+                    currentDrawStream: _currentDrawController.stream,
+                  ),
+                ),
+                Container(
+                  height: 100,
+                  width: 146,
+                  child: Warnings(
+                    ctcStream: _ctcController.stream,
+                    ptcStream: _ptcController.stream,
+                    apwiStream: _apwController.stream,
+                    callback: () => setState(() => HomePage.leftIndex = 2),
+                  ),
+                )
+              ]),
+              VerticalDivider(width: 50),
+              Column(
+                children: [
+                  Container(
+                    height: 10,
+                  ),
+                  Container(
+                      height: 450,
+                      width: 450,
+                      child: IndexedStack(
+                        index: HomePage.rightIndex,
+                        children: [
+                          Container(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 30),
+                              child: VoltMeter(
+                                socStream: _socController.stream,
+                                lowStream: _lowController.stream,
+                                hiStream: _hiController.stream,
+                                packVoltStream: _packVoltSumController.stream,
+                                deltaStream: _deltaController.stream,
+                                hiTempStream: _hiTempController.stream,
+                              )),
+                          Center(
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.horizontal(
+                                      left: Radius.elliptical(150, 150),
+                                      right: Radius.elliptical(150, 150)),
+                                  child: Container(
+                                      height: 500,
+                                      width: 500,
+                                      child: navInstance))),
+                          Container(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 0, horizontal: 0),
+                              child: Speedometer(
+                                timeOn: true,
+                                mphStream: _mphController.stream,
+                                callback: (speed) => {setSpeed(speed.toInt())},
+                              )),
+                          /*Center(
+                              child: SOCGraph(
+                            socStream: _socController.stream,
+                            packVoltStream: _packVoltSumController.stream,
+                          )),*/
+                        ],
+                      )),
+                  Container(
+                    height: 10,
+                  ),
+                  Row(children: [
+                    VerticalDivider(width: 15),
+                    if (HomePage.rightIndex > 0)
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            --HomePage.rightIndex;
+                          });
+                        },
+                        child: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Color(0xffedd711),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xffffffff).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(18),
+                        ),
+                      ),
+                    if (HomePage.rightIndex == 0) VerticalDivider(width: 65),
+                    if (HomePage.rightIndex != 1) VerticalDivider(width: 150),
+                    if (HomePage.rightIndex == 1)
+                      VerticalDivider(
+                        width: 44,
+                      ),
+                    if (HomePage.rightIndex == 1)
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      FullScreenNav(nav: navInstance)),
+                            ); //NavDirections()/*FullScreenNav()*/),);
+                          });
+                        },
+                        child: Icon(
+                          Icons.fullscreen,
+                          color: Color(0xffedd711),
+                          size: 40,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xffffffff).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(11),
+                        ),
+                      ),
+                    if (HomePage.rightIndex == 1) VerticalDivider(width: 44),
+                    if (HomePage.rightIndex < 2)
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            ++HomePage.rightIndex;
+                          });
+                        },
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xffedd711),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: Color(0xffffffff).withOpacity(0),
+                          shape: CircleBorder(),
+                          padding: EdgeInsets.all(18),
+                        ),
+                      ),
+                    if (HomePage.rightIndex == 2) VerticalDivider(width: 65),
+                  ]),
+                  Container(
+                    height: 10,
+                  ),
+                ],
+              )
+            ],
+          ),
+        ]));
+  }
     }
 
   //TODO: Using initState, connect using a the previous method.
 
-  @override
-  /// normal initState, but with new initiated fields
-  /// for our HomePageState Class
-  void initState() {
-    // Calling superclass initState
-    super.initState();
-
-
-
-    //we want to cycle through each of the usbs (there should only
-    //be one) and check
 
 
 
 
-  }
+
+
 
 
 
