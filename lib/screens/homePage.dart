@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:usb_serial/transaction.dart';
 import 'package:usb_serial/usb_serial.dart';
-
+import 'package:geolocator/geolocator.dart' as gl;
 
 
 import 'dart:convert';
@@ -66,7 +66,7 @@ class HomePageState extends State<HomePage> {
   /// This is an Array of Linked List ports.
   ///
   /// In terms of Bluetooth, I think this may be like services (maybe)
-  List _ports = [];
+  List<UsbPort> _ports = [];
 
   /// A linked list of empty array for serial data, which is the data pulled
   /// from the USB
@@ -195,6 +195,8 @@ class HomePageState extends State<HomePage> {
   }
 
   /// grabs ports from the list of USB devices
+  ///
+  ///WE USE THIS TO CONNECT TO THE DEVICE
   void _getPorts() async {
     _ports = []; //ports is an empty array
     List<UsbDevice> devices = await UsbSerial.listDevices(); //list of devices
@@ -282,9 +284,31 @@ class HomePageState extends State<HomePage> {
   void initState() {
     // Calling superclass initState
     super.initState();
+
+    navInstance = new Nav(callback: (event) => {routeLocationToDB(event)},); //GPS
+
     UsbSerial.usbEventStream!.listen((UsbEvent event) { //listens for usb event
+
       _getPorts(); //and also gets ports
     });
+
+    //BEGAN CAN COMM
+    notify();
+  }
+
+
+  routeLocationToDB(gl.Position position) {
+    _latController.add(position.latitude);
+    _longController.add(position.longitude);
+    _altController.add(position.altitude);
+  }
+
+  void changeToTCPage() {
+    if (this.mounted) {
+      setState(() {
+        HomePage.leftIndex = 2;
+      });
+    }
   }
 
 
